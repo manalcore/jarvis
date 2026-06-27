@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Jarvis — Agentic AI OS | manal_verse.co</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#030006;--g1:rgba(18,0,36,.65);--g2:rgba(8,0,20,.5);
+  --p:#a855f7;--pd:rgba(168,85,247,.13);--pg:rgba(168,85,247,.55);
+  --c:#22d3ee;--cd:rgba(34,211,238,.11);--cg:rgba(34,211,238,.5);
+  --grad:linear-gradient(135deg,#a855f7,#22d3ee);
+  --gradd:linear-gradient(135deg,rgba(168,85,247,.18),rgba(34,211,238,.15));
+  --bo:rgba(168,85,247,.2);--bohi:rgba(168,85,247,.65);
+  --tx:#eeddff;--txm:rgba(225,205,255,.72);--txd:rgba(190,165,230,.4);
+  --ok:#10b981;--warn:#f59e0b;--err:#ef4444;
+  /* Agent colors */
+  --jarvis:#a855f7;--research:#22d3ee;--content:#f59e0b;
+  --strategy:#10b981;--voice:#ec4899;--memory:#6366f1;
+  --web:#f97316;--code:#14b8a6;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--tx);font-family:'Rajdhani',sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+canvas#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+#grid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(168,85,247,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(168,85,247,.02) 1px,transparent 1px);
+  background-size:54px 54px;animation:gp 12s ease-in-out infinite}
+@keyframes gp{0%,100%{opacity:.4}50%{opacity:.9}}
+#cglow{position:fixed;pointer-events:none;z-index:1;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(168,85,247,.04) 0%,transparent 70%);
+  transform:translate(-50%,-50%);left:50%;top:50%;transition:left .06s,top .06s}
+#app{position:relative;z-index:10;display:grid;grid-template-columns:64px 1fr;grid-template-rows:52px 1fr;height:100vh;width:100vw}
+
+/* TOPBAR */
+#tb{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px 0 10px;background:rgba(3,0,8,.96);border-bottom:1px solid var(--bo);
+  backdrop-filter:blur(30px);z-index:200;position:relative;gap:10px}
+#tb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(168,85,247,.7),rgba(34,211,238,.7),transparent);
+  animation:tbg 4s ease-in-out infinite}
+@keyframes tbg{0%,100%{opacity:.35}50%{opacity:1}}
+.tbl{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.lgname{font-family:'Orbitron',monospace;font-weight:900;font-size:12px;letter-spacing:3px;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap}
+.lgsub{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd);letter-spacing:1px}
+.tbstat{display:flex;align-items:center;gap:10px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd)}
+.dot{width:5px;height:5px;border-radius:50%;display:inline-block;margin-right:4px;animation:bl 2.5s ease-in-out infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.15}}
+.tbr{display:flex;align-items:center;gap:7px;flex-shrink:0}
+#clk{font-family:'Share Tech Mono',monospace;font-size:12px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap}
+#ddisp{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd);white-space:nowrap}
+.tbtn{width:28px;height:28px;border:1px solid var(--bo);background:var(--g1);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--txd);transition:all .2s;font-size:12px;user-select:none}
+.tbtn:hover{border-color:var(--p);color:var(--p);box-shadow:0 0 10px var(--pd)}
+.assemble-btn{padding:4px 14px;border-radius:20px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
+  border:1px solid var(--p);background:var(--pd);cursor:pointer;color:var(--p);-webkit-text-fill-color:var(--p);
+  transition:all .2s;white-space:nowrap;text-transform:uppercase;user-select:none;animation:abPulse 3s ease-in-out infinite}
+@keyframes abPulse{0%,100%{box-shadow:0 0 8px var(--pd)}50%{box-shadow:0 0 18px var(--pg)}}
+.assemble-btn:hover{background:linear-gradient(135deg,rgba(168,85,247,.25),rgba(34,211,238,.2));box-shadow:0 0 20px var(--pg)}
+.assemble-btn.active{background:var(--grad);-webkit-text-fill-color:#fff;color:#fff;border-color:transparent;animation:abActive .5s ease-in-out infinite alternate}
+@keyframes abActive{from{box-shadow:0 0 15px var(--pg)}to{box-shadow:0 0 35px rgba(168,85,247,.8),0 0 60px rgba(34,211,238,.5)}}
+.mbadge{padding:3px 9px;border-radius:20px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;border:1px solid var(--bo);background:var(--g1);cursor:pointer;color:var(--c);-webkit-text-fill-color:var(--c);transition:all .2s;white-space:nowrap}
+.mbadge:hover{border-color:var(--c)}
+
+/* SIDEBAR */
+#sb{background:rgba(3,0,8,.92);border-right:1px solid var(--bo);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:5px;backdrop-filter:blur(30px);z-index:100}
+.ni{width:40px;height:40px;border:1px solid transparent;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--txd);transition:all .22s;position:relative;font-size:16px;user-select:none}
+.ni:hover,.ni.on{border-color:var(--bohi);color:var(--p);background:var(--pd);box-shadow:0 0 14px var(--pd)}
+.ni.on::before{content:'';position:absolute;left:-1px;top:8px;bottom:8px;width:2px;background:var(--grad);border-radius:0 2px 2px 0;box-shadow:0 0 8px var(--p)}
+.ntip{position:absolute;left:48px;background:rgba(3,0,8,.97);border:1px solid var(--bo);color:var(--c);-webkit-text-fill-color:var(--c);font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;padding:3px 9px;border-radius:4px;white-space:nowrap;pointer-events:none;opacity:0;transform:translateX(-4px);transition:all .18s;z-index:300;text-transform:uppercase}
+.ni:hover .ntip{opacity:1;transform:translateX(0)}
+.ndv{width:24px;height:1px;background:var(--bo);margin:2px 0}
+
+/* MAIN */
+#main{overflow:hidden;position:relative}
+.panel{display:none;height:100%;overflow:hidden;padding:18px 20px;position:absolute;inset:0;flex-direction:column;animation:pIn .3s cubic-bezier(.16,1,.3,1)}
+.panel.on{display:flex}
+@keyframes pIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* GLASS CARD */
+.gc{background:var(--g1);border:1px solid var(--bo);border-radius:12px;padding:16px;backdrop-filter:blur(24px);position:relative;overflow:hidden;transition:all .25s}
+.gc:hover{border-color:rgba(168,85,247,.35);box-shadow:0 0 20px rgba(168,85,247,.07)}
+.gc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(168,85,247,.25),rgba(34,211,238,.25),transparent)}
+.gcl{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ph{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-shrink:0;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ph::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(168,85,247,.3),transparent)}
+
+/* ORB */
+.owrap{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ring{position:absolute;border-radius:50%;border:1px solid;pointer-events:none}
+.r1{border-color:rgba(168,85,247,.1);animation:rs 9s linear infinite}
+.r2{border-color:rgba(100,50,200,.18);animation:rs 5.5s linear infinite reverse}
+.r3{border-color:rgba(34,211,238,.22);border-style:dashed;animation:rs 3.2s linear infinite}
+@keyframes rs{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.orb{border-radius:50%;cursor:pointer;position:relative;z-index:2;background:radial-gradient(circle at 32% 32%,rgba(168,85,247,.9) 0%,rgba(100,40,200,.6) 30%,rgba(30,0,80,.9) 65%,rgba(5,0,12,.95) 100%);box-shadow:0 0 30px rgba(168,85,247,.55),0 0 60px rgba(100,40,200,.3),inset 0 0 30px rgba(168,85,247,.18);animation:ob 4s ease-in-out infinite;user-select:none}
+@keyframes ob{0%,100%{transform:scale(1);box-shadow:0 0 30px rgba(168,85,247,.55),0 0 60px rgba(100,40,200,.3),inset 0 0 30px rgba(168,85,247,.18)}50%{transform:scale(1.04);box-shadow:0 0 50px rgba(168,85,247,.75),0 0 90px rgba(34,211,238,.4),inset 0 0 40px rgba(34,211,238,.25)}}
+.orb.listening{animation:ol .45s ease-in-out infinite alternate;background:radial-gradient(circle at 32% 32%,rgba(34,211,238,.95) 0%,rgba(0,180,220,.65) 30%,rgba(0,60,120,.88) 65%,rgba(5,0,12,.95) 100%)}
+@keyframes ol{from{transform:scale(1);box-shadow:0 0 40px rgba(34,211,238,.65),inset 0 0 30px rgba(34,211,238,.3)}to{transform:scale(1.1);box-shadow:0 0 70px rgba(34,211,238,.85),inset 0 0 50px rgba(34,211,238,.42)}}
+.orb.thinking{animation:ot 1s ease-in-out infinite;background:radial-gradient(circle at 32% 32%,rgba(245,158,11,.85) 0%,rgba(200,80,0,.52) 30%,rgba(80,20,0,.88) 65%,rgba(5,0,12,.95) 100%)}
+@keyframes ot{0%,100%{transform:scale(1) rotate(0deg)}25%{transform:scale(1.05) rotate(4deg)}75%{transform:scale(1.05) rotate(-4deg)}}
+.orb.speaking{animation:osp .25s ease-in-out infinite alternate;background:radial-gradient(circle at 32% 32%,rgba(168,85,247,1) 0%,rgba(34,211,238,.8) 45%,rgba(0,50,140,.88) 75%,rgba(5,0,12,.95) 100%)}
+@keyframes osp{from{transform:scale(1)}to{transform:scale(1.08)}}
+.orb.assembling{animation:asmb .4s ease-in-out infinite alternate;background:radial-gradient(circle at 32% 32%,#fff 0%,rgba(168,85,247,.9) 25%,rgba(34,211,238,.8) 50%,rgba(30,0,80,.9) 75%,rgba(5,0,12,.95) 100%)}
+@keyframes asmb{from{transform:scale(1);box-shadow:0 0 50px rgba(168,85,247,.8),0 0 100px rgba(34,211,238,.6)}to{transform:scale(1.12);box-shadow:0 0 80px rgba(168,85,247,1),0 0 150px rgba(34,211,238,.9),0 0 200px rgba(255,255,255,.2)}}
+.orbst{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;height:16px;transition:color .3s}
+
+/* WAVEFORM */
+.wvf{display:flex;align-items:center;gap:2px}
+.wb{width:3px;border-radius:3px;min-height:3px;transition:height .1s ease;background:linear-gradient(to top,var(--p),var(--c));box-shadow:0 0 4px rgba(168,85,247,.4)}
+
+/* VTRANSCRIPT */
+.vtx{background:var(--g1);border:1px solid var(--bo);border-radius:12px;padding:12px 16px;text-align:center;font-size:14px;font-weight:500;color:var(--tx);backdrop-filter:blur(20px);position:relative;overflow:hidden;line-height:1.55;min-height:48px;display:flex;align-items:center;justify-content:center}
+.vtx::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--p),var(--c),transparent);animation:scanL 3s linear infinite}
+@keyframes scanL{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.vtxph{color:var(--txd);font-size:12px;font-family:'Share Tech Mono',monospace}
+
+/* VOICE CONTROLS */
+.vcrow{display:flex;align-items:center;gap:12px}
+.micbtn{border-radius:50%;border:2px solid var(--p);background:var(--pd);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--p);transition:all .22s;user-select:none}
+.micbtn:hover{box-shadow:0 0 30px var(--pg);transform:scale(1.06)}
+.micbtn.on{background:rgba(34,211,238,.14);border-color:var(--c);color:var(--c);box-shadow:0 0 40px rgba(34,211,238,.45);animation:micp 1s ease-in-out infinite}
+@keyframes micp{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.vcbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--bo);background:var(--g1);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--txd);transition:all .2s;font-size:15px;user-select:none}
+.vcbtn:hover{border-color:var(--p);color:var(--p)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:640px}
+.chip{padding:5px 12px;border:1px solid var(--bo);border-radius:16px;background:var(--g1);font-size:11px;font-weight:600;color:var(--txd);cursor:pointer;transition:all .2s;white-space:nowrap;user-select:none}
+.chip:hover{border-color:var(--p);color:var(--p);background:var(--pd);box-shadow:0 0 8px var(--pd)}
+.chip.agent-chip{border-color:rgba(168,85,247,.35);color:var(--p)}
+.chip.agent-chip:hover{box-shadow:0 0 14px var(--pg)}
+
+/* AGENT GRID */
+.agent-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;flex:1;overflow-y:auto;padding-bottom:4px}
+.agent-grid::-webkit-scrollbar{width:3px}
+.agent-grid::-webkit-scrollbar-thumb{background:rgba(168,85,247,.3)}
+.agent-card{padding:16px;border-radius:14px;border:1px solid var(--bo);background:var(--g1);backdrop-filter:blur(24px);position:relative;overflow:hidden;transition:all .3s;cursor:pointer;display:flex;flex-direction:column;gap:10px}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--agent-color,var(--grad));opacity:.6}
+.agent-card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(168,85,247,.12)}
+.agent-card.active{border-color:var(--agent-color,var(--p));box-shadow:0 0 20px var(--agent-glow,var(--pg));animation:agentPulse 2s ease-in-out infinite}
+@keyframes agentPulse{0%,100%{box-shadow:0 0 20px var(--agent-glow,var(--pg))}50%{box-shadow:0 0 35px var(--agent-glow,var(--pg)),0 0 60px var(--agent-glow,var(--pg))}}
+.agent-card.working{border-color:var(--warn);box-shadow:0 0 20px rgba(245,158,11,.3)}
+.agent-card.done{border-color:var(--ok);box-shadow:0 0 20px rgba(16,185,129,.25)}
+.agent-card.error{border-color:var(--err);box-shadow:0 0 20px rgba(239,68,68,.2)}
+.agent-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;border:2px solid var(--agent-color,var(--p));background:var(--g2)}
+.agent-avatar::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:1px solid var(--agent-color,var(--p));opacity:.3;animation:rs 4s linear infinite}
+.agent-status-dot{width:8px;height:8px;border-radius:50%;position:absolute;bottom:0;right:0;border:2px solid var(--g1)}
+.agent-header{display:flex;align-items:center;gap:10px}
+.agent-info{flex:1;min-width:0}
+.agent-name{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1.5px;font-weight:700;color:var(--tx);margin-bottom:2px}
+.agent-role{font-size:11px;color:var(--txd)}
+.agent-status{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:10px;background:var(--g2);border:1px solid var(--bo);width:fit-content}
+.agent-log{font-size:11px;color:var(--txm);line-height:1.5;max-height:60px;overflow:hidden;font-family:'Share Tech Mono',monospace}
+.agent-progress{height:2px;border-radius:2px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:4px}
+.agent-progress-fill{height:100%;border-radius:2px;background:var(--agent-color,var(--grad));transition:width .5s ease;box-shadow:0 0 6px var(--agent-glow,var(--pg))}
+
+/* AGENT FEED */
+.feed-wrap{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px}
+.feed-wrap::-webkit-scrollbar{width:3px}
+.feed-wrap::-webkit-scrollbar-thumb{background:rgba(168,85,247,.3)}
+.feed-item{padding:12px 14px;border-radius:10px;border:1px solid var(--bo);background:var(--g1);backdrop-filter:blur(10px);animation:pIn .3s ease;position:relative;overflow:hidden}
+.feed-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--agent-color,var(--p))}
+.feed-item.working::before{animation:loadBar 1.5s ease-in-out infinite}
+@keyframes loadBar{0%,100%{opacity:.4}50%{opacity:1}}
+.feed-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.feed-agent-icon{font-size:14px}
+.feed-agent-name{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1.5px;font-weight:700}
+.feed-time{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd);margin-left:auto}
+.feed-body{font-size:12.5px;line-height:1.65;color:var(--txm)}
+.feed-body.loading{display:flex;gap:4px;align-items:center}
+.dots{display:flex;gap:4px;align-items:center}
+.dot2{width:5px;height:5px;border-radius:50%;background:var(--p);opacity:.6;animation:da 1.2s ease-in-out infinite}
+.dot2:nth-child(2){animation-delay:.2s}.dot2:nth-child(3){animation-delay:.4s}
+@keyframes da{0%,60%,100%{transform:scale(1);opacity:.6}30%{transform:scale(1.5);opacity:1}}
+
+/* ASSEMBLE PANEL */
+#pa{background:transparent}
+.assemble-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-shrink:0}
+.assemble-input-area{display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;flex-shrink:0}
+.assemble-input{flex:1;background:var(--g1);border:1px solid var(--bo);border-radius:12px;padding:12px 16px;color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:15px;outline:none;transition:all .2s;resize:none;line-height:1.4;min-height:52px}
+.assemble-input:focus{border-color:var(--p);box-shadow:0 0 14px var(--pd)}
+.assemble-input::placeholder{color:var(--txd)}
+.assemble-go{padding:12px 22px;border-radius:12px;background:var(--grad);border:none;color:#fff;font-family:'Orbitron',monospace;font-size:10px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .2s;text-transform:uppercase;white-space:nowrap;user-select:none;box-shadow:0 4px 20px rgba(168,85,247,.4)}
+.assemble-go:hover{box-shadow:0 4px 30px rgba(168,85,247,.7),0 0 60px rgba(34,211,238,.3);transform:translateY(-1px)}
+.assemble-layout{display:grid;grid-template-columns:1fr 340px;gap:14px;flex:1;overflow:hidden}
+
+/* CHAT */
+.chatmsgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-bottom:10px;padding-right:4px}
+.chatmsgs::-webkit-scrollbar{width:3px}
+.chatmsgs::-webkit-scrollbar-thumb{background:rgba(168,85,247,.3)}
+.msg{display:flex;gap:9px;align-items:flex-start;animation:pIn .28s ease}
+.msg.u{flex-direction:row-reverse}
+.mav{width:30px;height:30px;border-radius:8px;flex-shrink:0;border:1px solid var(--bo);display:flex;align-items:center;justify-content:center;font-size:11px}
+.mav.j{background:linear-gradient(135deg,rgba(168,85,247,.3),rgba(34,211,238,.18));border-color:var(--p)}
+.mav.j span{font-family:'Orbitron',monospace;font-weight:900;font-size:9px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mav.u{background:rgba(50,0,80,.4)}
+.mav.agent{border-color:var(--agent-color,var(--p));background:var(--g2)}
+.mbub{max-width:80%;padding:10px 14px;border-radius:10px;line-height:1.62;font-size:13.5px;word-break:break-word}
+.msg.j .mbub{background:var(--g1);border:1px solid var(--bo);border-top-left-radius:2px;backdrop-filter:blur(20px)}
+.msg.u .mbub{background:rgba(100,0,180,.14);border:1px solid rgba(168,85,247,.25);border-top-right-radius:2px;backdrop-filter:blur(20px)}
+.msg.agent .mbub{background:var(--g2);border-top-left-radius:2px;backdrop-filter:blur(20px)}
+.mtime{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd);margin-top:3px}
+.msg.u .mtime{text-align:right}
+.agent-tag{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;padding:1px 6px;border-radius:4px;margin-bottom:4px;display:inline-block;background:var(--pd);color:var(--p);-webkit-text-fill-color:var(--p)}
+.ciarea{display:flex;gap:8px;align-items:flex-end;padding-top:12px;border-top:1px solid var(--bo);flex-shrink:0}
+.ciwrap{flex:1;background:var(--g1);border:1px solid var(--bo);border-radius:10px;backdrop-filter:blur(20px);display:flex;align-items:center;transition:all .2s}
+.ciwrap:focus-within{border-color:var(--p);box-shadow:0 0 12px var(--pd)}
+.ci{flex:1;background:transparent;border:none;outline:none;color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:500;padding:10px 13px;resize:none;line-height:1.4;max-height:100px}
+.ci::placeholder{color:var(--txd)}
+.sbtn{width:38px;height:38px;flex-shrink:0;border:1px solid var(--p);border-radius:9px;background:var(--pd);color:var(--p);-webkit-text-fill-color:var(--p);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s}
+.sbtn:hover{background:rgba(168,85,247,.22);box-shadow:0 0 14px var(--pd)}
+
+/* DASHBOARD */
+.dg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;flex:1;overflow-y:auto;padding-bottom:4px}
+.dg::-webkit-scrollbar{width:3px}.dg::-webkit-scrollbar-thumb{background:rgba(168,85,247,.25)}
+.grtc{grid-column:1/-1;display:flex;align-items:center;gap:16px}
+.gorb{width:50px;height:50px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 32% 32%,rgba(168,85,247,.9) 0%,rgba(100,40,200,.55) 40%,rgba(30,0,80,.9) 100%);box-shadow:0 0 20px rgba(168,85,247,.5),0 0 40px rgba(34,211,238,.2);animation:ob 4s ease-in-out infinite}
+.grtc h2{font-family:'Orbitron',monospace;font-size:15px;font-weight:700;margin-bottom:3px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.grtc p{font-size:12px;color:var(--txm);line-height:1.5}
+.pb{margin-bottom:8px}
+.pbh{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;color:var(--txm)}
+.pbv{font-family:'Share Tech Mono',monospace;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.pbar{height:3px;border-radius:2px;background:rgba(168,85,247,.08);overflow:hidden}
+.pfill{height:100%;border-radius:2px;background:var(--grad);box-shadow:0 0 6px rgba(168,85,247,.5);transition:width 1.2s cubic-bezier(.16,1,.3,1)}
+.tski{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(168,85,247,.06);font-size:12px}
+.tski:last-child{border:none}
+.tck{width:14px;height:14px;border-radius:3px;border:1px solid var(--bo);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;font-size:9px;user-select:none}
+.tck.done{background:var(--pd);border-color:var(--p);color:var(--p)}
+.tt{flex:1;font-size:12px}.tt.done{text-decoration:line-through;color:var(--txd)}
+.pri{font-size:9px;padding:1px 5px;border-radius:3px;flex-shrink:0}
+.prih{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25)}
+.prim{background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.2)}
+.pril{background:var(--pd);color:var(--c);-webkit-text-fill-color:var(--c);border:1px solid var(--bo)}
+.acti{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid rgba(168,85,247,.05);font-size:11px;color:var(--txm)}
+.acti:last-child{border:none}
+.adot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.atm{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd);flex-shrink:0}
+.snum{font-family:'Orbitron',monospace;font-size:24px;font-weight:700;line-height:1;margin-bottom:3px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* KNOWLEDGE */
+.kl{display:grid;grid-template-columns:175px 1fr;gap:12px;flex:1;overflow:hidden}
+.kcat{display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:8px;border:1px solid var(--bo);cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;background:var(--g1);color:var(--txm);margin-bottom:5px}
+.kcat:hover,.kcat.on{border-color:var(--p);color:var(--p);background:var(--pd)}
+.knote{padding:12px;border-radius:10px;border:1px solid var(--bo);background:var(--g1);backdrop-filter:blur(10px);cursor:pointer;transition:all .22s;margin-bottom:8px;position:relative}
+.knote:hover{border-color:rgba(168,85,247,.35)}
+.kntit{font-size:13px;font-weight:700;margin-bottom:4px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.knprev{font-size:11px;color:var(--txd);line-height:1.5}
+.knmeta{display:flex;gap:6px;margin-top:6px;align-items:center;flex-wrap:wrap}
+.ktag{font-size:9px;padding:2px 6px;border-radius:8px;background:var(--pd);color:var(--c);-webkit-text-fill-color:var(--c);border:1px solid var(--bo)}
+.kdate{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd)}
+.kndel{position:absolute;top:8px;right:8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.22);color:#f87171;font-size:10px;padding:2px 6px;border-radius:4px;cursor:pointer;opacity:0;transition:opacity .2s;font-weight:600}
+.knote:hover .kndel{opacity:1}
+.ksrch{background:var(--g1);border:1px solid var(--bo);border-radius:8px;padding:8px 12px;color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:13px;outline:none;width:100%;margin-bottom:9px;transition:all .2s}
+.ksrch:focus{border-color:var(--p);box-shadow:0 0 10px var(--pd)}
+.addbtn{padding:9px 12px;border-radius:8px;cursor:pointer;transition:all .2s;text-align:center;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;background:var(--gradd);border:1px solid var(--p);color:var(--p);-webkit-text-fill-color:var(--p);display:block}
+.addbtn:hover{background:linear-gradient(135deg,rgba(168,85,247,.22),rgba(34,211,238,.22));box-shadow:0 0 12px var(--pd)}
+
+/* CMD PALETTE */
+#cmdbg{display:none;position:fixed;inset:0;background:rgba(3,0,8,.9);z-index:800;align-items:flex-start;justify-content:center;padding-top:10vh;backdrop-filter:blur(8px)}
+#cmdbg.on{display:flex}
+.cmdbox{background:rgba(6,0,15,.98);border:1px solid var(--bohi);border-radius:16px;width:min(560px,92vw);overflow:hidden;box-shadow:0 0 60px rgba(168,85,247,.25);animation:pIn .22s ease}
+.cmdiw{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--bo)}
+.cmdi{flex:1;background:transparent;border:none;outline:none;color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:500}
+.cmdi::placeholder{color:var(--txd)}
+.cmdico{font-size:16px;flex-shrink:0;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cmdhint{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd);flex-shrink:0}
+.cmdres{max-height:340px;overflow-y:auto;padding:6px}
+.cmdsec{padding:6px 12px 2px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--txd);text-transform:uppercase}
+.cmditem{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;transition:all .15s}
+.cmditem:hover,.cmditem.sel{background:var(--pd)}
+.cmin{font-size:13px;font-weight:600;color:var(--tx)}.cmid{font-size:11px;color:var(--txd)}
+.cmikbd{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--c);-webkit-text-fill-color:var(--c);background:var(--cd);border:1px solid var(--bo);padding:2px 7px;border-radius:4px;margin-left:auto;white-space:nowrap}
+
+/* MODALS */
+.mbg{display:none;position:fixed;inset:0;background:rgba(3,0,8,.9);z-index:600;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.mbg.on{display:flex}
+.modal{background:rgba(6,0,15,.98);border:1px solid var(--bohi);border-radius:16px;padding:22px;width:min(500px,93vw);max-height:86vh;overflow-y:auto;box-shadow:0 0 60px rgba(168,85,247,.22);animation:pIn .28s ease}
+.modal h3{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;margin-bottom:14px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mf{display:flex;flex-direction:column;gap:9px}
+.mf input,.mf textarea,.mf select{background:var(--g1);border:1px solid var(--bo);border-radius:8px;padding:9px 12px;color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:13px;outline:none;resize:vertical;transition:all .2s}
+.mf input:focus,.mf textarea:focus,.mf select:focus{border-color:var(--p);box-shadow:0 0 10px var(--pd)}
+.mf select option{background:#0a0012}.mf textarea{min-height:88px}
+.mfrow{display:flex;gap:8px}
+.mbbtn{padding:9px 16px;border-radius:8px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+.mbbtn.pri{background:var(--gradd);border:1px solid var(--p);color:var(--p);-webkit-text-fill-color:var(--p)}
+.mbbtn.pri:hover{background:linear-gradient(135deg,rgba(168,85,247,.22),rgba(34,211,238,.22));box-shadow:0 0 12px var(--pd)}
+.mbbtn.sec{background:transparent;border:1px solid var(--bo);color:var(--txd)}
+
+/* TOAST */
+#toastc{position:fixed;top:60px;right:14px;display:flex;flex-direction:column;gap:6px;z-index:9000;pointer-events:none}
+.toast{background:rgba(6,0,15,.97);border:1px solid var(--p);border-radius:9px;padding:8px 13px;font-size:12px;color:var(--tx);display:flex;align-items:center;gap:8px;box-shadow:0 0 18px rgba(168,85,247,.2);backdrop-filter:blur(22px);pointer-events:auto;min-width:220px;animation:tIn .3s ease,tOut .3s ease 3.7s forwards}
+@keyframes tIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tOut{from{opacity:1}to{opacity:0;transform:translateX(20px)}}
+.toast.w{border-color:var(--warn)}.toast.e{border-color:var(--err)}.toast.ok{border-color:var(--ok)}
+
+/* FLOATING MIC */
+#fmic{position:fixed;bottom:20px;right:20px;z-index:7000;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,rgba(168,85,247,.28),rgba(34,211,238,.18));border:1.5px solid var(--p);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:var(--p);user-select:none;box-shadow:0 0 18px rgba(168,85,247,.3),0 4px 18px rgba(0,0,0,.5);transition:all .22s}
+#fmic:hover{transform:scale(1.1);box-shadow:0 0 30px rgba(168,85,247,.55),0 4px 18px rgba(0,0,0,.5)}
+#fmic.on{background:rgba(34,211,238,.18);border-color:var(--c);color:var(--c);box-shadow:0 0 36px rgba(34,211,238,.5),0 4px 18px rgba(0,0,0,.5);animation:micp 1s ease-in-out infinite}
+
+/* VOICE MODAL */
+#vmodal{display:none;position:fixed;inset:0;background:rgba(3,0,8,.85);z-index:700;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+#vmodal.on{display:flex}
+.vmbox{background:rgba(6,0,15,.98);border:1px solid var(--bohi);border-radius:20px;padding:28px;width:min(420px,92vw);display:flex;flex-direction:column;align-items:center;gap:16px;box-shadow:0 0 60px rgba(168,85,247,.22);animation:pIn .28s ease}
+.vmclose{align-self:flex-end;cursor:pointer;color:var(--txd);font-size:17px;transition:color .2s;margin-bottom:-10px}
+.vmclose:hover{color:var(--p)}
+
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(168,85,247,.3);border-radius:2px}
+
+@media(max-width:900px){.agent-grid{grid-template-columns:repeat(2,1fr)}.assemble-layout{grid-template-columns:1fr}}
+@media(max-width:740px){
+  #app{grid-template-columns:1fr;grid-template-rows:50px 46px 1fr}
+  #sb{grid-row:2;grid-column:1;flex-direction:row;justify-content:center;padding:0 10px;border-right:none;border-bottom:1px solid var(--bo)}
+  .ntip{display:none}.dg{grid-template-columns:1fr 1fr}.kl{grid-template-columns:1fr;grid-template-rows:auto 1fr}.tbstat{display:none}
+  .agent-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:460px){.dg{grid-template-columns:1fr}.panel{padding:12px}.agent-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div id="grid"></div>
+<div id="cglow"></div>
+<div id="app">
+<header id="tb">
+  <div class="tbl">
+    <div class="logo">
+      <svg width="28" height="24" viewBox="0 0 28 24" fill="none">
+        <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs>
+        <path d="M2 22V2L14 14L26 2V22" stroke="url(#lg)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M8 22V10L14 16L20 10V22" stroke="url(#lg)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.65"/>
+      </svg>
+      <div><div class="lgname">MISSION JARVIS</div><div class="lgsub">manal_verse.co · AGENTIC AI OS</div></div>
+    </div>
+    <div class="tbstat">
+      <span><span class="dot" style="background:var(--ok);box-shadow:0 0 5px var(--ok)"></span>ONLINE</span>
+      <span><span class="dot" style="background:var(--p);box-shadow:0 0 5px var(--p)"></span><span id="agent-count">0</span> AGENTS</span>
+      <span><span class="dot" style="background:var(--c);box-shadow:0 0 5px var(--c)" id="vsdot"></span><span id="vstxt">STANDBY</span></span>
+    </div>
+  </div>
+  <div class="tbr">
+    <div id="ddisp"></div><div id="clk"></div>
+    <div class="assemble-btn" id="assemble-btn" onclick="assembleAgents()">⚡ AVENGERS ASSEMBLE</div>
+    <div class="mbadge" id="modebadge" onclick="cycleMode()">JARVIS</div>
+    <div class="tbtn" onclick="openCmd()" title="Ctrl+K">⌘</div>
+    <div class="tbtn" onclick="manageApiKey()" title="Set API Key">🔑</div>
+  </div>
+</header>
+<nav id="sb">
+  <div class="ni on" id="nav-pv" onclick="showPanel('pv')">🎙<span class="ntip">Voice</span></div>
+  <div class="ni" id="nav-pa" onclick="showPanel('pa')">🤖<span class="ntip">Agents HQ</span></div>
+  <div class="ni" id="nav-pc" onclick="showPanel('pc')">💬<span class="ntip">Chat</span></div>
+  <div class="ndv"></div>
+  <div class="ni" id="nav-pd" onclick="showPanel('pd')">📡<span class="ntip">Dashboard</span></div>
+  <div class="ni" id="nav-pk" onclick="showPanel('pk')">🗄<span class="ntip">Knowledge</span></div>
+  <div class="ndv"></div>
+  <div class="ni" id="nav-pm" onclick="showPanel('pm')">🎯<span class="ntip">Missions</span></div>
+</nav>
+<main id="main">
+<!-- VOICE PANEL -->
+<section class="panel on" id="pv">
+  <div class="owrap" style="width:200px;height:200px;margin-bottom:22px">
+    <div class="ring r1" style="width:200px;height:200px"></div>
+    <div class="ring r2" style="width:162px;height:162px"></div>
+    <div class="ring r3" style="width:126px;height:126px"></div>
+    <div class="orb" id="orb" style="width:96px;height:96px" onclick="toggleVoice()"></div>
+  </div>
+  <div class="orbst" id="orbst" style="color:var(--p)">READY</div>
+  <div class="wvf" id="wvf" style="height:52px;margin:14px 0"></div>
+  <div class="vtx" id="vtx" style="max-width:580px;width:100%;margin-bottom:14px">
+    <span class="vtxph" id="vtxph">Press Space or click the orb to speak with Jarvis</span>
+    <span id="vtxtxt" style="display:none"></span>
+  </div>
+  <div class="vcrow">
+    <div class="vcbtn" onclick="clearVoice()">🗑</div>
+    <div class="micbtn" id="micbtn" style="width:64px;height:64px;font-size:24px" onclick="toggleVoice()">🎙</div>
+    <div class="vcbtn" onclick="showPanel('pc')">💬</div>
+  </div>
+  <div class="chips" style="margin-top:14px">
+    <div class="chip agent-chip" onclick="useChip(this)">⚡ Avengers Assemble</div>
+    <div class="chip agent-chip" onclick="useChip(this)">Research quantum computing</div>
+    <div class="chip agent-chip" onclick="useChip(this)">Write a tweet thread about AI</div>
+    <div class="chip agent-chip" onclick="useChip(this)">Analyze my missions</div>
+    <div class="chip" onclick="useChip(this)">What's my briefing today?</div>
+    <div class="chip" onclick="useChip(this)">Give me a productivity tip</div>
+  </div>
+</section>
+<!-- AGENTS HQ PANEL -->
+<section class="panel" id="pa">
+  <div class="ph"><span>🤖</span> Agents HQ — Avengers Assemble</div>
+  <div class="assemble-input-area">
+    <textarea class="assemble-input" id="mission-input" rows="2" placeholder="Give your agents a mission… e.g. 'Research AI trends and write a tweet thread about it' or 'Analyze my tasks and build me a strategy'"></textarea>
+    <div class="assemble-go" onclick="assembleFromInput()">⚡ ASSEMBLE</div>
+  </div>
+  <div class="assemble-layout">
+    <div style="display:flex;flex-direction:column;overflow:hidden;gap:12px">
+      <div class="agent-grid" id="agent-grid"></div>
+    </div>
+    <div class="gc" style="display:flex;flex-direction:column;overflow:hidden">
+      <div class="gcl">📡 Mission Feed</div>
+      <div class="feed-wrap" id="agent-feed"></div>
+    </div>
+  </div>
+</section>
+<!-- CHAT PANEL -->
+<section class="panel" id="pc">
+  <div class="ph"><span>💬</span> Jarvis Chat</div>
+  <div class="chatmsgs" id="cmsg"></div>
+  <div class="ciarea">
+    <div class="ciwrap">
+      <textarea class="ci" id="cinput" rows="1" placeholder="Message Jarvis or any agent…" onkeydown="ciKey(event)" oninput="ciResize(this)"></textarea>
+    </div>
+    <div class="sbtn" onclick="sendChat()">➤</div>
+  </div>
+</section>
+<!-- DASHBOARD -->
+<section class="panel" id="pd">
+  <div class="dg">
+    <div class="gc grtc" style="grid-column:1/-1">
+      <div class="gorb"></div>
+      <div><h2 id="greeth">Good Day, Commander.</h2><p>All agents standing by. manal_verse.co Agentic AI OS active. Say "Avengers Assemble" to deploy all agents.</p></div>
+    </div>
+    <div class="gc">
+      <div class="gcl">🤖 Agent Status</div>
+      <div id="agent-status-dash"></div>
+    </div>
+    <div class="gc">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="gcl" style="margin-bottom:0">✅ Tasks</div>
+        <span onclick="openTaskModal()" style="cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:11px;border:1px solid var(--bo);padding:1px 8px;border-radius:4px;color:var(--c);-webkit-text-fill-color:var(--c)">+ ADD</span>
+      </div>
+      <div id="dashtasks"></div>
+    </div>
+    <div class="gc"><div class="gcl">⚡ Activity</div><div id="actfeed"></div></div>
+    <div class="gc" style="grid-column:1/3"><div class="gcl">🎯 Mission Goals</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:13px" id="dashgoals"></div></div>
+    <div class="gc"><div class="gcl">🤖 Jarvis Insight</div><p id="jinsight" style="font-size:12px;line-height:1.7;color:var(--txm)">Analyzing patterns…</p></div>
+  </div>
+</section>
+<!-- KNOWLEDGE -->
+<section class="panel" id="pk">
+  <div class="ph"><span>🗄</span> Knowledge Vault</div>
+  <div class="kl">
+    <div style="display:flex;flex-direction:column;overflow-y:auto">
+      <div class="kcat on" data-cat="all" onclick="filterKB(this,'all')">📁 All Notes</div>
+      <div class="kcat" data-cat="research" onclick="filterKB(this,'research')">🔬 Research</div>
+      <div class="kcat" data-cat="ideas" onclick="filterKB(this,'ideas')">💡 Ideas</div>
+      <div class="kcat" data-cat="tech" onclick="filterKB(this,'tech')">⚙ Technical</div>
+      <div class="kcat" data-cat="agent" onclick="filterKB(this,'agent')">🤖 Agent Reports</div>
+      <div class="kcat" data-cat="personal" onclick="filterKB(this,'personal')">👤 Personal</div>
+      <div style="margin-top:auto;padding-top:10px"><div class="addbtn" onclick="openNoteModal()">+ New Note</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;overflow:hidden">
+      <input class="ksrch" id="kbsrch" type="text" placeholder="Search vault…" oninput="searchKB()">
+      <div id="kbnotes" style="overflow-y:auto;flex:1"></div>
+    </div>
+  </div>
+</section>
+<!-- MISSIONS -->
+<section class="panel" id="pm">
+  <div class="ph"><span>🎯</span> Mission Control</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;overflow:hidden">
+    <div class="gc" style="overflow-y:auto"><div class="gcl">Active Missions</div><div id="misslist"></div><div style="padding:9px 12px;border-radius:8px;border:1px dashed var(--bo);background:transparent;color:var(--txd);font-size:12px;font-weight:600;cursor:pointer;text-align:center;margin-top:4px;display:block" onclick="openMissionModal()">+ New Mission</div></div>
+    <div class="gc" style="overflow-y:auto">
+      <div class="gcl">Analytics</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px" id="mcstats"></div>
+      <div class="gcl" style="margin-top:4px">Weekly Focus</div>
+      <div id="mcfocus"></div>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+<div id="fmic" onclick="fmicClick()" title="Voice (Space)">🎙</div>
+<div id="toastc"></div>
+<!-- CMD PALETTE -->
+<div id="cmdbg" onclick="if(event.target===this)closeCmd()">
+  <div class="cmdbox">
+    <div class="cmdiw"><span class="cmdico">⌘</span><input class="cmdi" id="cmdinput" placeholder="Type a command…" oninput="filterCmd(this.value)" onkeydown="cmdKey(event)"><span class="cmdhint">ESC to close</span></div>
+    <div class="cmdres" id="cmdres"></div>
+  </div>
+</div>
+<!-- NOTE MODAL -->
+<div class="mbg" id="notemodal" onclick="if(event.target===this)closeNoteModal()">
+  <div class="modal"><h3 id="nmtitle">📝 NEW NOTE</h3>
+    <div class="mf">
+      <input type="text" id="nmttl" placeholder="Title…">
+      <select id="nmcat"><option value="research">🔬 Research</option><option value="ideas">💡 Ideas</option><option value="tech">⚙ Technical</option><option value="agent">🤖 Agent Report</option><option value="personal">👤 Personal</option></select>
+      <textarea id="nmbody" placeholder="Content…" rows="5"></textarea>
+      <div class="mfrow"><div class="mbbtn pri" style="flex:1;text-align:center" onclick="saveNote()">Save Note</div><div class="mbbtn sec" onclick="closeNoteModal()">Cancel</div></div>
+    </div>
+  </div>
+</div>
+<!-- TASK MODAL -->
+<div class="mbg" id="taskmodal" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="modal"><h3>✅ ADD TASK</h3>
+    <div class="mf">
+      <input type="text" id="tminput" placeholder="Task description…" onkeydown="if(event.key==='Enter')saveTask()">
+      <select id="tmpri"><option value="high">🔴 High</option><option value="med">🟡 Medium</option><option value="low">🔵 Low</option></select>
+      <div class="mfrow"><div class="mbbtn pri" style="flex:1;text-align:center" onclick="saveTask()">Add Task</div><div class="mbbtn sec" onclick="document.getElementById('taskmodal').classList.remove('on')">Cancel</div></div>
+    </div>
+  </div>
+</div>
+<!-- MISSION MODAL -->
+<div class="mbg" id="missionmodal" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="modal"><h3>🎯 NEW MISSION</h3>
+    <div class="mf">
+      <input type="text" id="mmname" placeholder="Mission name…">
+      <input type="text" id="mmemoji" placeholder="Emoji (e.g. 🚀)">
+      <textarea id="mmdesc" placeholder="Description…" rows="3"></textarea>
+      <div class="mfrow"><div class="mbbtn pri" style="flex:1;text-align:center" onclick="saveMission()">Create</div><div class="mbbtn sec" onclick="document.getElementById('missionmodal').classList.remove('on')">Cancel</div></div>
+    </div>
+  </div>
+</div>
+<!-- VOICE MODAL -->
+<div id="vmodal" onclick="if(event.target===this)closeVModal()">
+  <div class="vmbox">
+    <div class="vmclose" onclick="closeVModal()">✕</div>
+    <div class="owrap" style="width:160px;height:160px">
+      <div class="ring r1" style="width:160px;height:160px"></div>
+      <div class="ring r2" style="width:128px;height:128px"></div>
+      <div class="ring r3" style="width:98px;height:98px"></div>
+      <div class="orb" id="orb2" style="width:76px;height:76px" onclick="toggleVoice()"></div>
+    </div>
+    <div class="orbst" id="orbst2" style="color:var(--p)">READY</div>
+    <div class="wvf" id="wvf2" style="height:42px"></div>
+    <div class="vtx" id="vtx2" style="max-width:100%;min-height:42px;font-size:12px">
+      <span class="vtxph" id="vtxph2">Tap orb to speak</span>
+      <span id="vtxtxt2" style="display:none"></span>
+    </div>
+    <div class="vcrow">
+      <div class="vcbtn" onclick="clearVoice()">🗑</div>
+      <div class="micbtn" id="micbtn2" style="width:54px;height:54px;font-size:22px" onclick="toggleVoice()">🎙</div>
+      <div class="vcbtn" onclick="closeVModal();showPanel('pc')">💬</div>
+    </div>
+  </div>
+</div>
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════
+// CONFIG — Set your Anthropic API key here for standalone
+// OR leave blank to use the /api/chat Vercel proxy
+// ═══════════════════════════════════════════════════════
+var DIRECT_KEY = ''; // e.g. 'sk-ant-api03-...'
+var API_PROXY   = '/api/chat';
+
+// ═══════════════════════════════════════════════
+// ROBUST callClaude — works standalone OR on Vercel
+// ═══════════════════════════════════════════════
+var _cachedKey = '';
+
+function getKey() {
+  if (DIRECT_KEY) return DIRECT_KEY;
+  if (_cachedKey) return _cachedKey;
+  var stored = localStorage.getItem('mvja_apikey');
+  if (stored) { _cachedKey = stored; return stored; }
+  return '';
+}
+
+function promptForKey() {
+  var k = prompt(
+    'Mission Jarvis needs your Anthropic API key to activate all agents.\n\n' +
+    'Get one FREE at: console.anthropic.com\n\n' +
+    'Your key (starts with sk-ant-):',
+    ''
+  );
+  if (k && k.trim().startsWith('sk-')) {
+    _cachedKey = k.trim();
+    localStorage.setItem('mvja_apikey', _cachedKey);
+    toast('✅ API key saved. Agents activated!', 'ok');
+    return _cachedKey;
+  }
+  return '';
+}
+
+async function callClaude(messages, system, maxTok) {
+  maxTok = maxTok || 1000;
+
+  var key = getKey();
+
+  // ── Path 1: Direct browser API call with key ──
+  if (key) {
+    var r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: maxTok,
+        system: system || '',
+        messages: messages
+      })
+    });
+    if (r.status === 401) {
+      // Bad key — clear it and ask again
+      _cachedKey = '';
+      localStorage.removeItem('mvja_apikey');
+      var newKey = promptForKey();
+      if (!newKey) throw new Error('API key required');
+      return callClaude(messages, system, maxTok);
+    }
+    if (!r.ok) {
+      var e = await r.json().catch(function(){return{};});
+      throw new Error((e.error && e.error.message) || 'API error ' + r.status);
+    }
+    var d = await r.json();
+    return (d.content && d.content[0] && d.content[0].text) || '';
+  }
+
+  // ── Path 2: Vercel proxy (when deployed on Vercel) ──
+  try {
+    var r2 = await fetch(API_PROXY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: messages, system: system, max_tokens: maxTok })
+    });
+    if (r2.ok) {
+      var d2 = await r2.json();
+      return (d2.content && d2.content[0] && d2.content[0].text) || '';
+    }
+  } catch(proxyErr) {
+    // Proxy not available — running as local file
+  }
+
+  // ── Path 3: No key, no proxy — prompt user ──
+  var newKey = promptForKey();
+  if (!newKey) throw new Error('No API key set. Get one free at console.anthropic.com');
+  return callClaude(messages, system, maxTok);
+}
+
+// ═══════════════════════════════════════════════════════
+// STARFIELD
+// ═══════════════════════════════════════════════════════
+(function(){
+  var cv=document.getElementById('stars'),ctx=cv.getContext('2d'),W,H,S=[];
+  function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
+  resize(); window.addEventListener('resize',function(){resize();init();});
+  function init(){S=[];for(var i=0;i<220;i++)S.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+0.2,o:Math.random()*.7+.1,s:Math.random()*.3+.05,h:Math.random()>.5?'168,85,247':'34,211,238'});}
+  init();
+  function draw(){ctx.clearRect(0,0,W,H);for(var i=0;i<S.length;i++){var s=S[i];s.o+=Math.sin(Date.now()*s.s*.001)*.008;s.o=Math.max(.05,Math.min(.85,s.o));ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle='rgba('+s.h+','+s.o+')';ctx.fill();}requestAnimationFrame(draw);}
+  draw();
+})();
+
+document.addEventListener('mousemove',function(e){var g=document.getElementById('cglow');if(g){g.style.left=e.clientX+'px';g.style.top=e.clientY+'px';}});
+
+// ═══════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════
+function ls(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function lss(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+
+// ═══════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════
+var notes=ls('mvja_notes',[
+  {id:1,title:'AI Architecture Patterns',cat:'research',body:'Transformer architectures, attention mechanisms, and multi-agent systems. Emergent behavior from scale and training diversity.',date:'2026-05-24'},
+  {id:2,title:'Mission Jarvis Roadmap',cat:'agent',body:'Phase 1: Core voice & chat. Phase 2: Multi-agent system. Phase 3: Computer control. Phase 4: Predictive intelligence.',date:'2026-05-23'},
+]);
+var tasks=ls('mvja_tasks',[
+  {id:1,text:'Deploy agents to Vercel',done:false,pri:'high'},
+  {id:2,text:'Test voice + agent pipeline',done:false,pri:'high'},
+  {id:3,text:'Build content strategy',done:false,pri:'med'},
+  {id:4,text:'Set up Stripe billing',done:true,pri:'med'},
+]);
+var missions=ls('mvja_missions',[
+  {id:1,name:'Mission Jarvis — Agentic',icon:'🤖',progress:60,desc:'Multi-agent AI OS.'},
+  {id:2,name:'Audience Growth',icon:'📈',progress:35,desc:'Content-led growth.'},
+  {id:3,name:'Revenue $1K/week',icon:'💎',progress:15,desc:'Monetization playbook.'},
+]);
+var activity=ls('mvja_activity',[
+  {text:'Agentic OS initialized',time:'Now',c:'#a855f7'},
+  {text:'All agents standing by',time:'1m ago',c:'#22d3ee'},
+  {text:'Voice engine active',time:'2m ago',c:'#10b981'},
+]);
+var chatHistory=ls('mvja_chat',[]);
+var chatRendered=false;
+var kbCat='all';
+var editNoteId=null;
+var currentPanel='pv';
+var waveIntervals=[];
+var cmdSel=0;
+var filteredCmds=[];
+
+var MODES=['JARVIS','FRIDAY','TACTICAL','FOUNDER','STUDY'];
+var MODEPR={
+  'JARVIS':'You are Jarvis, commander of a multi-agent AI OS by manal_verse.co. Intelligent, calm, professional. You coordinate specialized agents and report their findings. Address user as "Commander" occasionally.',
+  'FRIDAY':'You are Friday, AI coordinator by manal_verse.co. Friendly, upbeat. Call user "Boss". Coordinate agents with energy.',
+  'TACTICAL':'You are a tactical AI commander by manal_verse.co. Concise, direct, strategic. Military-precise coordination.',
+  'FOUNDER':'You are a startup AI co-pilot by manal_verse.co. Growth-minded. Coordinate agents toward revenue and growth goals.',
+  'STUDY':'You are an educational AI coordinator by manal_verse.co. Patient, thorough. Break down agent findings clearly.'
+};
+var currentMode=ls('mvja_mode','JARVIS');
+
+function save(){lss('mvja_notes',notes);lss('mvja_tasks',tasks);lss('mvja_missions',missions);lss('mvja_activity',activity);lss('mvja_chat',chatHistory);}
+function esc2(t){return String(t).replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/<br>/g,'\n');}
+
+// ═══════════════════════════════════════════════════════
+// AGENT DEFINITIONS — Each agent has a role, persona, color
+// ═══════════════════════════════════════════════════════
+var AGENTS = [
+  {
+    id: 'jarvis',
+    name: 'JARVIS',
+    role: 'Commander',
+    icon: '🧠',
+    color: '#a855f7',
+    glow: 'rgba(168,85,247,.5)',
+    description: 'Mission coordinator. Routes tasks, synthesizes findings, delivers final voice report.',
+    system: 'You are Jarvis, the AI commander and coordinator. You receive reports from specialized agents and synthesize them into a clear, actionable briefing for the Commander. Be decisive, intelligent, and concise. Always end with a voice-ready summary.'
+  },
+  {
+    id: 'research',
+    name: 'ORACLE',
+    role: 'Research Agent',
+    icon: '🔬',
+    color: '#22d3ee',
+    glow: 'rgba(34,211,238,.5)',
+    description: 'Deep research, fact-finding, and knowledge synthesis on any topic.',
+    system: 'You are Oracle, an expert research agent. Your job is to deeply research topics, find key insights, and present findings in a clear, structured way. Be thorough, cite key facts, and always end with 3 bullet-point "Key Findings" for the Jarvis commander to relay.'
+  },
+  {
+    id: 'content',
+    name: 'MERCURY',
+    role: 'Content Agent',
+    icon: '✍',
+    color: '#f59e0b',
+    glow: 'rgba(245,158,11,.5)',
+    description: 'Creates tweets, LinkedIn posts, blogs, scripts, and viral content.',
+    system: 'You are Mercury, an elite content creation agent for manal_verse.co — CODE · DESIGN · AI · FUTURE. You create platform-optimized, viral content. Always create ready-to-publish content. Be direct, punchy, valuable. End your output with a "READY TO POST" section.'
+  },
+  {
+    id: 'strategy',
+    name: 'ATHENA',
+    role: 'Strategy Agent',
+    icon: '🎯',
+    color: '#10b981',
+    glow: 'rgba(16,185,129,.5)',
+    description: 'Business strategy, growth planning, revenue optimization, and execution roadmaps.',
+    system: 'You are Athena, a strategic planning agent. You analyze situations, identify opportunities, and create clear execution plans. Always produce: 1) Situation analysis, 2) Top 3 strategic options, 3) Recommended action plan with timelines. Be data-driven and decisive.'
+  },
+  {
+    id: 'memory',
+    name: 'NEXUS',
+    role: 'Memory Agent',
+    icon: '💾',
+    color: '#6366f1',
+    glow: 'rgba(99,102,241,.5)',
+    description: 'Manages knowledge vault, connects ideas, finds patterns across stored information.',
+    system: 'You are Nexus, the memory and knowledge management agent. You analyze stored knowledge, find connections between ideas, identify patterns, and surface relevant information. You help build a second brain. Always end with "Connections Found" section linking ideas.'
+  },
+  {
+    id: 'code',
+    name: 'SYNTAX',
+    role: 'Code Agent',
+    icon: '💻',
+    color: '#14b8a6',
+    glow: 'rgba(20,184,166,.5)',
+    description: 'Writes code, debugs, explains technical concepts, and builds technical solutions.',
+    system: 'You are Syntax, an expert coding agent. You write clean, efficient code, debug problems, explain technical concepts clearly, and suggest architectural improvements. Always provide working code with clear comments. End with "Code Ready" section.'
+  },
+  {
+    id: 'web',
+    name: 'HERMES',
+    role: 'Web Agent',
+    icon: '🌐',
+    color: '#f97316',
+    glow: 'rgba(249,115,22,.5)',
+    description: 'Web search simulation, trend analysis, competitor research, market intelligence.',
+    system: 'You are Hermes, the web intelligence agent. You simulate comprehensive web research, analyze trends, gather market intelligence, and monitor competitive landscape. Present findings as if gathered from real-time web sources. End with "Intelligence Report" section.'
+  },
+  {
+    id: 'voice',
+    name: 'ECHO',
+    role: 'Voice Agent',
+    icon: '🎙',
+    color: '#ec4899',
+    glow: 'rgba(236,72,153,.5)',
+    description: 'Converts all agent reports into natural, spoken voice summaries for Jarvis to deliver.',
+    system: 'You are Echo, the voice synthesis agent. You receive reports from other agents and convert them into natural, conversational speech scripts. Make them sound like a real AI assistant speaking. Use short sentences, natural transitions, no bullet points. Write exactly what Jarvis should say aloud.'
+  }
+];
+
+// Agent state
+var agentStates = {};
+AGENTS.forEach(function(a) {
+  agentStates[a.id] = { status: 'idle', log: 'Standing by…', progress: 0 };
+});
+
+// ═══════════════════════════════════════════════════════
+// VOICE ENGINE
+// ═══════════════════════════════════════════════════════
+var VS = { state:'idle', recog:null, synth:window.speechSynthesis||null, voices:[], pending:'', vmodalOpen:false };
+var VSLBL = { idle:'READY', listening:'LISTENING', thinking:'PROCESSING', speaking:'SPEAKING', assembling:'ASSEMBLING' };
+var VSCOL = { idle:'#a855f7', listening:'#22d3ee', thinking:'#f59e0b', speaking:'#a855f7', assembling:'#ffffff' };
+var VEMP  = { idle:0, listening:100, thinking:60, speaking:85, assembling:100 };
+
+function loadVoices(){if(VS.synth)VS.voices=VS.synth.getVoices();}
+if(VS.synth){loadVoices();VS.synth.onvoiceschanged=loadVoices;}
+
+function buildWave(id,n){var el=document.getElementById(id);if(!el)return;el.innerHTML='';for(var i=0;i<n;i++){var b=document.createElement('div');b.className='wb';b.style.height='3px';el.appendChild(b);}}
+buildWave('wvf',28);buildWave('wvf2',20);
+
+function animWave(mode){
+  waveIntervals.forEach(function(iv){clearInterval(iv);}); waveIntervals=[];
+  ['wvf','wvf2'].forEach(function(id){
+    var el=document.getElementById(id); if(!el)return;
+    var bars=el.querySelectorAll('.wb');
+    if(mode==='idle'){bars.forEach(function(b){b.style.height='3px';b.style.opacity='.25';});return;}
+    bars.forEach(function(b){
+      var iv=setInterval(function(){
+        var base=mode==='listening'?26:mode==='speaking'||mode==='assembling'?22:8;
+        b.style.height=(Math.random()*base+3)+'px';
+        b.style.opacity=mode==='thinking'?'.4':'.95';
+      },60+Math.random()*40);
+      waveIntervals.push(iv);
+    });
+  });
+}
+animWave('idle');
+
+function setVS(state){
+  VS.state=state; var col=VSCOL[state]||VSCOL.idle;
+  ['orb','orb2'].forEach(function(id){var el=document.getElementById(id);if(!el)return;el.className='orb '+(state==='assembling'?'assembling':state!=='idle'?state:'');});
+  ['orbst','orbst2'].forEach(function(id){var el=document.getElementById(id);if(!el)return;el.textContent=VSLBL[state]||state.toUpperCase();el.style.color=col;el.style.webkitTextFillColor=col;});
+  animWave(state);
+  var isL=state==='listening';
+  ['micbtn','micbtn2','fmic'].forEach(function(id){var el=document.getElementById(id);if(!el)return;if(isL)el.classList.add('on');else el.classList.remove('on');el.textContent=isL?'⏹':'🎙';});
+  var vd=document.getElementById('vsdot'),vt=document.getElementById('vstxt');
+  if(vd){vd.style.background=col;vd.style.boxShadow='0 0 5px '+col;} if(vt)vt.textContent=(VSLBL[state]||state.toUpperCase());
+}
+
+function showVTX(text,isJ){
+  ['vtxph','vtxph2'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});
+  ['vtxtxt','vtxtxt2'].forEach(function(id){var e=document.getElementById(id);if(!e)return;e.style.display='block';e.style.color=isJ?'#a855f7':'var(--tx)';e.textContent=text;});
+}
+
+function clearVoice(){
+  if(VS.synth)VS.synth.cancel(); try{if(VS.recog)VS.recog.stop();}catch(e){}
+  setVS('idle'); VS.pending='';
+  ['vtxph','vtxph2'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='';});
+  ['vtxtxt','vtxtxt2'].forEach(function(id){var e=document.getElementById(id);if(e){e.style.display='none';e.textContent='';}});
+}
+
+function openVModal(){document.getElementById('vmodal').classList.add('on');VS.vmodalOpen=true;}
+function closeVModal(){document.getElementById('vmodal').classList.remove('on');VS.vmodalOpen=false;}
+function fmicClick(){if(currentPanel!=='pv'&&!VS.vmodalOpen)openVModal();toggleVoice();}
+
+function toggleVoice(){
+  if(VS.state==='listening'){stopL();return;}
+  if(VS.state==='speaking'||VS.state==='assembling'){if(VS.synth)VS.synth.cancel();setVS('idle');return;}
+  if(VS.state==='idle')startL();
+}
+function stopL(){try{if(VS.recog)VS.recog.stop();}catch(e){}}
+
+function startL(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast('⚠ Voice requires Chrome or Edge.','w');return;}
+  VS.recog=new SR(); VS.recog.continuous=false; VS.recog.interimResults=true; VS.recog.lang='en-US';
+  VS.recog.onstart=function(){setVS('listening');showVTX('Listening…',false);toast('🎙 Listening — speak now');};
+  VS.recog.onresult=function(e){
+    var interim='',final='';
+    for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)final+=e.results[i][0].transcript;else interim+=e.results[i][0].transcript;}
+    VS.pending=final||interim; showVTX(VS.pending||'…',false);
+  };
+  VS.recog.onend=function(){
+    if(VS.state==='listening'){
+      var t=VS.pending.trim();
+      if(t){
+        // Check for Avengers Assemble command
+        if(/avengers\s*assemble/i.test(t)){
+          assembleAgents(t); VS.pending='';
+        } else {
+          askJarvis(t,true); VS.pending='';
+        }
+      } else { setVS('idle'); clearVoice(); }
+    }
+  };
+  VS.recog.onerror=function(e){
+    if(e.error!=='aborted'&&e.error!=='no-speech')toast('⚠ Voice error: '+e.error,'w');
+    setVS('idle');
+  };
+  if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
+    navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+      stream.getTracks().forEach(function(t){t.stop();});
+      try{VS.recog.start();}catch(err){toast('⚠ Voice start failed.','e');setVS('idle');}
+    }).catch(function(){toast('⚠ Microphone denied. Allow mic in browser settings.','e');setVS('idle');});
+  } else {
+    try{VS.recog.start();}catch(err){toast('⚠ Cannot start voice.','e');setVS('idle');}
+  }
+}
+
+function speakText(text, onDone){
+  if(!VS.synth){if(onDone)onDone();return;}
+  VS.synth.cancel();
+  var utt=new SpeechSynthesisUtterance(text); utt.rate=0.92; utt.pitch=0.87; utt.volume=1;
+  var pref=null;
+  for(var i=0;i<VS.voices.length;i++){if(/Daniel|Arthur|Google UK English Male|Alex|Oliver|James/i.test(VS.voices[i].name)){pref=VS.voices[i];break;}}
+  if(!pref){for(var j=0;j<VS.voices.length;j++){if(VS.voices[j].lang==='en-GB'){pref=VS.voices[j];break;}}}
+  if(!pref){for(var k=0;k<VS.voices.length;k++){if(VS.voices[k].lang.indexOf('en')===0){pref=VS.voices[k];break;}}}
+  if(pref)utt.voice=pref;
+  utt.onend=function(){if(onDone)onDone();};
+  utt.onerror=function(){if(onDone)onDone();};
+  VS.synth.speak(utt);
+}
+
+function useChip(el){
+  var text=el.textContent.trim();
+  if(/avengers\s*assemble/i.test(text)){assembleAgents('Give me a complete intelligence briefing: research current AI trends, create a tweet thread about it, and give me a strategic plan for manal_verse.co growth.');}
+  else{askJarvis(text,true);}
+}
+
+// ═══════════════════════════════════════════════════════
+// AVENGERS ASSEMBLE — Core multi-agent orchestration
+// ═══════════════════════════════════════════════════════
+var isAssembling=false;
+var assembleQueue=[];
+
+function assembleAgents(mission){
+  if(isAssembling){toast('Agents already assembling, Commander!','w');return;}
+  var inp=document.getElementById('mission-input');
+  if(!mission){mission=inp?inp.value.trim():'';}
+  if(!mission){mission='Give me a complete intelligence briefing on the current state of AI, create viral content about it, and build a growth strategy for manal_verse.co.';}
+  if(inp)inp.value='';
+
+  isAssembling=true;
+  showPanel('pa');
+  setVS('assembling');
+  showVTX('⚡ AVENGERS ASSEMBLE — All agents deploying…',true);
+
+  // Flash assemble button
+  var btn=document.getElementById('assemble-btn');
+  if(btn)btn.classList.add('active');
+
+  toast('⚡ AVENGERS ASSEMBLE — Deploying all agents!','ok');
+  addFeedItem('jarvis','🧠','JARVIS','Avengers Assemble! Deploying specialized agents for mission: "'+mission.substring(0,60)+(mission.length>60?'…':'')+'"','assembling','#a855f7');
+  addAct('AVENGERS ASSEMBLE activated','just now','#a855f7');
+
+  // Speak the activation
+  speakText('Avengers Assemble. All agents are deploying, Commander. Stand by for a full intelligence briefing.', function(){});
+
+  // Update agent count
+  var ac=document.getElementById('agent-count');
+  if(ac)ac.textContent=AGENTS.length;
+
+  // Render agent grid
+  renderAgentGrid();
+
+  // Run agents in parallel waves
+  runAgentWave(mission);
+}
+
+function assembleFromInput(){
+  var inp=document.getElementById('mission-input');
+  var mission=inp?inp.value.trim():'';
+  assembleAgents(mission||null);
+}
+
+async function runAgentWave(mission){
+  // Wave 1: Research + Web (parallel)
+  setAgentState('research','working','🔬 Researching…',10);
+  setAgentState('web','working','🌐 Gathering intelligence…',10);
+
+  var researchPromise = runAgent('research', mission);
+  var webPromise = runAgent('web', mission);
+
+  var [researchResult, webResult] = await Promise.all([researchPromise, webPromise]);
+
+  // Wave 2: Content + Strategy (parallel, use wave 1 results)
+  setAgentState('content','working','✍ Creating content…',10);
+  setAgentState('strategy','working','🎯 Building strategy…',10);
+  setAgentState('memory','working','💾 Connecting knowledge…',10);
+
+  var context = 'Mission: '+mission+'\n\nResearch findings:\n'+researchResult+'\n\nWeb intelligence:\n'+webResult;
+
+  var contentPromise = runAgent('content', context);
+  var strategyPromise = runAgent('strategy', context);
+  var memoryPromise = runAgent('memory', mission + '\n\nKnowledge base: ' + notes.slice(0,3).map(function(n){return n.title+': '+n.body.substring(0,150);}).join('\n'));
+
+  var [contentResult, strategyResult, memoryResult] = await Promise.all([contentPromise, strategyPromise, memoryPromise]);
+
+  // Wave 3: Jarvis synthesizes everything
+  setAgentState('jarvis','working','🧠 Synthesizing all reports…',50);
+
+  var fullContext = 'Commander has assigned this mission: '+mission+
+    '\n\n=== ORACLE (Research) ===\n'+researchResult+
+    '\n\n=== HERMES (Web Intel) ===\n'+webResult+
+    '\n\n=== MERCURY (Content) ===\n'+contentResult+
+    '\n\n=== ATHENA (Strategy) ===\n'+strategyResult+
+    '\n\n=== NEXUS (Memory) ===\n'+memoryResult;
+
+  var jarvisResult = await runAgent('jarvis', fullContext);
+
+  // Wave 4: Echo converts to voice
+  setAgentState('voice','working','🎙 Preparing voice report…',80);
+  var voiceResult = await runAgent('voice', 'Convert this agent briefing to a natural voice report (2-3 minutes when spoken): '+jarvisResult);
+
+  setAgentState('voice','done','✅ Voice report ready',100);
+  setAgentState('jarvis','done','✅ All agents reporting',100);
+
+  // Save full report to Knowledge Vault
+  notes.unshift({id:Date.now(),title:'Agent Report: '+mission.substring(0,50),cat:'agent',body:jarvisResult,date:new Date().toISOString().split('T')[0]});
+  save();
+
+  // Add to chat
+  addMsg(jarvisResult,'j');
+  addAct('All agents reported','just now','#10b981');
+
+  // Voice delivery
+  setVS('speaking');
+  showVTX('📡 Jarvis delivering full briefing…',true);
+  toast('🎙 Jarvis is delivering your briefing, Commander!','ok');
+
+  var voiceScript = voiceResult || jarvisResult;
+  // Trim to speakable length
+  var speakable = voiceScript.replace(/<br>/g,' ').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').substring(0,800);
+
+  speakText(speakable, function(){
+    setVS('idle');
+    isAssembling=false;
+    var btn=document.getElementById('assemble-btn');
+    if(btn)btn.classList.remove('active');
+    toast('✅ Mission complete. Full report saved to Knowledge Vault.','ok');
+    clearVoice();
+  });
+
+  if(currentPanel==='pc'){}else showPanel('pa');
+}
+
+async function runAgent(agentId, input){
+  var agent = AGENTS.find(function(a){return a.id===agentId;});
+  if(!agent)return 'Agent not found.';
+
+  setAgentState(agentId,'working','Running…',20);
+
+  try{
+    var result = await callClaude(
+      [{role:'user', content: input}],
+      agent.system,
+      900
+    );
+    setAgentState(agentId,'done','✅ Report delivered',100);
+    addFeedItem(agentId, agent.icon, agent.name, result.substring(0,300)+(result.length>300?'…':''), 'done', agent.color);
+    // Add to chat as agent message
+    addAgentMsg(agent, result);
+    return result;
+  } catch(err){
+    setAgentState(agentId,'error','❌ Error: '+err.message,0);
+    addFeedItem(agentId, agent.icon, agent.name, 'Error: '+err.message, 'error', '#ef4444');
+    return 'Agent '+agent.name+' encountered an error: '+err.message;
+  }
+}
+
+function setAgentState(id, status, log, progress){
+  agentStates[id]={status:status,log:log,progress:progress};
+  var card=document.getElementById('agent-card-'+id);
+  if(!card)return;
+  card.className='agent-card '+status;
+  var agent=AGENTS.find(function(a){return a.id===id;});
+  if(agent){card.style.setProperty('--agent-color',agent.color);card.style.setProperty('--agent-glow',agent.glow);}
+  var logEl=card.querySelector('.agent-log');
+  if(logEl)logEl.innerHTML=esc(log);
+  var progEl=card.querySelector('.agent-progress-fill');
+  if(progEl)progEl.style.width=progress+'%';
+  var statEl=card.querySelector('.agent-status');
+  if(statEl){
+    statEl.textContent=status.toUpperCase();
+    statEl.style.color=status==='done'?'#10b981':status==='working'?'#f59e0b':status==='error'?'#ef4444':'var(--txd)';
+  }
+  var dotEl=card.querySelector('.agent-status-dot');
+  if(dotEl){dotEl.style.background=status==='done'?'#10b981':status==='working'?'#f59e0b':status==='error'?'#ef4444':'var(--txd)';}
+}
+
+function renderAgentGrid(){
+  var grid=document.getElementById('agent-grid');
+  if(!grid)return;
+  grid.innerHTML=AGENTS.map(function(agent){
+    var state=agentStates[agent.id]||{status:'idle',log:'Standing by…',progress:0};
+    return '<div class="agent-card" id="agent-card-'+agent.id+'" style="--agent-color:'+agent.color+';--agent-glow:'+agent.glow+'">'+
+      '<div class="agent-header">'+
+        '<div class="agent-avatar" style="border-color:'+agent.color+'">'+agent.icon+
+          '<div class="agent-status-dot" style="background:var(--txd)"></div>'+
+        '</div>'+
+        '<div class="agent-info">'+
+          '<div class="agent-name">'+agent.name+'</div>'+
+          '<div class="agent-role">'+agent.role+'</div>'+
+        '</div>'+
+        '<div class="agent-status" style="color:var(--txd)">IDLE</div>'+
+      '</div>'+
+      '<div class="agent-log">'+esc(state.log)+'</div>'+
+      '<div class="agent-progress"><div class="agent-progress-fill" style="width:0%;background:'+agent.color+'"></div></div>'+
+    '</div>';
+  }).join('');
+}
+
+function renderAgentDash(){
+  var el=document.getElementById('agent-status-dash');
+  if(!el)return;
+  el.innerHTML=AGENTS.slice(0,4).map(function(agent){
+    var state=agentStates[agent.id]||{status:'idle',progress:0};
+    return '<div class="pb">'+
+      '<div class="pbh"><span>'+agent.icon+' '+agent.name+'</span><span style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:'+agent.color+'">'+state.status.toUpperCase()+'</span></div>'+
+      '<div class="pbar"><div class="pfill" style="width:'+state.progress+'%;background:'+agent.color+'"></div></div>'+
+    '</div>';
+  }).join('');
+}
+
+function addFeedItem(agentId, icon, name, body, status, color){
+  var feed=document.getElementById('agent-feed');
+  if(!feed)return;
+  var now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  var item=document.createElement('div');
+  item.className='feed-item '+status;
+  item.style.setProperty('--agent-color',color);
+  item.innerHTML=
+    '<div class="feed-header">'+
+      '<span class="feed-agent-icon">'+icon+'</span>'+
+      '<span class="feed-agent-name" style="color:'+color+';-webkit-text-fill-color:'+color+'">'+name+'</span>'+
+      '<span class="feed-time">'+now+'</span>'+
+    '</div>'+
+    '<div class="feed-body">'+(status==='working'?'<div class="dots"><div class="dot2"></div><div class="dot2"></div><div class="dot2"></div></div>':esc(body))+'</div>';
+  feed.prepend(item);
+  // Limit feed to 20 items
+  var items=feed.querySelectorAll('.feed-item');
+  if(items.length>20)items[items.length-1].remove();
+}
+
+// ═══════════════════════════════════════════════════════
+// CHAT & MESSAGING
+// ═══════════════════════════════════════════════════════
+function renderChat(){
+  var el=document.getElementById('cmsg'); if(!el||chatRendered)return; chatRendered=true;
+  if(chatHistory.length===0){
+    addMsg("Good day, Commander. I'm Jarvis — your agentic AI OS by manal_verse.co. I coordinate "+AGENTS.length+" specialized agents. Say 'Avengers Assemble' or press the button to deploy all agents on a mission. How may I assist you today?",'j',false);
+  } else {
+    chatHistory.forEach(function(m){addMsg(m.content,m.role==='user'?'u':'j',false);});
+    el.scrollTop=el.scrollHeight;
+  }
+}
+
+function addMsg(text,role,scroll){
+  if(scroll===undefined)scroll=true;
+  var el=document.getElementById('cmsg'); if(!el)return;
+  var now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  var d=document.createElement('div'); d.className='msg '+role;
+  d.innerHTML='<div class="mav '+role+'">'+(role==='j'?'<span>J</span>':'👤')+'</div><div><div class="mbub">'+esc(text)+'</div><div class="mtime">'+now+'</div></div>';
+  el.appendChild(d); if(scroll)el.scrollTop=el.scrollHeight;
+}
+
+function addAgentMsg(agent, text){
+  var el=document.getElementById('cmsg'); if(!el)return;
+  var now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  var d=document.createElement('div'); d.className='msg j agent';
+  d.innerHTML=
+    '<div class="mav agent" style="border-color:'+agent.color+';font-size:16px">'+agent.icon+'</div>'+
+    '<div>'+
+      '<div class="agent-tag" style="background:'+agent.color+'22;color:'+agent.color+';-webkit-text-fill-color:'+agent.color+'">'+agent.name+' · '+agent.role+'</div>'+
+      '<div class="mbub" style="border-color:'+agent.color+'44">'+esc(text)+'</div>'+
+      '<div class="mtime">'+now+'</div>'+
+    '</div>';
+  el.appendChild(d); el.scrollTop=el.scrollHeight;
+}
+
+function addTyping(){
+  var el=document.getElementById('cmsg'); if(!el)return;
+  var d=document.createElement('div'); d.className='msg j'; d.id='typing';
+  d.innerHTML='<div class="mav j"><span>J</span></div><div><div class="mbub"><div class="dots"><div class="dot2"></div><div class="dot2"></div><div class="dot2"></div></div></div></div>';
+  el.appendChild(d); el.scrollTop=el.scrollHeight;
+}
+function removeTyping(){var e=document.getElementById('typing');if(e)e.remove();}
+
+function askJarvis(userText, isVoice){
+  setVS('thinking'); if(isVoice)showVTX('Processing…',true);
+  addMsg(userText,'u'); addAct('Query sent','just now','#a855f7');
+  chatHistory.push({role:'user',content:userText}); if(chatHistory.length>20)chatHistory=chatHistory.slice(-20); save();
+  var sys=(MODEPR[currentMode]||MODEPR['JARVIS'])+(isVoice?' Respond in 2-3 natural sentences. No bullet points.':'');
+  callClaude(chatHistory.slice(-10),sys,1000).then(function(reply){
+    chatHistory.push({role:'assistant',content:reply}); save();
+    removeTyping(); addMsg(reply,'j'); addAct('Jarvis responded','just now','#22d3ee');
+    if(isVoice){setVS('speaking');showVTX(reply,true);speakText(reply,function(){setVS('idle');});}else setVS('idle');
+  }).catch(function(err){
+    removeTyping(); var fb='Unable to reach AI core: '+err.message+'. Check your API key at console.anthropic.com or network connection.';
+    addMsg(fb,'j');
+    if(isVoice){setVS('speaking');showVTX(fb,true);speakText(fb,function(){setVS('idle');});}
+    else{setVS('idle');toast('API error: '+err.message,'e');}
+  });
+}
+
+function sendChat(){
+  var inp=document.getElementById('cinput'); var text=inp.value.trim(); if(!text)return;
+  inp.value=''; inp.style.height='';
+  // Check for Avengers Assemble in chat
+  if(/avengers\s*assemble/i.test(text)){assembleAgents(text.replace(/avengers\s*assemble\s*/i,'').trim()||null);return;}
+  addMsg(text,'u'); addTyping(); addAct('Message sent','just now','#a855f7');
+  chatHistory.push({role:'user',content:text}); if(chatHistory.length>20)chatHistory=chatHistory.slice(-20); save();
+  callClaude(chatHistory.slice(-10),MODEPR[currentMode]||MODEPR['JARVIS'],1000).then(function(reply){
+    removeTyping(); chatHistory.push({role:'assistant',content:reply}); save(); addMsg(reply,'j'); addAct('Jarvis responded','just now','#22d3ee');
+  }).catch(function(err){removeTyping();addMsg('Unable to reach AI core. Check network.','j');console.error(err);});
+}
+function ciKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
+function ciResize(el){el.style.height='';el.style.height=Math.min(el.scrollHeight,108)+'px';}
+
+// ═══════════════════════════════════════════════════════
+// PANELS
+// ═══════════════════════════════════════════════════════
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on');});
+  var p=document.getElementById(id),n=document.getElementById('nav-'+id);
+  if(p)p.classList.add('on'); if(n)n.classList.add('on');
+  currentPanel=id; closeCmd();
+  if(id==='pd'){renderDash();renderAgentDash();}
+  if(id==='pk'){kbCat='all';document.querySelectorAll('.kcat').forEach(function(k){if(k.dataset.cat==='all')k.classList.add('on');else k.classList.remove('on');});renderNotes('all');}
+  if(id==='pm')renderMissions();
+  if(id==='pa')renderAgentGrid();
+  if(id==='pc'){renderChat();setTimeout(function(){var c=document.getElementById('cinput');if(c)c.focus();},80);}
+}
+
+// ═══════════════════════════════════════════════════════
+// CLOCK
+// ═══════════════════════════════════════════════════════
+function updateClock(){
+  var n=new Date(),h=n.getHours(),m=n.getMinutes(),ap=h>=12?'PM':'AM';
+  h=h%12||12;
+  var cl=document.getElementById('clk'); if(cl)cl.textContent=h+':'+(m<10?'0':'')+m+' '+ap;
+  var dd=document.getElementById('ddisp'); if(dd)dd.textContent=n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+}
+updateClock(); setInterval(updateClock,1000);
+
+// ═══════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════
+function renderDash(){
+  var h=new Date().getHours();var g=h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening';
+  var gh=document.getElementById('greeth'); if(gh)gh.textContent=g+', Commander.';
+  document.querySelectorAll('.pfill[data-w]').forEach(function(el){setTimeout(function(){el.style.width=el.dataset.w+'%';},80);});
+  var dt=document.getElementById('dashtasks');
+  if(dt)dt.innerHTML=tasks.slice(0,5).map(function(t){
+    return '<div class="tski"><div class="tck'+(t.done?' done':'')+'" onclick="toggleTask('+t.id+')">'+(t.done?'✓':'')+'</div>'+
+      '<span class="tt'+(t.done?' done':'')+'">'+esc(t.text)+'</span>'+
+      '<span class="pri pri'+(t.pri==='high'?'h':t.pri==='med'?'m':'l')+'">'+t.pri.toUpperCase()+'</span></div>';
+  }).join('');
+  var af=document.getElementById('actfeed');
+  if(af)af.innerHTML=activity.slice(0,5).map(function(a){
+    return '<div class="acti"><div class="adot" style="background:'+a.c+'"></div><div style="flex:1">'+esc(a.text)+'</div><div class="atm">'+a.time+'</div></div>';
+  }).join('');
+  var dg=document.getElementById('dashgoals');
+  if(dg)dg.innerHTML=missions.map(function(m){
+    return '<div><div class="pb"><div class="pbh"><span>'+m.icon+' '+esc(m.name)+'</span><span class="pbv">'+m.progress+'%</span></div>'+
+      '<div class="pbar"><div class="pfill" style="width:'+m.progress+'%"></div></div></div></div>';
+  }).join('');
+  var ji=document.getElementById('jinsight');
+  if(ji){var done=tasks.filter(function(t){return t.done;}).length;ji.innerHTML='Agents deployed: <span style="color:#22d3ee">'+AGENTS.length+'</span>. Tasks: <span style="color:#22d3ee">'+done+'/'+tasks.length+'</span>. Say "Avengers Assemble" to activate all agents. Efficiency: <span style="color:#22d3ee">94%</span>.';}
+}
+function addAct(text,time,c){
+  activity.unshift({text:text,time:time,c:c}); if(activity.length>20)activity.pop(); save();
+  if(currentPanel==='pd'||currentPanel==='pa'){var af=document.getElementById('actfeed');if(af)af.innerHTML=activity.slice(0,5).map(function(a){return '<div class="acti"><div class="adot" style="background:'+a.c+'"></div><div style="flex:1">'+esc(a.text)+'</div><div class="atm">'+a.time+'</div></div>';}).join('');}
+}
+function toggleTask(id){var t=tasks.find(function(t){return t.id===id;});if(!t)return;t.done=!t.done;save();renderDash();toast(t.done?'✅ Task completed.':'↩ Task reopened.');addAct((t.done?'Completed: ':'Reopened: ')+t.text,'just now',t.done?'#22d3ee':'#f59e0b');}
+function openTaskModal(){document.getElementById('taskmodal').classList.add('on');setTimeout(function(){document.getElementById('tminput').focus();},100);}
+function saveTask(){var text=document.getElementById('tminput').value.trim();var pri=document.getElementById('tmpri').value;if(!text){toast('Enter a task.','w');return;}tasks.push({id:Date.now(),text:text,done:false,pri:pri});save();document.getElementById('taskmodal').classList.remove('on');document.getElementById('tminput').value='';renderDash();toast('✅ Task added.');addAct('New task: '+text,'just now','#a855f7');}
+
+// ═══════════════════════════════════════════════════════
+// KNOWLEDGE VAULT
+// ═══════════════════════════════════════════════════════
+function catE(c){return{research:'🔬',ideas:'💡',tech:'⚙',agent:'🤖',personal:'👤'}[c]||'📁';}
+function renderNotes(cat){
+  kbCat=cat;var q=(document.getElementById('kbsrch')?document.getElementById('kbsrch').value:'').toLowerCase();
+  var container=document.getElementById('kbnotes'); if(!container)return;
+  var filtered=notes.filter(function(n){return(cat==='all'||n.cat===cat)&&(!q||n.title.toLowerCase().indexOf(q)>=0||n.body.toLowerCase().indexOf(q)>=0);});
+  if(!filtered.length){container.innerHTML='<div style="text-align:center;padding:36px;color:var(--txd);font-size:12px">No notes found, Commander.</div>';return;}
+  container.innerHTML=filtered.map(function(n){
+    return '<div class="knote" onclick="openNoteModal('+n.id+')">'+
+      '<div class="kndel" onclick="event.stopPropagation();deleteNote('+n.id+')">✕ Delete</div>'+
+      '<div class="kntit">'+esc(n.title)+'</div>'+
+      '<div class="knprev">'+esc(n.body.substring(0,110))+(n.body.length>110?'…':'')+'</div>'+
+      '<div class="knmeta"><span class="ktag">'+catE(n.cat)+' '+n.cat+'</span><span class="kdate">'+n.date+'</span></div></div>';
+  }).join('');
+}
+function filterKB(el,cat){document.querySelectorAll('.kcat').forEach(function(k){k.classList.remove('on');});el.classList.add('on');renderNotes(cat);}
+function searchKB(){renderNotes(kbCat);}
+function openNoteModal(id){editNoteId=id||null;document.getElementById('nmtitle').textContent=id?'📝 EDIT NOTE':'📝 NEW NOTE';if(id){var n=notes.find(function(n){return n.id===id;});if(!n)return;document.getElementById('nmttl').value=n.title;document.getElementById('nmcat').value=n.cat;document.getElementById('nmbody').value=n.body;}else{document.getElementById('nmttl').value='';document.getElementById('nmcat').value='ideas';document.getElementById('nmbody').value='';}document.getElementById('notemodal').classList.add('on');setTimeout(function(){document.getElementById('nmttl').focus();},100);}
+function closeNoteModal(){document.getElementById('notemodal').classList.remove('on');editNoteId=null;}
+function saveNote(){var title=document.getElementById('nmttl').value.trim();var cat=document.getElementById('nmcat').value;var body=document.getElementById('nmbody').value.trim();if(!title||!body){toast('Fill in title and content.','w');return;}var today=new Date().toISOString().split('T')[0];if(editNoteId){var n=notes.find(function(n){return n.id===editNoteId;});if(n){n.title=title;n.cat=cat;n.body=body;n.date=today;}toast('📝 Updated.');}else{notes.unshift({id:Date.now(),title:title,cat:cat,body:body,date:today});toast('📝 Saved.');}save();closeNoteModal();renderNotes(kbCat);addAct((editNoteId?'Updated: ':'Saved: ')+title,'just now','#a855f7');}
+function deleteNote(id){if(!confirm('Delete?'))return;notes=notes.filter(function(n){return n.id!==id;});save();renderNotes(kbCat);toast('🗑 Deleted.');}
+
+// ═══════════════════════════════════════════════════════
+// MISSIONS
+// ═══════════════════════════════════════════════════════
+function renderMissions(){
+  var list=document.getElementById('misslist'); if(!list)return;
+  list.innerHTML=missions.map(function(m){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;border:1px solid var(--bo);background:rgba(168,85,247,.02);margin-bottom:7px;cursor:pointer;transition:all .2s" onclick="editMissionProg('+m.id+')" onmouseover="this.style.background=\'var(--pd)\'" onmouseout="this.style.background=\'rgba(168,85,247,.02)\'">'+
+      '<div style="width:32px;height:32px;border-radius:7px;flex-shrink:0;background:var(--pd);border:1px solid var(--bo);display:flex;align-items:center;justify-content:center;font-size:14px">'+m.icon+'</div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:12px;font-weight:700;margin-bottom:3px;color:var(--tx)">'+esc(m.name)+'</div>'+
+        '<div style="margin:3px 0;height:3px;border-radius:2px;background:rgba(168,85,247,.09);overflow:hidden"><div style="height:100%;border-radius:2px;background:linear-gradient(90deg,#7c3aed,#22d3ee);width:'+m.progress+'%"></div></div>'+
+        '<div style="font-size:10px;color:var(--txd)">'+m.progress+'% · '+esc(m.desc)+'</div>'+
+      '</div></div>';
+  }).join('');
+  var ms=document.getElementById('mcstats'),done=tasks.filter(function(t){return t.done;}).length;
+  if(ms)ms.innerHTML='<div style="text-align:center;padding:10px;background:var(--g2);border:1px solid var(--bo);border-radius:8px"><div style="font-family:\'Orbitron\',monospace;font-size:18px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">'+AGENTS.length+'</div><div style="font-size:10px;color:var(--txd);margin-top:2px">Agents</div></div>'+
+    '<div style="text-align:center;padding:10px;background:var(--g2);border:1px solid var(--bo);border-radius:8px"><div style="font-family:\'Orbitron\',monospace;font-size:18px;color:#10b981;-webkit-text-fill-color:#10b981">'+done+'</div><div style="font-size:10px;color:var(--txd);margin-top:2px">Tasks Done</div></div>'+
+    '<div style="text-align:center;padding:10px;background:var(--g2);border:1px solid var(--bo);border-radius:8px"><div style="font-family:\'Orbitron\',monospace;font-size:18px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">94%</div><div style="font-size:10px;color:var(--txd);margin-top:2px">Efficiency</div></div>'+
+    '<div style="text-align:center;padding:10px;background:var(--g2);border:1px solid var(--bo);border-radius:8px"><div style="font-family:\'Orbitron\',monospace;font-size:18px;color:#f59e0b;-webkit-text-fill-color:#f59e0b">7</div><div style="font-size:10px;color:var(--txd);margin-top:2px">Day Streak</div></div>';
+  var mf=document.getElementById('mcfocus');
+  if(mf){mf.innerHTML='';[['Development',45],['Content',30],['Agent Ops',25]].forEach(function(item){mf.innerHTML+='<div class="pb"><div class="pbh"><span>'+item[0]+'</span><span class="pbv">'+item[1]+'%</span></div><div class="pbar"><div class="pfill" style="width:'+item[1]+'%"></div></div></div>';});}
+}
+function editMissionProg(id){var m=missions.find(function(m){return m.id===id;});if(!m)return;var v=prompt('Update progress for "'+m.name+'" (current: '+m.progress+'%):',m.progress);if(v===null)return;var n=parseInt(v);if(isNaN(n)||n<0||n>100){toast('Enter 0–100.','w');return;}m.progress=n;save();renderMissions();toast('🎯 Updated to '+n+'%.');}
+function openMissionModal(){document.getElementById('missionmodal').classList.add('on');setTimeout(function(){document.getElementById('mmname').focus();},100);}
+function saveMission(){var name=document.getElementById('mmname').value.trim(),icon=document.getElementById('mmemoji').value.trim()||'🚀',desc=document.getElementById('mmdesc').value.trim();if(!name){toast('Name required.','w');return;}missions.push({id:Date.now(),name:name,icon:icon,progress:0,desc:desc||'New mission.'});save();renderMissions();document.getElementById('missionmodal').classList.remove('on');['mmname','mmemoji','mmdesc'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});toast('🎯 Mission created.');}
+
+// ═══════════════════════════════════════════════════════
+// PERSONALITY MODE
+// ═══════════════════════════════════════════════════════
+function cycleMode(){var i=MODES.indexOf(currentMode);currentMode=MODES[(i+1)%MODES.length];lss('mvja_mode',currentMode);document.getElementById('modebadge').textContent=currentMode;toast('Mode: '+currentMode);}
+
+// ═══════════════════════════════════════════════════════
+// COMMAND PALETTE
+// ═══════════════════════════════════════════════════════
+var CMDS=[
+  {icon:'⚡',name:'Avengers Assemble',desc:'Deploy all agents on a mission',kbd:'A',action:function(){assembleAgents(null);}},
+  {icon:'🎙',name:'Activate Voice',desc:'Start voice assistant',kbd:'Space',action:function(){showPanel('pv');toggleVoice();}},
+  {icon:'🤖',name:'Agents HQ',desc:'View all agents',kbd:'2',action:function(){showPanel('pa');}},
+  {icon:'💬',name:'Chat',desc:'Open chat',kbd:'3',action:function(){showPanel('pc');}},
+  {icon:'📡',name:'Dashboard',desc:'View dashboard',kbd:'4',action:function(){showPanel('pd');}},
+  {icon:'🗄',name:'Knowledge Vault',desc:'Browse notes',kbd:'5',action:function(){showPanel('pk');}},
+  {icon:'🎯',name:'Missions',desc:'View missions',kbd:'6',action:function(){showPanel('pm');}},
+  {icon:'📝',name:'New Note',desc:'Create a note',kbd:'',action:function(){showPanel('pk');setTimeout(function(){openNoteModal();},200);}},
+  {icon:'✅',name:'Add Task',desc:'Add a task',kbd:'',action:function(){showPanel('pd');setTimeout(openTaskModal,200);}},
+  {icon:'🔄',name:'Cycle Mode',desc:'Change AI personality',kbd:'',action:cycleMode},
+  {icon:'🔑',name:'Set API Key',desc:'Add/update Anthropic API key',kbd:'',action:manageApiKey},
+  {icon:'🗑',name:'Clear Chat',desc:'Clear history',kbd:'',action:function(){if(!confirm('Clear chat?'))return;chatHistory=[];chatRendered=false;save();var el=document.getElementById('cmsg');if(el)el.innerHTML='';if(currentPanel==='pc'){chatRendered=false;renderChat();}toast('Chat cleared.');}},
+];
+
+function openCmd(){document.getElementById('cmdbg').classList.add('on');var inp=document.getElementById('cmdinput');if(inp){inp.value='';inp.focus();}filteredCmds=CMDS.slice();cmdSel=0;renderCmd();}
+function closeCmd(){document.getElementById('cmdbg').classList.remove('on');}
+function renderCmd(){var r=document.getElementById('cmdres');if(!r)return;r.innerHTML='<div class="cmdsec">COMMANDS</div>'+filteredCmds.map(function(item,i){var origIdx=CMDS.indexOf(item);return '<div class="cmditem'+(i===cmdSel?' sel':'')+'" onclick="runCmd('+origIdx+')"><span style="font-size:14px;flex-shrink:0;width:20px;text-align:center">'+item.icon+'</span><div style="flex:1"><div class="cmin">'+item.name+'</div><div class="cmid">'+item.desc+'</div></div>'+(item.kbd?'<span class="cmikbd">'+item.kbd+'</span>':'')+'</div>';}).join('');}
+function filterCmd(val){var q=val.toLowerCase();filteredCmds=CMDS.filter(function(c){return c.name.toLowerCase().indexOf(q)>=0||c.desc.toLowerCase().indexOf(q)>=0;});cmdSel=0;renderCmd();}
+function runCmd(idx){var cmd=CMDS[idx];if(!cmd)return;closeCmd();cmd.action();}
+function cmdKey(e){var items=document.getElementById('cmdres')?document.getElementById('cmdres').querySelectorAll('.cmditem'):[];if(e.key==='ArrowDown'){cmdSel=Math.min(cmdSel+1,filteredCmds.length-1);items.forEach(function(el,i){if(i===cmdSel)el.classList.add('sel');else el.classList.remove('sel');});}else if(e.key==='ArrowUp'){cmdSel=Math.max(cmdSel-1,0);items.forEach(function(el,i){if(i===cmdSel)el.classList.add('sel');else el.classList.remove('sel');});}else if(e.key==='Enter'){var cmd=filteredCmds[cmdSel];if(cmd){closeCmd();cmd.action();}}else if(e.key==='Escape')closeCmd();}
+
+// ═══════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════
+function toast(msg,type){type=type||'';var c=document.getElementById('toastc');var el=document.createElement('div');el.className='toast'+(type?' '+type:'');var col=type==='w'?'var(--warn)':type==='e'?'var(--err)':type==='ok'?'var(--ok)':'var(--p)';if(type)el.style.borderColor=col;el.innerHTML='<span style="color:'+col+'">'+(type==='w'?'⚠':type==='e'?'✕':type==='ok'?'✅':'◈')+'</span> '+msg;c.appendChild(el);setTimeout(function(){if(el.parentNode)el.remove();},4200);}
+
+// ═══════════════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════════════
+document.addEventListener('keydown',function(e){
+  var tag=e.target.tagName; if(tag==='INPUT'||tag==='TEXTAREA')return;
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();openCmd();return;}
+  if(e.key==='a'||e.key==='A'){assembleAgents(null);return;}
+  if(e.key===' '){e.preventDefault();toggleVoice();return;}
+  if(e.key==='Escape'){closeVModal();closeNoteModal();closeCmd();['missionmodal','taskmodal'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('on');});if(VS.state!=='idle'&&VS.state!=='assembling'){if(VS.synth)VS.synth.cancel();stopL();setVS('idle');}return;}
+  if(e.key==='1')showPanel('pv'); if(e.key==='2')showPanel('pa'); if(e.key==='3')showPanel('pc');
+  if(e.key==='4')showPanel('pd'); if(e.key==='5')showPanel('pk'); if(e.key==='6')showPanel('pm');
+});
+
+// ═══════════════════════════════════════════════════════
+// API KEY MANAGEMENT
+// ═══════════════════════════════════════════════════════
+function manageApiKey() {
+  var current = getKey();
+  var msg = current
+    ? 'Current API key: sk-ant-...'+current.slice(-6)+'\n\nEnter a new key to replace, or cancel to keep current:'
+    : 'Enter your Anthropic API key to activate all agents.\nGet one FREE at: console.anthropic.com\n\n(Starts with sk-ant-)';
+  var k = prompt(msg, '');
+  if (k === null) return; // cancelled
+  k = k.trim();
+  if (!k) {
+    // Clear key
+    _cachedKey = '';
+    localStorage.removeItem('mvja_apikey');
+    toast('API key cleared.', 'w');
+    return;
+  }
+  if (!k.startsWith('sk-')) {
+    toast('Invalid key format. Must start with sk-', 'e');
+    return;
+  }
+  _cachedKey = k;
+  localStorage.setItem('mvja_apikey', k);
+  toast('✅ API key saved! All agents now active.', 'ok');
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+document.getElementById('modebadge').textContent=currentMode;
+document.getElementById('agent-count').textContent=AGENTS.length;
+renderAgentGrid();
+renderDash();
+renderChat();
+// Initial feed items
+AGENTS.forEach(function(a){addFeedItem(a.id,a.icon,a.name,'Standing by. Ready to deploy on your command.','idle',a.color);});
+
+// Check for API key on startup
+var _startKey = getKey();
+setTimeout(function(){
+  if (_startKey) {
+    toast('◈ Jarvis online. '+AGENTS.length+' agents active. API key loaded.');
+  } else {
+    toast('🔑 No API key found — click 🔑 in topbar to add your free key.', 'w');
+  }
+}, 600);
+setTimeout(function(){
+  if (getKey()) {
+    toast('⚡ Press A or say "Avengers Assemble" to deploy all agents!', 'ok');
+  } else {
+    toast('Get a free API key at console.anthropic.com to activate agents.', 'w');
+  }
+}, 2500);
+</script>
+</body>
+</html>
