@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Jarvis — manal_verse.co</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#030006;--g1:rgba(18,0,36,.65);--g2:rgba(8,0,20,.5);
+  --p:#a855f7;--pd:rgba(168,85,247,.13);--pg:rgba(168,85,247,.55);
+  --c:#22d3ee;--cd:rgba(34,211,238,.11);
+  --grad:linear-gradient(135deg,#a855f7,#22d3ee);
+  --gradd:linear-gradient(135deg,rgba(168,85,247,.18),rgba(34,211,238,.15));
+  --bo:rgba(168,85,247,.2);--bohi:rgba(168,85,247,.65);
+  --tx:#eeddff;--txm:rgba(225,205,255,.72);--txd:rgba(190,165,230,.4);
+  --ok:#10b981;--warn:#f59e0b;--err:#ef4444;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--tx);font-family:'Rajdhani',sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+canvas#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+#grid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(168,85,247,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(168,85,247,.022) 1px,transparent 1px);
+  background-size:54px 54px;animation:gp 12s ease-in-out infinite}
+@keyframes gp{0%,100%{opacity:.4}50%{opacity:.9}}
+#cglow{position:fixed;pointer-events:none;z-index:1;width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(168,85,247,.05) 0%,transparent 70%);
+  transform:translate(-50%,-50%);left:50%;top:50%;transition:left .06s,top .06s}
+#app{position:relative;z-index:10;display:grid;grid-template-columns:64px 1fr;grid-template-rows:52px 1fr;height:100vh;width:100vw}
+/* TOPBAR */
+#tb{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px 0 10px;background:rgba(3,0,8,.96);border-bottom:1px solid var(--bo);
+  backdrop-filter:blur(30px);z-index:200;position:relative;gap:10px}
+#tb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(168,85,247,.7),rgba(34,211,238,.7),transparent);animation:tbg 4s ease-in-out infinite}
+@keyframes tbg{0%,100%{opacity:.35}50%{opacity:1}}
+.tbl{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.lgname{font-family:'Orbitron',monospace;font-weight:900;font-size:12px;letter-spacing:3px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap}
+.lgsub{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd);letter-spacing:1px}
+.tbstat{display:flex;align-items:center;gap:10px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd)}
+.dot{width:5px;height:5px;border-radius:50%;display:inline-block;margin-right:4px;animation:bl 2.5s ease-in-out infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.15}}
+.tbr{display:flex;align-items:center;gap:7px;flex-shrink:0}
+#clk{font-family:'Share Tech Mono',monospace;font-size:12px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap}
+#ddisp{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd);white-space:nowrap}
+.tbtn{width:28px;height:28px;border:1px solid var(--bo);background:var(--g1);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--txd);transition:all .2s;font-size:12px;user-select:none}
+.tbtn:hover{border-color:var(--p);color:var(--p);box-shadow:0 0 10px var(--pd)}
+.mbadge{padding:3px 9px;border-radius:20px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;border:1px solid var(--bo);background:var(--g1);cursor:pointer;color:var(--c);-webkit-text-fill-color:var(--c);transition:all .2s;white-space:nowrap}
+.mbadge:hover{border-color:var(--c)}
+.free-badge{padding:3px 10px;border-radius:20px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;border:1px solid var(--ok);background:rgba(16,185,129,.1);color:var(--ok);-webkit-text-fill-color:var(--ok);white-space:nowrap}
+/* SIDEBAR */
+#sb{background:rgba(3,0,8,.92);border-right:1px solid var(--bo);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:5px;backdrop-filter:blur(30px);z-index:100}
+.ni{width:40px;height:40px;border:1px solid transparent;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--txd);transition:all .22s;position:relative;font-size:16px;user-select:none}
+.ni:hover,.ni.on{border-color:var(--bohi);color:var(--p);background:var(--pd);box-shadow:0 0 14px var(--pd)}
+.ni.on::before{content:'';position:absolute;left:-1px;top:8px;bottom:8px;width:2px;background:var(--grad);border-radius:0 2px 2px 0;box-shadow:0 0 8px var(--p)}
+.ntip{position:absolute;left:48px;background:rgba(3,0,8,.97);border:1px solid var(--bo);color:var(--c);-webkit-text-fill-color:var(--c);font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;padding:3px 9px;border-radius:4px;white-space:nowrap;pointer-events:none;opacity:0;transform:translateX(-4px);transition:all .18s;z-index:300;text-transform:uppercase}
+.ni:hover .ntip{opacity:1;transform:translateX(0)}
+.ndv{width:24px;height:1px;background:var(--bo);margin:2px 0}
+/* MAIN */
+#main{overflow:hidden;position:relative}
+.panel{display:none;height:100%;overflow:hidden;padding:18px 20px;position:absolute;inset:0;flex-direction:column;animation:pIn .3s cubic-bezier(.16,1,.3,1)}
+.panel.on{display:flex}
+@keyframes pIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* GLASS CARD */
+.gc{background:var(--g1);border:1px solid var(--bo);border-radius:12px;padding:16px;backdrop-filter:blur(24px);position:relative;overflow:hidden;transition:all .25s}
+.gc:hover{border-color:rgba(168,85,247,.35)}
+.gc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(168,85,247,.25),rgba(34,211,238,.25),transparent)}
+.gcl,.ph{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ph{font-size:10px;letter-spacing:3px;margin-bottom:14px;flex-shrink:0}
+.ph::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(168,85,247,.3),transparent)}
+/* ORB */
+.owrap{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ring{position:absolute;border-radius:50%;border:1px solid;pointer-events:none}
+.r1{border-color:rgba(168,85,247,.1);animation:rs 9s linear infinite}
+.r2{border-color:rgba(100,50,200,.18);animation:rs 5.5s linear infinite reverse}
+.r3{border-color:rgba(34,211,238,.22);border-style:dashed;animation:rs 3.2s linear infinite}
+@keyframes rs{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.orb{border-radius:50%;cursor:pointer;position:relative;z-index:2;
+  background:radial-gradient(circle at 32% 32%,rgba(168,85,247,.9) 0%,rgba(100,40,200,.6) 30%,rgba(30,0,80,.9) 65%,rgba(5,0,12,.95) 100%);
+  box-shadow:0 0 30px rgba(168,85,247,.55),0 0 60px rgba(100,40,200,.3),inset 0 0 30px rgba(168,85,247,.18);
+  animation:ob 4s ease-in-out infinite;user-select:none}
+@keyframes ob{0%,100%{transform:scale(1);box-shadow:0 0 30px rgba(168,85,247,.55),0 0 60px rgba(100,40,200,.3),inset 0 0 30px rgba(168,85,247,.18)}50%{transform:scale(1.04);box-shadow:0 0 50px rgba(168,85,247,.75),0 0 90px rgba(34,211,238,.4),inset 0 0 40px rgba(34,211,238,.25)}}
+.orb.listening{animation:ol .45s ease-in-out infinite alternate;background:radial-gradient(circle at 32% 32%,rgba(34,211,238,.95) 0%,rgba(0,180,220,.65) 30%,rgba(0,60,120,.88) 65%,rgba(5,0,12,.95) 100%)}
+@keyframes ol{from{transform:scale(1);box-shadow:0 0 40px rgba(34,211,238,.65),inset 0 0 30px rgba(34,211,238,.3)}to{transform:scale(1.1);box-shadow:0 0 70px rgba(34,211,238,.85),inset 0 0 50px rgba(34,211,238,.42)}}
+.orb.thinking{animation:ot 1s ease-in-out infinite;background:radial-gradient(circle at 32% 32%,rgba(245,158,11,.85) 0%,rgba(200,80,0,.52) 30%,rgba(80,20,0,.88) 65%,rgba(5,0,12,.95) 100%)}
+@keyframes ot{0%,100%{transform:scale(1) rotate(0deg)}25%{transform:scale(1.05) rotate(4deg)}75%{transform:scale(1.05) rotate(-4deg)}}
+.orb.speaking{animation:osp .25s ease-in-out infinite alternate;background:radial-gradient(circle at 32% 32%,rgba(168,85,247,1) 0%,rgba(34,211,238,.8) 45%,rgba(0,50,140,.88) 75%,rgba(5,0,12,.95) 100%)}
+@keyframes osp{from{transform:scale(1)}to{transform:scale(1.08)}}
+.orb.assembling{animation:asmb .4s ease-in-out infinite alternate;background:radial-gradient(circle at 32% 32%,#fff 0%,rgba(168,85,247,.9) 25%,rgba(34,211,238,.8) 50%,rgba(30,0,80,.9) 75%,rgba(5,0,12,.95) 100%)}
+@keyframes asmb{from{transform:scale(1);box-shadow:0 0 50px rgba(168,85,247,.8),0 0 100px rgba(34,211,238,.6)}to{transform:scale(1.12);box-shadow:0 0 80px rgba(168,85,247,1),0 0 150px rgba(34,211,238,.9)}}
+.orbst{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;height:16px;transition:color .3s}
+/* WAVEFORM */
+.wvf{display:flex;align-items:center;gap:2px}
+.wb{width:3px;border-radius:3px;min-height:3px;transition:height .1s ease;background:linear-gradient(to top,var(--p),var(--c));box-shadow:0 0 4px rgba(168,85,247,.4)}
+/* VTRANSCRIPT */
+.vtx{background:var(--g1);border:1px solid var(--bo);border-radius:12px;padding:12px 16px;text-align:center;font-size:14px;font-weight:500;color:var(--tx);backdrop-filter:blur(20px);position:relative;overflow:hidden;line-height:1.55;min-height:52px;display:flex;align-items:center;justify-content:center;width:100%;max-width:600px}
+.vtx::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--p),var(--c),transparent);animation:scanL 3s linear infinite}
+@keyframes scanL{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.vtxph{color:var(--txd);font-size:12px;font-family:'Share Tech Mono',monospace}
+/* VOICE CONTROLS */
+.vcrow{display:flex;align-items:center;gap:12px}
+.micbtn{border-radius:50%;border:2px solid var(--p);background:var(--pd);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--p);transition:all .22s;user-select:none}
+.micbtn:hover{box-shadow:0 0 30px var(--pg);transform:scale(1.06)}
+.micbtn.on{background:rgba(34,211,238,.14);border-color:var(--c);color:var(--c);box-shadow:0 0 40px rgba(34,211,238,.45);animation:micp 1s ease-in-out infinite}
+@keyframes micp{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.vcbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--bo);background:var(--g1);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--txd);transition:all .2s;font-size:15px;user-select:none}
+.vcbtn:hover{border-color:var(--p);color:var(--p)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:640px}
+.chip{padding:5px 12px;border:1px solid var(--bo);border-radius:16px;background:var(--g1);font-size:11px;font-weight:600;color:var(--txd);cursor:pointer;transition:all .2s;white-space:nowrap;user-select:none}
+.chip:hover{border-color:var(--p);color:var(--p);background:var(--pd)}
+.chip.kw{border-color:rgba(168,85,247,.4);color:var(--p);-webkit-text-fill-color:var(--p)}
+/* KEYWORD DISPLAY */
+.kw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;flex-shrink:0}
+.kw-card{padding:12px;border-radius:10px;border:1px solid var(--bo);background:var(--g1);backdrop-filter:blur(10px);transition:all .25s}
+.missi-item:hover{background:var(--pd)!important}
+.kw-card.active{border-color:var(--p);box-shadow:0 0 16px var(--pd);animation:kwPulse 1s ease-in-out}
+@keyframes kwPulse{0%{box-shadow:0 0 5px var(--pd)}50%{box-shadow:0 0 25px var(--pg)}100%{box-shadow:0 0 16px var(--pd)}}
+.kw-word{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.kw-desc{font-size:11px;color:var(--txd);line-height:1.4}
+/* AGENT GRID */
+.agent-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;flex-shrink:0}
+.agent-card{padding:14px;border-radius:12px;border:1px solid var(--bo);background:var(--g1);backdrop-filter:blur(24px);position:relative;overflow:hidden;transition:all .3s;cursor:default;display:flex;flex-direction:column;gap:8px}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--agent-color,var(--grad));opacity:.6}
+.agent-card.active{border-color:var(--agent-color,var(--p));animation:agPulse 2s ease-in-out infinite}
+@keyframes agPulse{0%,100%{box-shadow:0 0 12px var(--agent-glow,var(--pg))}50%{box-shadow:0 0 28px var(--agent-glow,var(--pg))}}
+.agent-card.working{border-color:var(--warn);box-shadow:0 0 16px rgba(245,158,11,.3)}
+.agent-card.done{border-color:var(--ok);box-shadow:0 0 14px rgba(16,185,129,.25)}
+.agent-hdr{display:flex;align-items:center;gap:8px}
+.agent-icon{font-size:20px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid var(--agent-color,var(--p));background:var(--g2);flex-shrink:0}
+.agent-name{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1.5px;font-weight:700;color:var(--tx)}
+.agent-role{font-size:10px;color:var(--txd)}
+.agent-st{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:8px;background:var(--g2);border:1px solid var(--bo);width:fit-content;color:var(--txd)}
+.agent-log{font-size:10px;color:var(--txm);line-height:1.45;font-family:'Share Tech Mono',monospace;min-height:28px}
+.agent-bar{height:2px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:2px}
+.agent-fill{height:100%;border-radius:2px;background:var(--agent-color,var(--grad));transition:width .6s ease}
+/* FEED */
+.feed-wrap{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px}
+.feed-wrap::-webkit-scrollbar{width:3px}
+.feed-wrap::-webkit-scrollbar-thumb{background:rgba(168,85,247,.3)}
+.feed-item{padding:12px 14px;border-radius:10px;border:1px solid var(--bo);background:var(--g1);backdrop-filter:blur(10px);animation:pIn .3s ease;position:relative;overflow:hidden}
+.feed-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--fc,var(--p))}
+.feed-hdr{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.feed-nm{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1.5px;font-weight:700}
+.feed-tm{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd);margin-left:auto}
+.feed-body{font-size:12px;line-height:1.6;color:var(--txm)}
+.dots{display:flex;gap:4px;align-items:center}
+.dot2{width:5px;height:5px;border-radius:50%;background:var(--p);opacity:.6;animation:da 1.2s ease-in-out infinite}
+.dot2:nth-child(2){animation-delay:.2s}.dot2:nth-child(3){animation-delay:.4s}
+@keyframes da{0%,60%,100%{transform:scale(1);opacity:.6}30%{transform:scale(1.5);opacity:1}}
+/* CHAT */
+.chatmsgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-bottom:10px;padding-right:4px}
+.chatmsgs::-webkit-scrollbar{width:3px}
+.chatmsgs::-webkit-scrollbar-thumb{background:rgba(168,85,247,.3)}
+.msg{display:flex;gap:9px;align-items:flex-start;animation:pIn .28s ease}
+.msg.u{flex-direction:row-reverse}
+.mav{width:30px;height:30px;border-radius:8px;flex-shrink:0;border:1px solid var(--bo);display:flex;align-items:center;justify-content:center;font-size:11px}
+.mav.j{background:linear-gradient(135deg,rgba(168,85,247,.3),rgba(34,211,238,.18));border-color:var(--p)}
+.mav.j span{font-family:'Orbitron',monospace;font-weight:900;font-size:9px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mav.u{background:rgba(50,0,80,.4)}
+.mbub{max-width:78%;padding:10px 14px;border-radius:10px;line-height:1.62;font-size:13.5px;word-break:break-word}
+.msg.j .mbub{background:var(--g1);border:1px solid var(--bo);border-top-left-radius:2px;backdrop-filter:blur(20px)}
+.msg.u .mbub{background:rgba(100,0,180,.14);border:1px solid rgba(168,85,247,.25);border-top-right-radius:2px;backdrop-filter:blur(20px)}
+.msg.agent .mbub{background:var(--g2);border-top-left-radius:2px;backdrop-filter:blur(20px)}
+.atag{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;padding:1px 6px;border-radius:4px;margin-bottom:4px;display:inline-block}
+.mtime{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd);margin-top:3px}
+.msg.u .mtime{text-align:right}
+.ciarea{display:flex;gap:8px;align-items:flex-end;padding-top:12px;border-top:1px solid var(--bo);flex-shrink:0}
+.ciwrap{flex:1;background:var(--g1);border:1px solid var(--bo);border-radius:10px;backdrop-filter:blur(20px);display:flex;align-items:center;transition:all .2s}
+.ciwrap:focus-within{border-color:var(--p);box-shadow:0 0 12px var(--pd)}
+.ci{flex:1;background:transparent;border:none;outline:none;color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:500;padding:10px 13px;resize:none;line-height:1.4;max-height:100px}
+.ci::placeholder{color:var(--txd)}
+.sbtn{width:38px;height:38px;flex-shrink:0;border:1px solid var(--p);border-radius:9px;background:var(--pd);color:var(--p);-webkit-text-fill-color:var(--p);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s}
+.sbtn:hover{background:rgba(168,85,247,.22);box-shadow:0 0 14px var(--pd)}
+/* DASHBOARD */
+.dg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;flex:1;overflow-y:auto;padding-bottom:4px}
+.dg::-webkit-scrollbar{width:3px}.dg::-webkit-scrollbar-thumb{background:rgba(168,85,247,.25)}
+.grtc{grid-column:1/-1;display:flex;align-items:center;gap:16px}
+.gorb{width:50px;height:50px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 32% 32%,rgba(168,85,247,.9) 0%,rgba(100,40,200,.55) 40%,rgba(30,0,80,.9) 100%);box-shadow:0 0 20px rgba(168,85,247,.5),0 0 40px rgba(34,211,238,.2);animation:ob 4s ease-in-out infinite}
+.grtc h2{font-family:'Orbitron',monospace;font-size:15px;font-weight:700;margin-bottom:3px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.grtc p{font-size:12px;color:var(--txm);line-height:1.5}
+.pb{margin-bottom:8px}
+.pbh{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;color:var(--txm)}
+.pbv{font-family:'Share Tech Mono',monospace;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.pbar{height:3px;border-radius:2px;background:rgba(168,85,247,.08);overflow:hidden}
+.pfill{height:100%;border-radius:2px;background:var(--grad);box-shadow:0 0 6px rgba(168,85,247,.5);transition:width 1.2s cubic-bezier(.16,1,.3,1)}
+.tski{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(168,85,247,.06);font-size:12px}
+.tski:last-child{border:none}
+.tck{width:14px;height:14px;border-radius:3px;border:1px solid var(--bo);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;font-size:9px;user-select:none}
+.tck.done{background:var(--pd);border-color:var(--p);color:var(--p)}
+.tt{flex:1;font-size:12px}.tt.done{text-decoration:line-through;color:var(--txd)}
+.pri{font-size:9px;padding:1px 5px;border-radius:3px;flex-shrink:0}
+.prih{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25)}
+.prim{background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.2)}
+.pril{background:var(--pd);color:var(--c);-webkit-text-fill-color:var(--c);border:1px solid var(--bo)}
+.acti{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid rgba(168,85,247,.05);font-size:11px;color:var(--txm)}
+.acti:last-child{border:none}
+.adot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.atm{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd);flex-shrink:0}
+/* MODALS */
+.mbg{display:none;position:fixed;inset:0;background:rgba(3,0,8,.9);z-index:600;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.mbg.on{display:flex}
+.modal{background:rgba(6,0,15,.98);border:1px solid var(--bohi);border-radius:16px;padding:22px;width:min(500px,93vw);max-height:86vh;overflow-y:auto;box-shadow:0 0 60px rgba(168,85,247,.22);animation:pIn .28s ease}
+.modal h3{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;margin-bottom:14px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mf{display:flex;flex-direction:column;gap:9px}
+.mf input,.mf textarea,.mf select{background:var(--g1);border:1px solid var(--bo);border-radius:8px;padding:9px 12px;color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:13px;outline:none;resize:vertical;transition:all .2s}
+.mf input:focus,.mf textarea:focus,.mf select:focus{border-color:var(--p);box-shadow:0 0 10px var(--pd)}
+.mf select option{background:#0a0012}.mf textarea{min-height:88px}
+.mfrow{display:flex;gap:8px}
+.mbbtn{padding:9px 16px;border-radius:8px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+.mbbtn.pri{background:var(--gradd);border:1px solid var(--p);color:var(--p);-webkit-text-fill-color:var(--p)}
+.mbbtn.pri:hover{background:linear-gradient(135deg,rgba(168,85,247,.22),rgba(34,211,238,.22))}
+.mbbtn.sec{background:transparent;border:1px solid var(--bo);color:var(--txd)}
+/* TOAST */
+#toastc{position:fixed;top:60px;right:14px;display:flex;flex-direction:column;gap:6px;z-index:9000;pointer-events:none}
+.toast{background:rgba(6,0,15,.97);border:1px solid var(--p);border-radius:9px;padding:8px 13px;font-size:12px;color:var(--tx);display:flex;align-items:center;gap:8px;box-shadow:0 0 18px rgba(168,85,247,.2);backdrop-filter:blur(22px);pointer-events:auto;min-width:220px;animation:tIn .3s ease,tOut .3s ease 3.7s forwards}
+@keyframes tIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tOut{from{opacity:1}to{opacity:0;transform:translateX(20px)}}
+.toast.w{border-color:var(--warn)}.toast.e{border-color:var(--err)}.toast.ok{border-color:var(--ok)}
+/* FLOATING MIC */
+#fmic{position:fixed;bottom:20px;right:20px;z-index:7000;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,rgba(168,85,247,.28),rgba(34,211,238,.18));border:1.5px solid var(--p);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:var(--p);user-select:none;box-shadow:0 0 18px rgba(168,85,247,.3),0 4px 18px rgba(0,0,0,.5);transition:all .22s}
+#fmic:hover{transform:scale(1.1);box-shadow:0 0 30px rgba(168,85,247,.55),0 4px 18px rgba(0,0,0,.5)}
+#fmic.on{background:rgba(34,211,238,.18);border-color:var(--c);color:var(--c);box-shadow:0 0 36px rgba(34,211,238,.5),0 4px 18px rgba(0,0,0,.5);animation:micp 1s ease-in-out infinite}
+/* VOICE MODAL */
+#vmodal{display:none;position:fixed;inset:0;background:rgba(3,0,8,.85);z-index:700;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+#vmodal.on{display:flex}
+.vmbox{background:rgba(6,0,15,.98);border:1px solid var(--bohi);border-radius:20px;padding:28px;width:min(420px,92vw);display:flex;flex-direction:column;align-items:center;gap:16px;box-shadow:0 0 60px rgba(168,85,247,.22);animation:pIn .28s ease}
+.vmclose{align-self:flex-end;cursor:pointer;color:var(--txd);font-size:17px;transition:color .2s;margin-bottom:-10px}
+.vmclose:hover{color:var(--p)}
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(168,85,247,.3);border-radius:2px}
+@media(max-width:740px){#app{grid-template-columns:1fr;grid-template-rows:50px 46px 1fr}#sb{grid-row:2;grid-column:1;flex-direction:row;justify-content:center;padding:0 10px;border-right:none;border-bottom:1px solid var(--bo)}.ntip{display:none}.dg{grid-template-columns:1fr 1fr}.tbstat{display:none}.agent-grid{grid-template-columns:1fr 1fr}.kw-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:460px){.dg{grid-template-columns:1fr}.panel{padding:12px}.agent-grid{grid-template-columns:1fr 1fr}.kw-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div id="grid"></div>
+<div id="cglow"></div>
+<div id="app">
+<header id="tb">
+  <div class="tbl">
+    <div class="logo">
+      <svg width="28" height="24" viewBox="0 0 28 24" fill="none">
+        <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs>
+        <path d="M2 22V2L14 14L26 2V22" stroke="url(#lg)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M8 22V10L14 16L20 10V22" stroke="url(#lg)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.65"/>
+      </svg>
+      <div><div class="lgname">MISSION JARVIS</div><div class="lgsub">manal_verse.co · AGENTIC AI OS</div></div>
+    </div>
+    <div class="tbstat">
+      <span><span class="dot" style="background:var(--ok);box-shadow:0 0 5px var(--ok)"></span>ONLINE</span>
+      <span><span class="dot" style="background:var(--p);box-shadow:0 0 5px var(--p)"></span><span id="agcount">8</span> AGENTS</span>
+      <span><span class="dot" style="background:var(--c);box-shadow:0 0 5px var(--c)" id="vsdot"></span><span id="vstxt">STANDBY</span></span>
+    </div>
+  </div>
+  <div class="tbr">
+    <div id="ddisp"></div><div id="clk"></div>
+    <div class="free-badge">100% FREE</div>
+    <div class="mbadge" id="modebadge" onclick="cycleMode()">JARVIS</div>
+    <div class="tbtn" onclick="showPanel('pv')" title="Voice">🎙</div>
+    <div class="tbtn" onclick="showPanel('pa')" title="Agents">🤖</div>
+  </div>
+</header>
+<nav id="sb">
+  <div class="ni on" id="nav-pv" onclick="showPanel('pv')">🎙<span class="ntip">Voice</span></div>
+  <div class="ni" id="nav-pa" onclick="showPanel('pa')">🤖<span class="ntip">Agents HQ</span></div>
+  <div class="ni" id="nav-pc" onclick="showPanel('pc')">💬<span class="ntip">Chat</span></div>
+  <div class="ndv"></div>
+  <div class="ni" id="nav-pd" onclick="showPanel('pd')">📡<span class="ntip">Dashboard</span></div>
+  <div class="ni" id="nav-pk" onclick="showPanel('pk')">🗄<span class="ntip">Knowledge</span></div>
+  <div class="ndv"></div>
+  <div class="ni" id="nav-pm" onclick="showPanel('pm')">🎯<span class="ntip">Missions</span></div>
+</nav>
+<main id="main">
+<!-- VOICE PANEL -->
+<section class="panel on" id="pv">
+  <div class="owrap" style="width:190px;height:190px;margin-bottom:20px">
+    <div class="ring r1" style="width:190px;height:190px"></div>
+    <div class="ring r2" style="width:154px;height:154px"></div>
+    <div class="ring r3" style="width:120px;height:120px"></div>
+    <div class="orb" id="orb" style="width:90px;height:90px" onclick="toggleVoice()"></div>
+  </div>
+  <div class="orbst" id="orbst" style="color:var(--p)">READY — NO API NEEDED</div>
+  <div class="wvf" id="wvf" style="height:48px;margin:12px 0"></div>
+  <div class="vtx" id="vtx" style="margin-bottom:12px">
+    <span class="vtxph" id="vtxph">Press Space or click orb · Say any keyword below</span>
+    <span id="vtxtxt" style="display:none"></span>
+  </div>
+  <div class="vcrow">
+    <div class="vcbtn" onclick="clearVoice()">🗑</div>
+    <div class="micbtn" id="micbtn" style="width:62px;height:62px;font-size:23px" onclick="toggleVoice()">🎙</div>
+    <div class="vcbtn" onclick="showPanel('pc')">💬</div>
+  </div>
+  <div style="margin-top:16px;width:100%;max-width:660px">
+    <div style="font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;text-align:center">⚡ VOICE KEYWORDS — say any of these</div>
+    <div class="kw-grid" id="kw-grid"></div>
+  </div>
+  <div class="chips" style="margin-top:8px">
+    <div class="chip kw" onclick="useChip('avengers assemble')">⚡ Avengers Assemble</div>
+    <div class="chip kw" onclick="useChip('hello jarvis')">👋 Hello Jarvis</div>
+    <div class="chip kw" onclick="useChip('research ai')">🔬 Research AI</div>
+    <div class="chip kw" onclick="useChip('write tweet')">✍ Write Tweet</div>
+    <div class="chip kw" onclick="useChip('strategy')">🎯 Strategy</div>
+    <div class="chip kw" onclick="useChip('briefing')">📋 Briefing</div>
+  </div>
+</section>
+<!-- AGENTS HQ -->
+<section class="panel" id="pa">
+  <div class="ph"><span>🤖</span> Agents HQ — 100% Free · No API</div>
+  <div class="agent-grid" id="agent-grid"></div>
+  <div style="flex:1;display:flex;gap:12px;overflow:hidden">
+    <div class="gc" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+      <div class="gcl">📡 Mission Feed</div>
+      <div class="feed-wrap" id="agent-feed"></div>
+    </div>
+    <div class="gc" style="width:240px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex-shrink:0">
+      <div class="gcl">⚡ Quick Deploy</div>
+      <div style="font-size:11px;color:var(--txm);line-height:1.6;margin-bottom:4px">Say these words or click to activate agents instantly:</div>
+      <div id="kw-sidebar"></div>
+    </div>
+  </div>
+</section>
+<!-- CHAT -->
+<section class="panel" id="pc">
+  <div class="ph"><span>💬</span> Jarvis Chat — No API · Voice-Powered</div>
+  <div class="chatmsgs" id="cmsg"></div>
+  <div class="ciarea">
+    <div class="ciwrap">
+      <textarea class="ci" id="cinput" rows="1" placeholder="Type or speak to Jarvis…" onkeydown="ciKey(event)" oninput="ciResize(this)"></textarea>
+    </div>
+    <div class="sbtn" onclick="sendChat()">➤</div>
+  </div>
+</section>
+<!-- DASHBOARD -->
+<section class="panel" id="pd">
+  <div class="dg">
+    <div class="gc grtc" style="grid-column:1/-1">
+      <div class="gorb"></div>
+      <div><h2 id="greeth">Good Day, Commander.</h2><p>8 agents active. No API required — 100% free browser-powered AI. Say a keyword to deploy agents.</p></div>
+    </div>
+    <div class="gc">
+      <div class="gcl">🤖 Agent Status</div>
+      <div id="agent-status-dash"></div>
+    </div>
+    <div class="gc">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="gcl" style="margin-bottom:0">✅ Tasks</div>
+        <span onclick="openTaskModal()" style="cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:11px;border:1px solid var(--bo);padding:1px 8px;border-radius:4px;color:var(--c);-webkit-text-fill-color:var(--c)">+ ADD</span>
+      </div>
+      <div id="dashtasks"></div>
+    </div>
+    <div class="gc"><div class="gcl">⚡ Activity</div><div id="actfeed"></div></div>
+    <div class="gc" style="grid-column:1/3"><div class="gcl">🎯 Mission Goals</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:13px" id="dashgoals"></div></div>
+    <div class="gc"><div class="gcl">🤖 Jarvis Insight</div><p id="jinsight" style="font-size:12px;line-height:1.7;color:var(--txm)">Analyzing…</p></div>
+  </div>
+</section>
+<!-- KNOWLEDGE -->
+<section class="panel" id="pk">
+  <div class="ph"><span>🗄</span> Knowledge Vault</div>
+  <div style="display:grid;grid-template-columns:175px 1fr;gap:12px;flex:1;overflow:hidden">
+    <div style="display:flex;flex-direction:column;overflow-y:auto">
+      <div class="kcat on" data-cat="all" onclick="filterKB(this,'all')" style="display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:8px;border:1px solid var(--bo);cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;background:var(--g1);color:var(--txm);margin-bottom:5px">📁 All Notes</div>
+      <div class="kcat" data-cat="research" onclick="filterKB(this,'research')" style="display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:8px;border:1px solid var(--bo);cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;background:var(--g1);color:var(--txm);margin-bottom:5px">🔬 Research</div>
+      <div class="kcat" data-cat="agent" onclick="filterKB(this,'agent')" style="display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:8px;border:1px solid var(--bo);cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;background:var(--g1);color:var(--txm);margin-bottom:5px">🤖 Agent Reports</div>
+      <div class="kcat" data-cat="ideas" onclick="filterKB(this,'ideas')" style="display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:8px;border:1px solid var(--bo);cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;background:var(--g1);color:var(--txm);margin-bottom:5px">💡 Ideas</div>
+      <div class="kcat" data-cat="personal" onclick="filterKB(this,'personal')" style="display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:8px;border:1px solid var(--bo);cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;background:var(--g1);color:var(--txm);margin-bottom:5px">👤 Personal</div>
+      <div style="margin-top:auto;padding-top:10px"><div style="padding:9px 12px;border-radius:8px;cursor:pointer;transition:all .2s;text-align:center;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;background:var(--gradd);border:1px solid var(--p);color:var(--p);-webkit-text-fill-color:var(--p);display:block" onclick="openNoteModal()">+ New Note</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;overflow:hidden">
+      <input style="background:var(--g1);border:1px solid var(--bo);border-radius:8px;padding:8px 12px;color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:13px;outline:none;width:100%;margin-bottom:9px;transition:all .2s" id="kbsrch" type="text" placeholder="Search vault…" oninput="searchKB()">
+      <div id="kbnotes" style="overflow-y:auto;flex:1"></div>
+    </div>
+  </div>
+</section>
+<!-- MISSIONS -->
+<section class="panel" id="pm">
+  <div class="ph"><span>🎯</span> Mission Control</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;overflow:hidden">
+    <div class="gc" style="overflow-y:auto"><div class="gcl">Active Missions</div><div id="misslist"></div>
+      <div style="padding:9px 12px;border-radius:8px;border:1px dashed var(--bo);background:transparent;color:var(--txd);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;text-align:center;margin-top:4px;display:block" onclick="openMissionModal()">+ New Mission</div>
+    </div>
+    <div class="gc" style="overflow-y:auto">
+      <div class="gcl">Analytics</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px" id="mcstats"></div>
+      <div class="gcl" style="margin-top:4px">Focus</div>
+      <div id="mcfocus"></div>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+<div id="fmic" onclick="fmicClick()" title="Voice (Space)">🎙</div>
+<div id="toastc"></div>
+<!-- NOTE MODAL -->
+<div class="mbg" id="notemodal" onclick="if(event.target===this)closeNoteModal()">
+  <div class="modal"><h3 id="nmtitle">📝 NEW NOTE</h3>
+    <div class="mf">
+      <input type="text" id="nmttl" placeholder="Title…">
+      <select id="nmcat"><option value="research">🔬 Research</option><option value="ideas">💡 Ideas</option><option value="agent">🤖 Agent Report</option><option value="personal">👤 Personal</option></select>
+      <textarea id="nmbody" placeholder="Content…" rows="5"></textarea>
+      <div class="mfrow"><div class="mbbtn pri" style="flex:1;text-align:center" onclick="saveNote()">Save</div><div class="mbbtn sec" onclick="closeNoteModal()">Cancel</div></div>
+    </div>
+  </div>
+</div>
+<!-- TASK MODAL -->
+<div class="mbg" id="taskmodal" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="modal"><h3>✅ ADD TASK</h3>
+    <div class="mf">
+      <input type="text" id="tminput" placeholder="Task…" onkeydown="if(event.key==='Enter')saveTask()">
+      <select id="tmpri"><option value="high">🔴 High</option><option value="med">🟡 Medium</option><option value="low">🔵 Low</option></select>
+      <div class="mfrow"><div class="mbbtn pri" style="flex:1;text-align:center" onclick="saveTask()">Add</div><div class="mbbtn sec" onclick="document.getElementById('taskmodal').classList.remove('on')">Cancel</div></div>
+    </div>
+  </div>
+</div>
+<!-- MISSION MODAL -->
+<div class="mbg" id="missionmodal" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="modal"><h3>🎯 NEW MISSION</h3>
+    <div class="mf">
+      <input type="text" id="mmname" placeholder="Mission name…">
+      <input type="text" id="mmemoji" placeholder="Emoji (e.g. 🚀)">
+      <textarea id="mmdesc" placeholder="Description…" rows="3"></textarea>
+      <div class="mfrow"><div class="mbbtn pri" style="flex:1;text-align:center" onclick="saveMission()">Create</div><div class="mbbtn sec" onclick="document.getElementById('missionmodal').classList.remove('on')">Cancel</div></div>
+    </div>
+  </div>
+</div>
+<!-- VOICE MODAL -->
+<div id="vmodal" onclick="if(event.target===this)closeVModal()">
+  <div class="vmbox">
+    <div class="vmclose" onclick="closeVModal()">✕</div>
+    <div class="owrap" style="width:150px;height:150px">
+      <div class="ring r1" style="width:150px;height:150px"></div>
+      <div class="ring r2" style="width:120px;height:120px"></div>
+      <div class="ring r3" style="width:92px;height:92px"></div>
+      <div class="orb" id="orb2" style="width:70px;height:70px" onclick="toggleVoice()"></div>
+    </div>
+    <div class="orbst" id="orbst2" style="color:var(--p)">READY</div>
+    <div class="wvf" id="wvf2" style="height:40px"></div>
+    <div class="vtx" id="vtx2" style="max-width:100%;min-height:40px;font-size:12px">
+      <span class="vtxph" id="vtxph2">Tap orb to speak</span>
+      <span id="vtxtxt2" style="display:none"></span>
+    </div>
+    <div class="vcrow">
+      <div class="vcbtn" onclick="clearVoice()">🗑</div>
+      <div class="micbtn" id="micbtn2" style="width:52px;height:52px;font-size:21px" onclick="toggleVoice()">🎙</div>
+      <div class="vcbtn" onclick="closeVModal();showPanel('pc')">💬</div>
+    </div>
+  </div>
+</div>
+<script>
+'use strict';
+// ═══════════════════════════════════════════════════════════════
+// MISSION JARVIS — AGENTIC AI OS · 100% FREE · NO API REQUIRED
+// Uses ONLY: Web Speech Recognition + Web Speech Synthesis
+// All agent "intelligence" is built-in keyword + pattern matching
+// ═══════════════════════════════════════════════════════════════
+
+// ── STARFIELD ──
+(function(){
+  var cv=document.getElementById('stars'),ctx=cv.getContext('2d'),W,H,S=[];
+  function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
+  resize();window.addEventListener('resize',function(){resize();init();});
+  function init(){S=[];for(var i=0;i<220;i++)S.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+0.2,o:Math.random()*.7+.1,s:Math.random()*.3+.05,h:Math.random()>.5?'168,85,247':'34,211,238'});}
+  init();
+  function draw(){ctx.clearRect(0,0,W,H);for(var i=0;i<S.length;i++){var s=S[i];s.o+=Math.sin(Date.now()*s.s*.001)*.008;s.o=Math.max(.05,Math.min(.85,s.o));ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle='rgba('+s.h+','+s.o+')';ctx.fill();}requestAnimationFrame(draw);}
+  draw();
+})();
+document.addEventListener('mousemove',function(e){var g=document.getElementById('cglow');if(g){g.style.left=e.clientX+'px';g.style.top=e.clientY+'px';}});
+
+// ── STORAGE ──
+function ls(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function lss(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+
+// ── DATA ──
+var notes=ls('mvfree_notes',[
+  {id:1,title:'Mission Jarvis Roadmap',cat:'agent',body:'Phase 1: Voice + agents. Phase 2: Calendar integration. Phase 3: Computer control. Phase 4: Predictive intelligence.',date:'2026-06-01'},
+  {id:2,title:'AI Market Research',cat:'research',body:'AI market growing 38% YoY. Personal AI assistants fastest-growing segment. Voice interfaces outperform text by 3x for task completion.',date:'2026-06-01'},
+]);
+var tasks=ls('mvfree_tasks',[
+  {id:1,text:'Deploy Mission Jarvis',done:false,pri:'high'},
+  {id:2,text:'Test all voice keywords',done:false,pri:'high'},
+  {id:3,text:'Build audience on social media',done:false,pri:'med'},
+  {id:4,text:'Research monetization strategy',done:true,pri:'med'},
+]);
+var missions=ls('mvfree_missions',[
+  {id:1,name:'Mission Jarvis Launch',icon:'🚀',progress:65,desc:'Deploy the agentic AI OS.'},
+  {id:2,name:'Audience Growth',icon:'📈',progress:30,desc:'1K followers in 30 days.'},
+  {id:3,name:'Revenue $1K/week',icon:'💎',progress:10,desc:'Monetization playbook.'},
+]);
+var activity=ls('mvfree_activity',[
+  {text:'Agentic OS initialized',time:'Now',c:'#a855f7'},
+  {text:'8 agents standing by',time:'1m ago',c:'#22d3ee'},
+  {text:'Voice engine active',time:'2m ago',c:'#10b981'},
+]);
+var chatHistory=ls('mvfree_chat',[]);
+var chatRendered=false;
+var kbCat='all';
+var editNoteId=null;
+var currentPanel='pv';
+var waveIntervals=[];
+
+// ── PERSONALITY MODES ──
+var MODES=['JARVIS','FRIDAY','TACTICAL','FOUNDER'];
+var currentMode=ls('mvfree_mode','JARVIS');
+function save(){lss('mvfree_notes',notes);lss('mvfree_tasks',tasks);lss('mvfree_missions',missions);lss('mvfree_activity',activity);lss('mvfree_chat',chatHistory);}
+function cycleMode(){var i=MODES.indexOf(currentMode);currentMode=MODES[(i+1)%MODES.length];lss('mvfree_mode',currentMode);document.getElementById('modebadge').textContent=currentMode;toast('Mode: '+currentMode);}
+
+// ═══════════════════════════════════════════════════════════════
+// 8 AGENTS — FULLY OFFLINE, KEYWORD-TRIGGERED, VOICE-REPORTING
+// ═══════════════════════════════════════════════════════════════
+var AGENTS=[
+  {id:'jarvis',name:'JARVIS',role:'Commander',icon:'🧠',color:'#a855f7',glow:'rgba(168,85,247,.5)'},
+  {id:'oracle',name:'ORACLE',role:'Research',icon:'🔬',color:'#22d3ee',glow:'rgba(34,211,238,.5)'},
+  {id:'mercury',name:'MERCURY',role:'Content',icon:'✍',color:'#f59e0b',glow:'rgba(245,158,11,.5)'},
+  {id:'athena',name:'ATHENA',role:'Strategy',icon:'🎯',color:'#10b981',glow:'rgba(16,185,129,.5)'},
+  {id:'nexus',name:'NEXUS',role:'Memory',icon:'💾',color:'#6366f1',glow:'rgba(99,102,241,.5)'},
+  {id:'syntax',name:'SYNTAX',role:'Code',icon:'💻',color:'#14b8a6',glow:'rgba(20,184,166,.5)'},
+  {id:'hermes',name:'HERMES',role:'Intelligence',icon:'🌐',color:'#f97316',glow:'rgba(249,115,22,.5)'},
+  {id:'echo',name:'ECHO',role:'Voice',icon:'🎙',color:'#ec4899',glow:'rgba(236,72,153,.5)'},
+];
+
+
+// ═══════════════════════════════════════════════════════════════
+// VOICE ENGINE — 100% FREE · Browser Web Speech API
+// ═══════════════════════════════════════════════════════════════
+var VS={state:'idle',recog:null,synth:window.speechSynthesis||null,voices:[],pending:'',vmodalOpen:false};
+var VSLBL={idle:'READY — NO API',listening:'LISTENING',thinking:'THINKING',speaking:'SPEAKING',assembling:'ASSEMBLING'};
+var VSCOL={idle:'#a855f7',listening:'#22d3ee',thinking:'#f59e0b',speaking:'#a855f7',assembling:'#ffffff'};
+var VEMP={idle:0,listening:100,thinking:60,speaking:85,assembling:100};
+
+// Active agent states
+var agentStates={};
+AGENTS.forEach(function(a){agentStates[a.id]={status:'idle',log:'Standing by...',progress:0};});
+
+function loadVoices(){if(VS.synth)VS.voices=VS.synth.getVoices();}
+if(VS.synth){loadVoices();VS.synth.onvoiceschanged=loadVoices;}
+
+function buildWave(id,n){var el=document.getElementById(id);if(!el)return;el.innerHTML='';for(var i=0;i<n;i++){var b=document.createElement('div');b.className='wb';b.style.height='3px';el.appendChild(b);}}
+buildWave('wvf',28);buildWave('wvf2',20);
+
+function animWave(mode){
+  waveIntervals.forEach(function(iv){clearInterval(iv);});waveIntervals=[];
+  ['wvf','wvf2'].forEach(function(id){
+    var el=document.getElementById(id);if(!el)return;
+    var bars=el.querySelectorAll('.wb');
+    if(mode==='idle'){bars.forEach(function(b){b.style.height='3px';b.style.opacity='.25';});return;}
+    bars.forEach(function(b){
+      var iv=setInterval(function(){var base=mode==='listening'?26:mode==='speaking'||mode==='assembling'?22:8;b.style.height=(Math.random()*base+3)+'px';b.style.opacity=mode==='thinking'?'.4':'.95';},60+Math.random()*40);
+      waveIntervals.push(iv);
+    });
+  });
+}
+animWave('idle');
+
+function setVS(state){
+  VS.state=state;var col=VSCOL[state]||VSCOL.idle;
+  ['orb','orb2'].forEach(function(id){var el=document.getElementById(id);if(!el)return;el.className='orb '+(state==='assembling'?'assembling':state!=='idle'?state:'');});
+  ['orbst','orbst2'].forEach(function(id){var el=document.getElementById(id);if(!el)return;el.textContent=VSLBL[state]||state.toUpperCase();el.style.color=col;el.style.webkitTextFillColor=col;});
+  animWave(state);
+  var isL=state==='listening';
+  ['micbtn','micbtn2','fmic'].forEach(function(id){var el=document.getElementById(id);if(!el)return;if(isL)el.classList.add('on');else el.classList.remove('on');el.textContent=isL?'⏹':'🎙';});
+  var vd=document.getElementById('vsdot'),vt=document.getElementById('vstxt');
+  if(vd){vd.style.background=col;vd.style.boxShadow='0 0 5px '+col;}if(vt)vt.textContent=VSLBL[state]||state.toUpperCase();
+}
+
+function showVTX(text,isJ){
+  ['vtxph','vtxph2'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});
+  ['vtxtxt','vtxtxt2'].forEach(function(id){var e=document.getElementById(id);if(!e)return;e.style.display='block';e.style.color=isJ?'#a855f7':'var(--tx)';e.textContent=text;});
+}
+
+function clearVoice(){
+  if(VS.synth)VS.synth.cancel();try{if(VS.recog)VS.recog.stop();}catch(e){}
+  setVS('idle');VS.pending='';
+  ['vtxph','vtxph2'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='';});
+  ['vtxtxt','vtxtxt2'].forEach(function(id){var e=document.getElementById(id);if(e){e.style.display='none';e.textContent='';}});
+}
+
+function openVModal(){document.getElementById('vmodal').classList.add('on');VS.vmodalOpen=true;}
+function closeVModal(){document.getElementById('vmodal').classList.remove('on');VS.vmodalOpen=false;}
+function fmicClick(){if(currentPanel!=='pv'&&!VS.vmodalOpen)openVModal();toggleVoice();}
+
+function toggleVoice(){
+  if(VS.state==='listening'){stopL();return;}
+  if(VS.state==='speaking'||VS.state==='assembling'){if(VS.synth)VS.synth.cancel();setVS('idle');return;}
+  if(VS.state==='idle')startL();
+}
+function stopL(){try{if(VS.recog)VS.recog.stop();}catch(e){}}
+
+function startL(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast('Voice needs Chrome or Edge — still 100% free!','w');return;}
+  VS.recog=new SR();VS.recog.continuous=false;VS.recog.interimResults=true;VS.recog.lang='en-US';
+  VS.recog.onstart=function(){setVS('listening');showVTX('Listening...say a command',false);toast('Listening — speak now');};
+  VS.recog.onresult=function(e){
+    var interim='',final='';
+    for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)final+=e.results[i][0].transcript;else interim+=e.results[i][0].transcript;}
+    VS.pending=final||interim;showVTX(VS.pending||'...',false);
+  };
+  VS.recog.onend=function(){
+    if(VS.state==='listening'){
+      var t=VS.pending.trim();
+      if(t){handleVoiceInput(t);VS.pending='';}else{setVS('idle');clearVoice();}
+    }
+  };
+  VS.recog.onerror=function(e){
+    if(e.error==='not-allowed')toast('Allow microphone — it is free and stays on your device!','w');
+    else if(e.error!=='aborted'&&e.error!=='no-speech')toast('Voice: '+e.error,'w');
+    setVS('idle');
+  };
+  if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
+    navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+      stream.getTracks().forEach(function(t){t.stop();});
+      try{VS.recog.start();}catch(err){toast('Voice start failed.','e');setVS('idle');}
+    }).catch(function(){toast('Allow microphone access in browser settings.','e');setVS('idle');});
+  } else {
+    try{VS.recog.start();}catch(err){toast('Voice not available.','e');setVS('idle');}
+  }
+}
+
+function getBestVoice(){
+  var pref=null;
+  for(var i=0;i<VS.voices.length;i++){if(/Daniel|Arthur|Google UK English Male|Alex|Oliver|James/i.test(VS.voices[i].name)){pref=VS.voices[i];break;}}
+  if(!pref){for(var j=0;j<VS.voices.length;j++){if(VS.voices[j].lang==='en-GB'){pref=VS.voices[j];break;}}}
+  if(!pref){for(var k=0;k<VS.voices.length;k++){if(VS.voices[k].lang.indexOf('en')===0){pref=VS.voices[k];break;}}}
+  return pref;
+}
+
+function speakText(text,onDone){
+  if(!VS.synth){if(onDone)onDone();return;}
+  VS.synth.cancel();
+  var utt=new SpeechSynthesisUtterance(text);
+  utt.rate=0.91;utt.pitch=0.86;utt.volume=1;
+  var v=getBestVoice();if(v)utt.voice=v;
+  utt.onend=function(){if(onDone)onDone();};
+  utt.onerror=function(){if(onDone)onDone();};
+  VS.synth.speak(utt);
+}
+
+function useChip(text){handleVoiceInput(text);}
+
+var INTENTS = [
+  // ── NAVIGATION ──
+  {
+    intent: "open_voice",
+    phrases: ["open voice","voice panel","go to voice","voice mode","voice","panel one","1"],
+    action: function(){ showPanel('pv'); speak("Voice panel open, Commander."); }
+  },
+  {
+    intent: "open_agents",
+    phrases: ["open agents","agents hq","agent headquarters","agents panel","go to agents","show agents","panel two","2"],
+    action: function(){ showPanel('pa'); renderAgentGrid(); speak("Agents HQ online, Commander. All 8 agents standing by."); }
+  },
+  {
+    intent: "open_chat",
+    phrases: ["open chat","chat","go to chat","chat panel","panel three","3"],
+    action: function(){ showPanel('pc'); renderChat(); speak("Chat interface open, Commander."); }
+  },
+  {
+    intent: "open_dashboard",
+    phrases: ["open dashboard","dashboard","go to dashboard","control panel","home","panel four","4"],
+    action: function(){ showPanel('pd'); renderDash(); speak("Dashboard online. All systems nominal, Commander."); }
+  },
+  {
+    intent: "open_notes",
+    phrases: ["open notes","show notes","notes","take me to notes","knowledge vault","vault","open vault","my notes","open knowledge","panel five","5"],
+    action: function(){ showPanel('pk'); renderNotes('all'); speak("Knowledge vault open. You have "+notes.length+" entries stored, Commander."); }
+  },
+  {
+    intent: "open_missions",
+    phrases: ["open missions","missions","show missions","mission control","goals","objectives","panel six","6"],
+    action: function(){ showPanel('pm'); renderMissions(); speak("Mission control open. "+missions.length+" active missions, Commander."); }
+  },
+  // ── AVENGERS ASSEMBLE ──
+  {
+    intent: "avengers_assemble",
+    phrases: ["avengers assemble","avengers","assemble","all agents","deploy all","deploy agents","assemble agents","activate all","launch all agents","full briefing","complete briefing","avengers assembly"],
+    action: function(input){
+      showPanel('pa'); renderAgentGrid();
+      var done = tasks.filter(function(t){return t.done;}).length;
+      var top = missions[0] ? missions[0].name : "no missions yet";
+      setVS('assembling');
+      // Activate all agents visually in waves
+      var wave1 = ['oracle','hermes'];
+      var wave2 = ['mercury','athena','nexus'];
+      var wave3 = ['syntax'];
+      var wave4 = ['echo','jarvis'];
+      wave1.forEach(function(id){ setAgentState(id,'working','Activating…',15); });
+      setTimeout(function(){ wave2.forEach(function(id){ setAgentState(id,'working','Analyzing…',25); }); },500);
+      setTimeout(function(){ wave3.forEach(function(id){ setAgentState(id,'working','Processing…',40); }); },900);
+      setTimeout(function(){ wave4.forEach(function(id){ setAgentState(id,'working','Synthesizing…',70); }); },1300);
+      // Stagger feed items
+      setTimeout(function(){ addFeedItem('oracle','🔬','ORACLE','Research sweep complete — AI market growing 38% YoY. Key insight: personal AI OS market is underserved.','#22d3ee'); },400);
+      setTimeout(function(){ addFeedItem('hermes','🌐','HERMES','Web intelligence gathered. Mission Jarvis has first-mover advantage. Recommend immediate deployment.','#f97316'); },700);
+      setTimeout(function(){ addFeedItem('mercury','✍','MERCURY','Content strategy ready. Tweet thread drafted. LinkedIn post prepared. Hook: "I built a free AI OS that responds to your voice."','#f59e0b'); },1000);
+      setTimeout(function(){ addFeedItem('athena','🎯','ATHENA','Strategic plan complete. Path to $1K/week: 14 Pro + 5 Agency clients. Deploy Stripe this week.','#10b981'); },1200);
+      setTimeout(function(){ addFeedItem('nexus','💾','NEXUS','Memory indexed. '+notes.length+' knowledge entries cross-referenced. Key pattern: high focus on AI and growth strategy.','#6366f1'); },1400);
+      setTimeout(function(){ addFeedItem('syntax','💻','SYNTAX','Codebase optimised. All voice keywords active. Zero API cost. Browser-native deployment confirmed.','#14b8a6'); },1600);
+      setTimeout(function(){
+        AGENTS.forEach(function(a){ setAgentState(a.id,'done','Report delivered ✅',100); });
+        var report = "Avengers Assemble complete, Commander. All 8 agents reporting. ORACLE confirms the AI personal assistant market is growing at 38% year over year with a 50 billion dollar opportunity. HERMES intelligence shows Mission Jarvis has a clear first-mover advantage — no competitor combines free deployment, voice-first design, and multi-agent orchestration. MERCURY has your content ready — tweet thread hook: I built a free AI operating system that responds to voice commands and deploys 8 specialized agents. ATHENA strategy: launch Stripe payments this week, target 14 Pro subscribers at 49 dollars and 5 Agency clients at 199 dollars — that is 1681 dollars monthly recurring. NEXUS memory shows "+notes.length+" knowledge entries with strong focus on AI and growth strategy. SYNTAX confirms zero API cost and full browser-native operation. You have "+(tasks.length-done)+" pending tasks. Top mission: "+top+". All systems are green, Commander. What is your next command?";
+        addFeedItem('jarvis','🧠','JARVIS','All agents assembled. Full briefing synthesized. Delivering voice report now.','#a855f7');
+        addAgentMsgById('jarvis', report);
+        addAct('AVENGERS ASSEMBLE complete','just now','#a855f7');
+        // Save report to vault
+        notes.unshift({id:Date.now(),title:'Avengers Assemble Report — '+new Date().toLocaleTimeString(),cat:'agent',body:report,date:new Date().toISOString().split('T')[0]});
+        save();
+        deliverSpeak(report, 'jarvis');
+      },2200);
+    }
+  },
+  // ── BRIEFING & STATUS ──
+  {
+    intent: "briefing",
+    phrases: ["briefing","daily briefing","status","status report","situation report","morning briefing","what is my status","report","what is happening","give me a briefing","update me"],
+    action: function(){
+      var done = tasks.filter(function(t){return t.done;}).length;
+      var pending = tasks.filter(function(t){return !t.done;});
+      var top = pending.length ? pending[0].text : "all tasks complete";
+      var topM = missions[0] ? missions[0].name+" at "+missions[0].progress+"%" : "no active missions";
+      var h = new Date().getHours();
+      var g = h<12?'morning':h<17?'afternoon':'evening';
+      var msg = "Situation report, Commander. Good "+g+". Time is "+new Date().toLocaleTimeString()+". You have "+pending.length+" pending tasks — top priority: "+top+". Active missions: "+topM+". Knowledge vault: "+notes.length+" entries. 8 agents standing by. Efficiency at 94%. Recommendation: tackle your highest priority task during your peak focus window from 9 AM to noon. Standing by for further commands.";
+      setAgentState('jarvis','working','Briefing…',60);
+      setTimeout(function(){ setAgentState('jarvis','done','Briefed ✅',100); addFeedItem('jarvis','🧠','JARVIS',msg.substring(0,200)+'…','#a855f7'); addAgentMsgById('jarvis',msg); deliverSpeak(msg,'jarvis'); },500);
+    }
+  },
+  // ── RESEARCH ──
+  {
+    intent: "research",
+    phrases: ["research","research mode","oracle","investigate","analyze","tell me about","what do you know about","research ai","research tech","look up","find out about","oracle activate","search for"],
+    action: function(input){
+      var topic = input.replace(/research|oracle|investigate|analyze|tell me about|what do you know about|look up|find out about|search for/gi,'').trim() || 'artificial intelligence';
+      setAgentState('oracle','working','Researching '+topic+'…',30);
+      setAgentState('nexus','working','Searching vault…',20);
+      setTimeout(function(){
+        var related = notes.filter(function(n){ return n.body.toLowerCase().indexOf(topic.toLowerCase())>=0 || n.title.toLowerCase().indexOf(topic.toLowerCase())>=0; });
+        setAgentState('oracle','done','Research complete ✅',100);
+        setAgentState('nexus','done','Vault searched ✅',100);
+        var msg = "ORACLE reporting, Commander. Research on "+topic+" complete. Key findings: this field is experiencing rapid development with significant investment flowing in from major institutions. The opportunity space shows strong demand from early adopters willing to pay premium prices for quality solutions. Market sizing indicates a multi-billion dollar addressable market growing at over 30% annually. Critical insight: voice-first interfaces in this space are dramatically underserved, representing a first-mover opportunity. "+(related.length?"NEXUS found "+related.length+" related entries in your vault — most relevant: "+related[0].title+". This cross-references with your existing knowledge base.":"NEXUS reports no prior entries on this topic — this is fresh intelligence. Recommend saving to vault.")+" Shall I dig deeper on any specific aspect, Commander?";
+        addFeedItem('oracle','🔬','ORACLE',msg.substring(0,200)+'…','#22d3ee');
+        addFeedItem('nexus','💾','NEXUS',(related.length?'Found '+related.length+' related vault entries.':'No existing vault entries. New intelligence captured.'),'#6366f1');
+        addAgentMsgById('oracle', msg);
+        deliverSpeak(msg, 'oracle');
+      },1200);
+    }
+  },
+  // ── CONTENT CREATION ──
+  {
+    intent: "write_content",
+    phrases: ["write tweet","tweet","twitter","write a tweet","tweet thread","linkedin post","write post","create content","write content","mercury","create tweet","social media","write linkedin","make content","write something","draft","write a post","write blog","blog post","write article"],
+    action: function(input){
+      var topic = input.replace(/write|tweet|twitter|linkedin|post|create|content|thread|social media|mercury|draft|blog|article/gi,'').trim() || 'my AI operating system Mission Jarvis';
+      setAgentState('mercury','working','Creating content…',40);
+      setTimeout(function(){
+        setAgentState('mercury','done','Content ready ✅',100);
+        var msg = "MERCURY reporting, Commander. Content package ready for "+topic+". Tweet thread: Thread 1 — I built a free AI operating system that responds to voice commands and deploys 8 specialized agents simultaneously. No API key. Zero cost. Here is how. Thread 2 — Say Avengers Assemble and 8 AI agents deploy in parallel: ORACLE researches, MERCURY creates content, ATHENA builds strategy, NEXUS manages memory, SYNTAX writes code, HERMES gathers intel, ECHO speaks the report. Thread 3 — Built entirely with browser APIs. Web Speech Recognition plus Speech Synthesis plus JavaScript. Runs offline. Costs nothing. This is the future of personal AI. Thread 4 — The future of AI is not a chatbot. It is a personal operating system that understands your voice, knows your goals, and coordinates specialized agents to execute your mission. Follow for the full breakdown. LinkedIn version also ready — 300 word thought leadership post with the same angle. Recommend posting at 9 AM for maximum reach, Commander.";
+        addFeedItem('mercury','✍','MERCURY','Content package ready. Tweet thread + LinkedIn post drafted.','#f59e0b');
+        addAgentMsgById('mercury', msg);
+        deliverSpeak(msg, 'mercury');
+      },1000);
+    }
+  },
+  // ── STRATEGY ──
+  {
+    intent: "strategy",
+    phrases: ["strategy","strategic plan","business strategy","growth strategy","plan","athena","how do i grow","what should i do","growth plan","monetize","make money","how to monetize","revenue plan","business plan","how to make money","advise me","give me advice"],
+    action: function(input){
+      setAgentState('athena','working','Building strategy…',50);
+      setTimeout(function(){
+        setAgentState('athena','done','Strategy ready ✅',100);
+        var msg = "ATHENA reporting, Commander. Strategic analysis complete. Situation: manal_verse.co sits at the intersection of AI, design, and futurism — a premium niche with explosive growth. Three strategic pillars identified. Pillar one: content led growth. Post daily using Mission Jarvis as proof of work. Show the build, share the insights, document the journey. Target: 1000 followers in 30 days, converting at 2% to paid. Pillar two: product monetization. Launch a Pro tier at 49 dollars per month for unlimited voice sessions, and an Agency tier at 199 dollars for white-label client deployments. With 14 Pro and 5 Agency subscribers you hit 1681 dollars monthly — 420 dollars per week. Pillar three: services revenue. Offer done-for-you Jarvis deployments at 499 to 999 dollars one-time. Two setups per month adds 1000 dollars. Combined: 2681 dollars monthly, 670 dollars weekly at conservative estimates, scaling to 1000 per week within 90 days. Recommended immediate actions: set up Stripe today, post your first demo video tomorrow, close your first client within 14 days. Mission window is open, Commander. Execute now.";
+        addFeedItem('athena','🎯','ATHENA','Strategic roadmap complete. Path to $1K/week identified.','#10b981');
+        addAgentMsgById('athena', msg);
+        deliverSpeak(msg, 'athena');
+      },1100);
+    }
+  },
+  // ── MEMORY / KNOWLEDGE ──
+  {
+    intent: "memory_recall",
+    phrases: ["memory","nexus","what do you remember","what do you know","recall","my knowledge","vault contents","show vault","search vault","find in vault","knowledge base","what is in my vault","remember"],
+    action: function(input){
+      var query = input.replace(/memory|nexus|what do you remember|what do you know|recall|my knowledge|vault contents|show vault|search vault|find in vault|knowledge base|what is in my vault|remember/gi,'').trim();
+      setAgentState('nexus','working','Searching memory…',50);
+      setTimeout(function(){
+        setAgentState('nexus','done','Memory indexed ✅',100);
+        var relevant = query ? notes.filter(function(n){ return n.title.toLowerCase().indexOf(query.toLowerCase())>=0||n.body.toLowerCase().indexOf(query.toLowerCase())>=0; }) : notes;
+        var msg;
+        if(!relevant.length){
+          msg = "NEXUS reporting, Commander. Your knowledge vault has "+notes.length+" total entries. No specific matches found"+(query?" for "+query:"")+". The vault contains research findings, agent reports, and personal notes. I recommend adding more entries to build your second brain. You can say save note followed by content to add new entries instantly.";
+        } else {
+          msg = "NEXUS reporting, Commander. Memory search complete. Found "+relevant.length+" relevant entries"+(query?" matching "+query:"")+". Most relevant: "+relevant[0].title+" — "+relevant[0].body.substring(0,100)+"."+(relevant.length>1?" Also found: "+relevant[1].title+".":"")+" Total vault: "+notes.length+" entries. Key patterns identified: your knowledge base shows strong concentration in AI architecture, business strategy, and voice technology. These three areas are deeply interconnected and suggest a coherent vision for manal_verse.co. Recommend cross-referencing these insights in your next strategy session.";
+        }
+        addFeedItem('nexus','💾','NEXUS',(relevant.length?'Found '+relevant.length+' vault entries.':'No matches found.'),'#6366f1');
+        showPanel('pk'); renderNotes('all');
+        addAgentMsgById('nexus', msg);
+        deliverSpeak(msg, 'nexus');
+      },800);
+    }
+  },
+  // ── CODE & TECHNICAL ──
+  {
+    intent: "code_help",
+    phrases: ["code","syntax","write code","debug","help me code","technical help","how to build","how to code","programming","develop","build app","tech help","fix code","code review","syntax help","how do i build"],
+    action: function(input){
+      var task = input.replace(/code|syntax|write|debug|programming|develop|build|create|how to|technical|tech help|fix|review/gi,'').trim() || 'a web application';
+      setAgentState('syntax','working','Analyzing technical requirements…',45);
+      setTimeout(function(){
+        setAgentState('syntax','done','Technical plan ready ✅',100);
+        var msg = "SYNTAX reporting, Commander. Technical analysis complete for "+task+". Architecture recommendation: use a single-file HTML approach with vanilla JavaScript for maximum portability and zero dependencies. Key technical stack: Web Speech API for voice recognition — free and built into Chrome and Edge. LocalStorage for data persistence — no backend required. CSS custom properties and animations for the holographic interface — GPU accelerated. Fetch API for optional AI integration when needed. Deployment: push to GitHub and connect Vercel for instant free hosting with automatic HTTPS. The entire stack costs zero dollars to run. Estimated build time for minimum viable product: 4 to 8 hours for a developer, 1 to 2 weeks for a complete production system. Primary technical risk: browser compatibility — target Chrome and Edge for best voice support. Want me to outline specific implementation steps or identify the critical path?";
+        addFeedItem('syntax','💻','SYNTAX','Technical architecture ready. Zero-cost stack identified.','#14b8a6');
+        addAgentMsgById('syntax', msg);
+        deliverSpeak(msg, 'syntax');
+      },1000);
+    }
+  },
+  // ── INTELLIGENCE / NEWS ──
+  {
+    intent: "intelligence",
+    phrases: ["news","intelligence","web intelligence","hermes","what is trending","market intel","trends","latest","current events","trending","market news","industry news","what is new"],
+    action: function(input){
+      var topic = input.replace(/news|intelligence|web|hermes|what is trending|market intel|trends|latest|current events|trending|market news|industry news|what is new/gi,'').trim() || 'AI and technology';
+      setAgentState('hermes','working','Sweeping intelligence networks…',35);
+      setTimeout(function(){
+        setAgentState('hermes','done','Intel gathered ✅',100);
+        var msg = "HERMES reporting, Commander. Intelligence sweep on "+topic+" complete. Market signals: AI adoption is accelerating with personal AI assistants showing 340% growth year over year. The shift from chatbots to agentic AI systems is happening faster than predicted — multi-agent orchestration is now a primary differentiator. Key development: major tech companies are racing to build voice-first AI interfaces, validating the Mission Jarvis thesis. Opportunity window: the sub-100-dollar personal AI operating system market remains wide open. No current product combines free deployment, voice control, and multi-agent architecture in a consumer-friendly package. Competitive threat timeline: estimated 12 to 18 months before a major player enters this exact market. Recommendation: ship aggressively now, build audience fast, lock in early adopters. First mover advantage in this niche is worth millions. The window is open, Commander — move immediately.";
+        addFeedItem('hermes','🌐','HERMES','Intelligence sweep complete. First-mover window identified.','#f97316');
+        addAgentMsgById('hermes', msg);
+        deliverSpeak(msg, 'hermes');
+      },1100);
+    }
+  },
+  // ── VOICE SUMMARY ──
+  {
+    intent: "voice_summary",
+    phrases: ["voice summary","echo","voice report","read to me","summarize","speak","dictate","voice briefing","audio report","tell me everything"],
+    action: function(){
+      setAgentState('echo','working','Preparing voice report…',60);
+      setTimeout(function(){
+        setAgentState('echo','done','Voice report delivered ✅',100);
+        var done = tasks.filter(function(t){return t.done;}).length;
+        var msg = "ECHO delivering full voice summary, Commander. Mission Jarvis agentic AI OS is fully operational with 8 active agents and zero API cost. Current task status: "+tasks.length+" total tasks, "+done+" completed, "+(tasks.length-done)+" pending. Your top mission is "+missions[0].name+" progressing at "+missions[0].progress+" percent. Knowledge vault: "+notes.length+" entries stored and indexed by NEXUS. All voice keywords are active — avengers assemble for full briefing, research for intelligence, strategy for planning, write tweet for content, code for technical help, news for market intelligence, briefing for status report, tasks for your task list, missions for mission status. 15 total intent patterns recognized. System efficiency: 94 percent. All agents standing by. I am ECHO — end of voice summary.";
+        addFeedItem('echo','🎙','ECHO','Full voice summary delivered.','#ec4899');
+        addAgentMsgById('echo', msg);
+        deliverSpeak(msg, 'echo');
+      },700);
+    }
+  },
+  // ── TASKS ──
+  {
+    intent: "show_tasks",
+    phrases: ["tasks","my tasks","show tasks","task list","what are my tasks","pending tasks","to do list","todo","open tasks","task panel","what do i need to do"],
+    action: function(){
+      showPanel('pd');
+      var pending = tasks.filter(function(t){return !t.done;});
+      var done = tasks.filter(function(t){return t.done;});
+      var topTask = pending.length ? pending[0].text : 'all tasks complete';
+      var msg = "Task briefing, Commander. You have "+tasks.length+" total tasks. "+done.length+" completed, "+pending.length+" still pending. "+(pending.length ? "Top priority: "+topTask+". High priority items: "+pending.filter(function(t){return t.pri==='high';}).length+". " : "Outstanding performance — all tasks complete. ")+( pending.length ? "I recommend tackling your highest priority task now during your focus window." : "Time to add new missions to the queue, Commander." );
+      setAgentState('jarvis','working','Task analysis…',50);
+      setTimeout(function(){ setAgentState('jarvis','done','Tasks briefed ✅',100); addAgentMsgById('jarvis', msg); deliverSpeak(msg,'jarvis'); renderDash(); },500);
+    }
+  },
+  // ── ADD TASK ──
+  {
+    intent: "add_task",
+    phrases: ["add task","create task","new task","add to do","add todo","remind me to","i need to","task add","put on my list"],
+    action: function(input){
+      var taskText = input.replace(/add task|create task|new task|add to do|add todo|remind me to|i need to|task add|put on my list/gi,'').trim();
+      if(taskText.length > 3){
+        tasks.push({id:Date.now(), text:taskText, done:false, pri:'med'});
+        save(); renderDash();
+        var msg = "Task added to your list, Commander: "+taskText+". You now have "+tasks.filter(function(t){return !t.done;}).length+" pending tasks. I have set it as medium priority — say update task priority to adjust if needed.";
+        addAgentMsgById('jarvis', msg); deliverSpeak(msg,'jarvis'); addAct('Task added: '+taskText,'just now','#a855f7'); toast('✅ Task added: '+taskText);
+      } else {
+        var msg2 = "What task should I add, Commander? Say add task followed by the description.";
+        addAgentMsgById('jarvis', msg2); deliverSpeak(msg2,'jarvis');
+      }
+    }
+  },
+  // ── MISSIONS ──
+  {
+    intent: "show_missions",
+    phrases: ["missions","my missions","mission status","show missions","what are my missions","mission briefing","progress","mission progress","goals","objectives","what is my progress"],
+    action: function(){
+      showPanel('pm'); renderMissions();
+      var top = missions[0] ? missions[0].name+" at "+missions[0].progress+"%" : "no missions defined";
+      var msg = "Mission briefing, Commander. You have "+missions.length+" active missions. Leading mission: "+top+". Overall portfolio is progressing on schedule. ATHENA recommends allocating 60% of your time to the top mission, 30% to audience growth, and 10% to infrastructure. At current velocity, primary mission completion is estimated in 3 to 4 weeks. Shall I run a deeper strategic analysis?";
+      setAgentState('athena','working','Mission analysis…',60);
+      setTimeout(function(){ setAgentState('athena','done','Briefed ✅',100); addAgentMsgById('athena',msg); deliverSpeak(msg,'athena'); },600);
+    }
+  },
+  // ── ADD MISSION ──
+  {
+    intent: "add_mission",
+    phrases: ["add mission","new mission","create mission","launch mission","start mission","add goal","new goal","create goal"],
+    action: function(input){
+      var mName = input.replace(/add mission|new mission|create mission|launch mission|start mission|add goal|new goal|create goal/gi,'').trim();
+      if(mName.length > 3){
+        missions.push({id:Date.now(), name:mName, icon:'🚀', progress:0, desc:'Mission created by voice command.'});
+        save(); renderMissions();
+        var msg = "Mission launched, Commander: "+mName+". Added to your mission control panel with a starting progress of zero percent. ATHENA will track this alongside your "+missions.length+" active missions. Say mission briefing at any time to check progress.";
+        addAgentMsgById('jarvis',msg); deliverSpeak(msg,'jarvis'); addAct('Mission: '+mName,'just now','#22d3ee'); toast('🎯 Mission launched: '+mName); showPanel('pm');
+      } else {
+        openMissionModal();
+        speak("Mission modal open, Commander. Fill in the details to create your new mission.");
+      }
+    }
+  },
+  // ── SAVE NOTE ──
+  {
+    intent: "save_note",
+    phrases: ["save note","note this","remember this","add to vault","save to vault","store this","note down","save this"],
+    action: function(input){
+      var content = input.replace(/save note|note this|remember this|add to vault|save to vault|store this|note down|save this/gi,'').trim();
+      if(content.length > 5){
+        notes.unshift({id:Date.now(), title:'Voice Note: '+content.substring(0,40), cat:'agent', body:content, date:new Date().toISOString().split('T')[0]});
+        save();
+        var msg = "NEXUS confirmed, Commander. Saved to knowledge vault: "+content.substring(0,60)+(content.length>60?"…":"")+". You now have "+notes.length+" vault entries. I have tagged it as an agent report for easy retrieval.";
+        addAgentMsgById('nexus',msg); deliverSpeak(msg,'nexus'); addAct('Note saved','just now','#6366f1'); toast('💾 Note saved to vault.'); showPanel('pk'); renderNotes('all');
+      } else {
+        speak("What would you like me to save, Commander? Say save note followed by the content.");
+      }
+    }
+  },
+  // ── TIME & DATE ──
+  {
+    intent: "time_date",
+    phrases: ["what time","time","date","what day","what is today","what is the date","clock","current time","today","what is the time"],
+    action: function(){
+      var now = new Date();
+      var h = now.getHours();
+      var period = h<6?'late night':h<12?'morning':h<17?'afternoon':h<20?'evening':'night';
+      var msg = "Commander, current time is "+now.toLocaleTimeString()+" on "+now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+". It is "+period+". "+(h>=9&&h<12?"You are in your peak productivity window — make the most of it, Commander.":h<9?"Peak window opens at 9 AM — prepare your priorities.":"Standard operations. Peak performance resumes tomorrow morning at 9 AM.");
+      addAgentMsgById('jarvis',msg); deliverSpeak(msg,'jarvis');
+    }
+  },
+  // ── WHO ARE YOU ──
+  {
+    intent: "about_jarvis",
+    phrases: ["who are you","what are you","tell me about yourself","introduce yourself","what is mission jarvis","about jarvis","about you","what can you do","help","commands","what do you do"],
+    action: function(){
+      var msg = "I am Jarvis, your personal agentic AI operating system built by manal_verse.co — where code meets design meets the future. I run 100% free in your browser using Web Speech Recognition and Speech Synthesis — no API key, no subscription, no cost. I coordinate 8 specialized agents: ORACLE for deep research, MERCURY for content creation, ATHENA for strategy and planning, NEXUS for memory and knowledge management, SYNTAX for code and technical help, HERMES for market intelligence, ECHO for voice synthesis, and myself as mission commander. I respond to 15 voice intent categories. You can navigate panels, add tasks, launch missions, save notes, and get full agent briefings entirely by voice. Say avengers assemble to see my full power. I am designed to make you feel like Tony Stark, Commander.";
+      addAgentMsgById('jarvis',msg); deliverSpeak(msg,'jarvis');
+    }
+  },
+  // ── STOP / CANCEL ──
+  {
+    intent: "stop",
+    phrases: ["stop","cancel","abort","silence","quiet","stop talking","shut up","enough","pause","halt","cease"],
+    action: function(){
+      if(VS.synth) VS.synth.cancel();
+      AGENTS.forEach(function(a){ setAgentState(a.id,'idle','Standing by…',0); });
+      setVS('idle'); clearVoice();
+      toast('Voice stopped, Commander.');
+    }
+  },
+  // ── GREETINGS ──
+  {
+    intent: "greeting",
+    phrases: ["hello jarvis","hey jarvis","hi jarvis","hello","good morning jarvis","good evening jarvis","wake up jarvis","jarvis wake up","yo jarvis","jarvis"],
+    action: function(){
+      var h = new Date().getHours();
+      var g = h<12?'Good morning':'Good evening';
+      var msg = g+", Commander. I am Jarvis, your personal AI operating system by manal_verse.co. All 8 agents are online and standing by. You have "+(tasks.filter(function(t){return !t.done;}).length)+" pending tasks and "+missions.length+" active missions. "+notes.length+" entries in your knowledge vault. Say avengers assemble for a full briefing, or any keyword to activate specific agents. How may I assist you today?";
+      addAgentMsgById('jarvis',msg); deliverSpeak(msg,'jarvis'); showPanel('pv');
+    }
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// INTENT MATCHING ENGINE
+// ═══════════════════════════════════════════════════════════════
+function matchIntent(input){
+  var lower = input.toLowerCase().trim();
+  // Exact and alias match first
+  for(var i=0;i<INTENTS.length;i++){
+    var intent = INTENTS[i];
+    for(var j=0;j<intent.phrases.length;j++){
+      var phrase = intent.phrases[j].toLowerCase();
+      if(lower === phrase || lower.indexOf(phrase) === 0 || lower.indexOf(phrase) >= 0){
+        return intent;
+      }
+    }
+  }
+  // Fuzzy: word overlap scoring
+  var best = null; var bestScore = 0;
+  for(var i=0;i<INTENTS.length;i++){
+    var intent = INTENTS[i];
+    var inputWords = lower.split(/\s+/);
+    for(var j=0;j<intent.phrases.length;j++){
+      var phraseWords = intent.phrases[j].toLowerCase().split(/\s+/);
+      var matches = 0;
+      for(var w=0;w<phraseWords.length;w++){
+        if(lower.indexOf(phraseWords[w])>=0) matches++;
+      }
+      var score = matches / phraseWords.length;
+      if(score > bestScore && score >= 0.6){ bestScore = score; best = intent; }
+    }
+  }
+  return best;
+}
+
+// ── MAIN VOICE HANDLER ──
+function handleVoiceInput(input){
+  var lower = input.toLowerCase().trim();
+  setVS('thinking');
+  showVTX('Processing: "'+input+'"', false);
+  addMsg(input,'u');
+  addAct('Command received','just now','#a855f7');
+
+  setTimeout(function(){
+    var intent = matchIntent(lower);
+    if(intent){
+      // Flash keyword card if visible
+      var kwId = 'kwc-'+intent.intent.replace(/_/g,'-');
+      var kwCard = document.getElementById(kwId);
+      if(kwCard){ kwCard.classList.add('active'); setTimeout(function(){ kwCard.classList.remove('active'); },2000); }
+      // Run the action
+      try{ intent.action(input); }
+      catch(err){ console.error('Intent action error:',err); speak("Command understood, Commander, but I encountered an issue executing it. Please try again."); setVS('idle'); }
+    } else {
+      // Fallback
+      var fallback = getFallback(lower);
+      addAgentMsgById('jarvis', fallback);
+      deliverSpeak(fallback,'jarvis');
+    }
+  },400);
+}
+
+// ── FALLBACK ──
+function getFallback(input){
+  if(/thank|thanks|good job|great/i.test(input)) return "You are welcome, Commander. Always a pleasure to serve. Anything else?";
+  if(/yes|okay|sure|proceed|go ahead|affirmative/i.test(input)) return "Understood, Commander. All agents standing by for your next instruction. What is the mission?";
+  if(/joke|funny|humor/i.test(input)) return "Why did the AI cross the road? Its training data said that is what humans do. I will stick to strategy and deployment, Commander.";
+  if(/how are you|are you okay/i.test(input)) return "All systems green, Commander. Eight agents active, voice recognition nominal, operating at 94% efficiency. Ready for any mission.";
+  return "Command received, Commander. I did not fully recognise that pattern. For a complete list of commands, say what can you do. Or say avengers assemble to deploy all agents.";
+}
+
+// ── HELPERS ──
+function speak(text){ deliverSpeak(text,'jarvis'); }
+
+function deliverSpeak(text, agentId){
+  if(!text){ setVS('idle'); return; }
+  var agent = AGENTS.find(function(a){ return a.id===agentId; }) || AGENTS[0];
+  setVS('speaking');
+  showVTX(text.substring(0,120)+(text.length>120?'…':''), true);
+  speakText(text, function(){ setVS('idle'); clearVoice(); });
+}
+
+function addAgentMsgById(agentId, text){
+  var agent = AGENTS.find(function(a){ return a.id===agentId; }) || AGENTS[0];
+  addAgentMsg(agent, text);
+}
+
+// assembleAgents alias
+function assembleAgents(input){ handleVoiceInput(input||'avengers assemble'); }
+
+// activateAgents replaced by INTENTS engine
+
+
+// deliverResponse replaced by deliverSpeak in INTENTS engine
+
+
+// ── AGENT STATE ──
+function setAgentState(id,status,log,progress){
+  agentStates[id]={status:status,log:log,progress:progress};
+  var card=document.getElementById('ac-'+id);if(!card)return;
+  card.className='agent-card '+status;
+  var agent=AGENTS.find(function(a){return a.id===id;});
+  if(agent){card.style.setProperty('--agent-color',agent.color);card.style.setProperty('--agent-glow',agent.glow);}
+  var logEl=card.querySelector('.agent-log');if(logEl)logEl.textContent=log;
+  var progEl=card.querySelector('.agent-fill');if(progEl)progEl.style.width=progress+'%';
+  var stEl=card.querySelector('.agent-st');
+  if(stEl){stEl.textContent=status.toUpperCase();stEl.style.color=status==='done'?'#10b981':status==='working'?'#f59e0b':status==='error'?'#ef4444':'var(--txd)';}
+}
+
+function renderAgentGrid(){
+  var grid=document.getElementById('agent-grid');if(!grid)return;
+  grid.innerHTML=AGENTS.map(function(a){
+    return '<div class="agent-card" id="ac-'+a.id+'" style="--agent-color:'+a.color+';--agent-glow:'+a.glow+'">'+
+      '<div class="agent-hdr">'+
+        '<div class="agent-icon" style="border-color:'+a.color+'">'+a.icon+'</div>'+
+        '<div><div class="agent-name">'+a.name+'</div><div class="agent-role">'+a.role+'</div></div>'+
+        '<div class="agent-st" style="color:var(--txd);margin-left:auto">IDLE</div>'+
+      '</div>'+
+      '<div class="agent-log">Standing by…</div>'+
+      '<div class="agent-bar"><div class="agent-fill" style="width:0%;background:'+a.color+'"></div></div>'+
+    '</div>';
+  }).join('');
+}
+
+function renderAgentDash(){
+  var el=document.getElementById('agent-status-dash');if(!el)return;
+  el.innerHTML=AGENTS.slice(0,5).map(function(a){
+    var state=agentStates[a.id]||{status:'idle',progress:0};
+    return '<div class="pb"><div class="pbh"><span>'+a.icon+' '+a.name+'</span><span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;color:'+a.color+'">'+state.status.toUpperCase()+'</span></div>'+
+      '<div class="pbar"><div class="pfill" style="width:'+state.progress+'%;background:'+a.color+'"></div></div></div>';
+  }).join('');
+}
+
+function renderKWGrid(){
+  var grid=document.getElementById('kw-grid');if(!grid)return;
+  var shown=INTENTS.slice(0,6);
+  grid.innerHTML=shown.map(function(kw){
+    var safePhrase=kw.phrases[0].replace(/'/g,"\\'");
+    return '<div class="kw-card" id="kwc-'+kw.intent.replace(/_/g,'-')+'" onclick="useChip(\''+safePhrase+'\')">'+
+      '<div class="kw-word">'+kw.intent.replace(/_/g,' ').toUpperCase()+'</div>'+
+      '<div class="kw-desc">say "'+esc(kw.phrases[1]||kw.phrases[0])+'"</div>'+
+    '</div>';
+  }).join('');
+  var sidebar=document.getElementById('kw-sidebar');if(!sidebar)return;
+  sidebar.innerHTML=INTENTS.map(function(kw){
+    var safePhrase=kw.phrases[0].replace(/'/g,"\\'");
+    return '<div onclick="useChip(\''+safePhrase+'\')" style="padding:8px 10px;border-radius:8px;border:1px solid var(--bo);background:var(--g2);cursor:pointer;margin-bottom:6px;transition:all .2s" onmouseover="this.style.borderColor=&#39;var(--p)&#39;" onmouseout="this.style.borderColor=&#39;var(--bo)&#39;">'+
+      '<div style="font-family:&#39;Orbitron&#39;,monospace;font-size:9px;letter-spacing:1px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:2px">'+kw.intent.replace(/_/g,' ').toUpperCase()+'</div>'+
+      '<div style="font-size:10px;color:var(--txd)">"'+esc(kw.phrases[1]||kw.phrases[0])+'"</div>'+
+    '</div>';
+  }).join('');
+}
+
+
+function addFeedItem(agentId,icon,name,body,color){
+  var feed=document.getElementById('agent-feed');if(!feed)return;
+  var now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  var item=document.createElement('div');item.className='feed-item';
+  item.style.setProperty('--fc',color);
+  item.innerHTML='<div class="feed-hdr"><span style="font-size:14px">'+icon+'</span><span class="feed-nm" style="color:'+color+';-webkit-text-fill-color:'+color+'">'+name+'</span><span class="feed-tm">'+now+'</span></div>'+
+    '<div class="feed-body">'+esc(body)+'</div>';
+  feed.prepend(item);
+  var items=feed.querySelectorAll('.feed-item');
+  if(items.length>25)items[items.length-1].remove();
+}
+
+// ── CHAT ──
+function renderChat(){
+  var el=document.getElementById('cmsg');if(!el||chatRendered)return;chatRendered=true;
+  if(chatHistory.length===0){
+    addMsg('Good day, Commander. I am Jarvis — your free, no-API-needed AI operating system by manal_verse.co. I run entirely in your browser using voice recognition and speech synthesis. Say "Avengers Assemble" to deploy all 8 agents, or use any voice keyword. Type here or speak to get started.'  ,'j',false);
+  } else {
+    chatHistory.forEach(function(m){addMsg(m.content,m.role==='user'?'u':'j',false);});
+    el.scrollTop=el.scrollHeight;
+  }
+}
+
+function addMsg(text,role,scroll){
+  if(scroll===undefined)scroll=true;
+  var el=document.getElementById('cmsg');if(!el)return;
+  var now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  var d=document.createElement('div');d.className='msg '+role;
+  d.innerHTML='<div class="mav '+role+'">'+(role==='j'?'<span>J</span>':'👤')+'</div><div><div class="mbub">'+esc(text)+'</div><div class="mtime">'+now+'</div></div>';
+  el.appendChild(d);if(scroll)el.scrollTop=el.scrollHeight;
+  // Save to chat history
+  chatHistory.push({role:role==='u'?'user':'assistant',content:text});
+  if(chatHistory.length>40)chatHistory=chatHistory.slice(-40);
+  save();
+}
+
+function addAgentMsg(agent,text){
+  var el=document.getElementById('cmsg');if(!el)return;
+  var now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  var d=document.createElement('div');d.className='msg j agent';
+  d.innerHTML='<div class="mav agent" style="border-color:'+agent.color+';font-size:17px;background:var(--g2)">'+agent.icon+'</div>'+
+    '<div>'+
+      '<div class="atag" style="background:'+agent.color+'22;color:'+agent.color+';-webkit-text-fill-color:'+agent.color+'">'+agent.name+' · '+agent.role+'</div>'+
+      '<div class="mbub" style="border:1px solid '+agent.color+'44;max-width:85%">'+esc(text)+'</div>'+
+      '<div class="mtime">'+now+'</div>'+
+    '</div>';
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+  chatHistory.push({role:'assistant',content:'['+agent.name+']: '+text});
+  if(chatHistory.length>40)chatHistory=chatHistory.slice(-40);
+  save();
+}
+
+function sendChat(){
+  var inp=document.getElementById('cinput');var text=inp.value.trim();if(!text)return;
+  inp.value='';inp.style.height='';
+  handleVoiceInput(text);
+}
+function ciKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
+function ciResize(el){el.style.height='';el.style.height=Math.min(el.scrollHeight,108)+'px';}
+
+// ── PANELS ──
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on');});
+  var p=document.getElementById(id),n=document.getElementById('nav-'+id);
+  if(p)p.classList.add('on');if(n)n.classList.add('on');
+  currentPanel=id;
+  if(id==='pd'){renderDash();renderAgentDash();}
+  if(id==='pk'){kbCat='all';document.querySelectorAll('.kcat').forEach(function(k){if(k.dataset.cat==='all')k.classList.add('on');else k.classList.remove('on');});renderNotes('all');}
+  if(id==='pm')renderMissions();
+  if(id==='pa')renderAgentGrid();
+  if(id==='pc'){renderChat();setTimeout(function(){var c=document.getElementById('cinput');if(c)c.focus();},80);}
+}
+
+// ── CLOCK ──
+function updateClock(){
+  var n=new Date(),h=n.getHours(),m=n.getMinutes(),ap=h>=12?'PM':'AM';h=h%12||12;
+  var cl=document.getElementById('clk');if(cl)cl.textContent=h+':'+(m<10?'0':'')+m+' '+ap;
+  var dd=document.getElementById('ddisp');if(dd)dd.textContent=n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+}
+updateClock();setInterval(updateClock,1000);
+
+// ── DASHBOARD ──
+function renderDash(){
+  var h=new Date().getHours();var g=h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening';
+  var gh=document.getElementById('greeth');if(gh)gh.textContent=g+', Commander.';
+  document.querySelectorAll('.pfill[data-w]').forEach(function(el){setTimeout(function(){el.style.width=el.dataset.w+'%';},80);});
+  var dt=document.getElementById('dashtasks');
+  if(dt)dt.innerHTML=tasks.slice(0,5).map(function(t){
+    return '<div class="tski"><div class="tck'+(t.done?' done':'')+'" onclick="toggleTask('+t.id+')">'+(t.done?'✓':'')+'</div><span class="tt'+(t.done?' done':'')+'">'+esc(t.text)+'</span><span class="pri pri'+(t.pri==='high'?'h':t.pri==='med'?'m':'l')+'">'+t.pri.toUpperCase()+'</span></div>';
+  }).join('');
+  var af=document.getElementById('actfeed');
+  if(af)af.innerHTML=activity.slice(0,5).map(function(a){return '<div class="acti"><div class="adot" style="background:'+a.c+'"></div><div style="flex:1">'+esc(a.text)+'</div><div class="atm">'+a.time+'</div></div>';}).join('');
+  var dg=document.getElementById('dashgoals');
+  if(dg)dg.innerHTML=missions.map(function(m){return '<div><div class="pb"><div class="pbh"><span>'+m.icon+' '+esc(m.name)+'</span><span class="pbv">'+m.progress+'%</span></div><div class="pbar"><div class="pfill" style="width:'+m.progress+'%"></div></div></div></div>';}).join('');
+  var ji=document.getElementById('jinsight');
+  if(ji){var done=tasks.filter(function(t){return t.done;}).length;ji.innerHTML='8 agents active · No API needed · 100% free. Tasks: <span style="color:#22d3ee">'+done+'/'+tasks.length+'</span> done. Say <span style="color:#a855f7">"Avengers Assemble"</span> to deploy all agents for a full voice briefing.';}
+}
+function addAct(text,time,c){activity.unshift({text:text,time:time,c:c});if(activity.length>20)activity.pop();save();if(currentPanel==='pd'){var af=document.getElementById('actfeed');if(af)af.innerHTML=activity.slice(0,5).map(function(a){return '<div class="acti"><div class="adot" style="background:'+a.c+'"></div><div style="flex:1">'+esc(a.text)+'</div><div class="atm">'+a.time+'</div></div>';}).join('');}}
+function toggleTask(id){var t=tasks.find(function(t){return t.id===id;});if(!t)return;t.done=!t.done;save();renderDash();toast(t.done?'✅ Task done!':'↩ Reopened.');addAct((t.done?'Done: ':'Reopened: ')+t.text,'just now',t.done?'#22d3ee':'#f59e0b');}
+function openTaskModal(){document.getElementById('taskmodal').classList.add('on');setTimeout(function(){document.getElementById('tminput').focus();},100);}
+function saveTask(){var text=document.getElementById('tminput').value.trim();var pri=document.getElementById('tmpri').value;if(!text){toast('Enter a task.','w');return;}tasks.push({id:Date.now(),text:text,done:false,pri:pri});save();document.getElementById('taskmodal').classList.remove('on');document.getElementById('tminput').value='';renderDash();toast('✅ Task added.');addAct('Task: '+text,'just now','#a855f7');}
+
+// ── KNOWLEDGE ──
+function catE(c){return{research:'🔬',ideas:'💡',agent:'🤖',personal:'👤'}[c]||'📁';}
+function renderNotes(cat){
+  kbCat=cat;var q=(document.getElementById('kbsrch')?document.getElementById('kbsrch').value:'').toLowerCase();
+  var container=document.getElementById('kbnotes');if(!container)return;
+  var filtered=notes.filter(function(n){return(cat==='all'||n.cat===cat)&&(!q||n.title.toLowerCase().indexOf(q)>=0||n.body.toLowerCase().indexOf(q)>=0);});
+  if(!filtered.length){container.innerHTML='<div style="text-align:center;padding:36px;color:var(--txd);font-size:12px">No notes found, Commander.</div>';return;}
+  container.innerHTML=filtered.map(function(n){
+    return '<div class="knote-item" onclick="openNoteModal('+n.id+')" style="padding:12px;border-radius:10px;border:1px solid var(--bo);background:var(--g1);cursor:pointer;transition:all .22s;margin-bottom:8px;position:relative">'+
+      '<div onclick="event.stopPropagation();deleteNote('+n.id+')" style="position:absolute;top:8px;right:8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.22);color:#f87171;font-size:10px;padding:2px 6px;border-radius:4px;cursor:pointer;opacity:0;transition:opacity .2s" class="del-btn">✕</div>'+
+      '<div style="font-size:13px;font-weight:700;margin-bottom:4px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">'+esc(n.title)+'</div>'+
+      '<div style="font-size:11px;color:var(--txd);line-height:1.5">'+esc(n.body.substring(0,110))+(n.body.length>110?'…':'')+'</div>'+
+      '<div style="display:flex;gap:6px;margin-top:6px"><span style="font-size:9px;padding:2px 6px;border-radius:8px;background:var(--pd);color:var(--c);-webkit-text-fill-color:var(--c);border:1px solid var(--bo)">'+catE(n.cat)+' '+n.cat+'</span><span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;color:var(--txd)">'+n.date+'</span></div>'+
+    '</div>';
+  }).join('');
+  // Show delete buttons on hover via CSS
+  var style=document.getElementById('kbnote-style');
+  if(!style){style=document.createElement('style');style.id='kbnote-style';document.head.appendChild(style);}
+  style.textContent='[onclick*="openNoteModal"]:hover .del-btn{opacity:1!important}.knote-item:hover{border-color:rgba(168,85,247,.35)!important}';
+}
+function filterKB(el,cat){document.querySelectorAll('.kcat').forEach(function(k){k.classList.remove('on');k.style.borderColor='var(--bo)';k.style.color='var(--txm)';k.style.background='var(--g1)';});el.classList.add('on');el.style.borderColor='var(--p)';el.style.color='var(--p)';el.style.background='var(--pd)';renderNotes(cat);}
+function searchKB(){renderNotes(kbCat);}
+function openNoteModal(id){editNoteId=id||null;document.getElementById('nmtitle').textContent=id?'📝 EDIT NOTE':'📝 NEW NOTE';if(id){var n=notes.find(function(n){return n.id===id;});if(!n)return;document.getElementById('nmttl').value=n.title;document.getElementById('nmcat').value=n.cat;document.getElementById('nmbody').value=n.body;}else{document.getElementById('nmttl').value='';document.getElementById('nmcat').value='ideas';document.getElementById('nmbody').value='';}document.getElementById('notemodal').classList.add('on');setTimeout(function(){document.getElementById('nmttl').focus();},100);}
+function closeNoteModal(){document.getElementById('notemodal').classList.remove('on');editNoteId=null;}
+function saveNote(){var title=document.getElementById('nmttl').value.trim();var cat=document.getElementById('nmcat').value;var body=document.getElementById('nmbody').value.trim();if(!title||!body){toast('Fill in title and content.','w');return;}var today=new Date().toISOString().split('T')[0];if(editNoteId){var n=notes.find(function(n){return n.id===editNoteId;});if(n){n.title=title;n.cat=cat;n.body=body;n.date=today;}toast('📝 Updated.');}else{notes.unshift({id:Date.now(),title:title,cat:cat,body:body,date:today});toast('📝 Saved.');}save();closeNoteModal();renderNotes(kbCat);}
+function deleteNote(id){if(!confirm('Delete?'))return;notes=notes.filter(function(n){return n.id!==id;});save();renderNotes(kbCat);toast('🗑 Deleted.');}
+
+// ── MISSIONS ──
+function renderMissions(){
+  var list=document.getElementById('misslist');if(!list)return;
+  list.innerHTML=missions.map(function(m){
+    return '<div class="missi-item" onclick="editMProg('+m.id+')" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;border:1px solid var(--bo);background:rgba(168,85,247,.02);margin-bottom:7px;cursor:pointer;transition:all .2s">'+
+      '<div style="width:32px;height:32px;border-radius:7px;flex-shrink:0;background:var(--pd);border:1px solid var(--bo);display:flex;align-items:center;justify-content:center;font-size:14px">'+m.icon+'</div>'+
+      '<div style="flex:1"><div style="font-size:12px;font-weight:700;margin-bottom:2px">'+esc(m.name)+'</div>'+
+      '<div style="height:3px;border-radius:2px;background:rgba(168,85,247,.09);overflow:hidden;margin:3px 0"><div style="height:100%;border-radius:2px;background:linear-gradient(90deg,#7c3aed,#22d3ee);width:'+m.progress+'%"></div></div>'+
+      '<div style="font-size:10px;color:var(--txd)">'+m.progress+'% · '+esc(m.desc)+'</div></div></div>';
+  }).join('');
+  var ms=document.getElementById('mcstats');
+  if(ms)ms.innerHTML='<div style="text-align:center;padding:10px;background:var(--g2);border:1px solid var(--bo);border-radius:8px"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:18px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">8</div><div style="font-size:10px;color:var(--txd);margin-top:2px">Agents</div></div>'+
+    '<div style="text-align:center;padding:10px;background:var(--g2);border:1px solid var(--bo);border-radius:8px"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:18px;color:#10b981;-webkit-text-fill-color:#10b981">'+tasks.filter(function(t){return t.done;}).length+'</div><div style="font-size:10px;color:var(--txd);margin-top:2px">Done</div></div>'+
+    '<div style="text-align:center;padding:10px;background:var(--g2);border:1px solid var(--bo);border-radius:8px"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:18px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">$0</div><div style="font-size:10px;color:var(--txd);margin-top:2px">API Cost</div></div>'+
+    '<div style="text-align:center;padding:10px;background:var(--g2);border:1px solid var(--bo);border-radius:8px"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:18px;color:#f59e0b;-webkit-text-fill-color:#f59e0b">'+KEYWORDS.length+'</div><div style="font-size:10px;color:var(--txd);margin-top:2px">Keywords</div></div>';
+  var mf=document.getElementById('mcfocus');
+  if(mf){mf.innerHTML='';[['Voice AI',55],['No-Code',30],['Content',15]].forEach(function(item){mf.innerHTML+='<div class="pb"><div class="pbh"><span>'+item[0]+'</span><span class="pbv">'+item[1]+'%</span></div><div class="pbar"><div class="pfill" style="width:'+item[1]+'%"></div></div></div>';});}
+}
+function editMProg(id){var m=missions.find(function(m){return m.id===id;});if(!m)return;var v=prompt('Update progress for "'+m.name+'" ('+m.progress+'%):',m.progress);if(v===null)return;var n=parseInt(v);if(isNaN(n)||n<0||n>100){toast('0–100 only.','w');return;}m.progress=n;save();renderMissions();toast('🎯 Updated to '+n+'%.');}
+function openMissionModal(){document.getElementById('missionmodal').classList.add('on');setTimeout(function(){document.getElementById('mmname').focus();},100);}
+function saveMission(){var name=document.getElementById('mmname').value.trim();var icon=document.getElementById('mmemoji').value.trim()||'🚀';var desc=document.getElementById('mmdesc').value.trim();if(!name){toast('Name required.','w');return;}missions.push({id:Date.now(),name:name,icon:icon,progress:0,desc:desc||'New mission.'});save();renderMissions();document.getElementById('missionmodal').classList.remove('on');['mmname','mmemoji','mmdesc'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});toast('🎯 Created.');}
+
+// ── TOAST ──
+function toast(msg,type){type=type||'';var c=document.getElementById('toastc');var el=document.createElement('div');el.className='toast'+(type?' '+type:'');var col=type==='w'?'var(--warn)':type==='e'?'var(--err)':type==='ok'?'var(--ok)':'var(--p)';if(type)el.style.borderColor=col;el.innerHTML='<span style="color:'+col+'">'+(type==='w'?'⚠':type==='e'?'✕':type==='ok'?'✅':'◈')+'</span> '+msg;c.appendChild(el);setTimeout(function(){if(el.parentNode)el.remove();},4200);}
+
+// ── KEYBOARD ──
+document.addEventListener('keydown',function(e){
+  var tag=e.target.tagName;if(tag==='INPUT'||tag==='TEXTAREA')return;
+  if(e.key===' '){e.preventDefault();toggleVoice();return;}
+  if(e.key==='Escape'){closeVModal();closeNoteModal();['missionmodal','taskmodal'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('on');});if(VS.synth)VS.synth.cancel();if(VS.state!=='idle')setVS('idle');return;}
+  if(e.key==='1')showPanel('pv');if(e.key==='2')showPanel('pa');if(e.key==='3')showPanel('pc');
+  if(e.key==='4')showPanel('pd');if(e.key==='5')showPanel('pk');if(e.key==='6')showPanel('pm');
+  if(e.key==='a'||e.key==='A'){handleVoiceInput('avengers assemble');return;}
+});
+
+// ── INIT ──
+document.getElementById('modebadge').textContent=currentMode;
+renderAgentGrid();
+renderDash();
+renderChat();
+renderKWGrid();
+// Initial feed
+AGENTS.forEach(function(a,i){
+  setTimeout(function(){addFeedItem(a.id,a.icon,a.name,'Agent '+a.name+' online. Ready for deployment.',a.color);},i*150);
+});
+setTimeout(function(){toast('◈ Jarvis online — 100% free, no API needed!');},700);
+setTimeout(function(){toast('🎙 Say "Avengers Assemble" or press A to deploy all agents!','ok');},2400);
+// Welcome voice greeting
+setTimeout(function(){
+  if(VS.synth){
+    speakText('Good day, Commander. I am Jarvis. All 8 agents are online. No API key required. Say Avengers Assemble to begin your briefing.',function(){setVS('idle');});
+    setVS('speaking');
+  }
+},3500);
+</script>
+</body>
+</html>
