@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Jarvis — manal_verse.co</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#030006;--g1:rgba(18,0,36,.65);--g2:rgba(8,0,20,.5);
+  --p:#a855f7;--pd:rgba(168,85,247,.13);--pg:rgba(168,85,247,.55);
+  --c:#22d3ee;--cd:rgba(34,211,238,.11);
+  --grad:linear-gradient(135deg,#a855f7,#22d3ee);
+  --bo:rgba(168,85,247,.2);--bohi:rgba(168,85,247,.65);
+  --tx:#eeddff;--txm:rgba(225,205,255,.72);--txd:rgba(190,165,230,.4);
+  --ok:#10b981;--warn:#f59e0b;--err:#ef4444;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--tx);font-family:'Rajdhani',sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+canvas#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+#grid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(168,85,247,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(168,85,247,.022) 1px,transparent 1px);
+  background-size:54px 54px;animation:gp 12s ease-in-out infinite}
+@keyframes gp{0%,100%{opacity:.4}50%{opacity:.9}}
+#cglow{position:fixed;pointer-events:none;z-index:1;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(168,85,247,.05) 0%,transparent 70%);
+  transform:translate(-50%,-50%);left:50%;top:50%;transition:left .06s,top .06s}
+#app{position:relative;z-index:10;display:grid;grid-template-columns:64px 1fr;grid-template-rows:52px 1fr;height:100vh;width:100vw}
+#tb{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px 0 8px;background:rgba(3,0,8,.96);border-bottom:1px solid var(--bo);
+  backdrop-filter:blur(30px);z-index:200;position:relative;gap:8px}
+#tb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(168,85,247,.7),rgba(34,211,238,.7),transparent);
+  animation:tbg 4s ease-in-out infinite}
+@keyframes tbg{0%,100%{opacity:.35}50%{opacity:1}}
+.tbl{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.lgname{font-family:'Orbitron',monospace;font-weight:900;font-size:11px;letter-spacing:3px;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap}
+.lgsub{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd);letter-spacing:1px}
+.tbstat{display:flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd)}
+.sdot{width:5px;height:5px;border-radius:50%;display:inline-block;margin-right:4px;animation:bl 2.5s ease-in-out infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.15}}
+.tbr{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.tbtn{width:28px;height:28px;border:1px solid var(--bo);background:var(--g1);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;
+  transition:all .2s;user-select:none;position:relative;color:var(--txd)}
+.tbtn:hover{border-color:var(--p);color:var(--p);box-shadow:0 0 10px var(--pd)}
+.tbtn.on{border-color:var(--p);color:var(--p);box-shadow:0 0 12px var(--pd);background:var(--pd)}
+.tbtndot{position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:var(--txd);transition:all .3s}
+.mbadge{padding:3px 8px;border-radius:20px;font-family:'Share Tech Mono',monospace;font-size:9px;
+  letter-spacing:1px;border:1px solid var(--bo);background:var(--g1);cursor:pointer;
+  color:var(--c);-webkit-text-fill-color:var(--c);transition:all .2s;white-space:nowrap}
+.freebadge{padding:3px 8px;border-radius:20px;font-family:'Share Tech Mono',monospace;font-size:9px;
+  border:1px solid rgba(16,185,129,.4);background:rgba(16,185,129,.08);
+  color:var(--ok);-webkit-text-fill-color:var(--ok);white-space:nowrap}
+#sb{background:rgba(3,0,8,.92);border-right:1px solid var(--bo);
+  display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:4px;
+  backdrop-filter:blur(30px);z-index:100}
+.ni{width:40px;height:40px;border:1px solid transparent;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  color:var(--txd);transition:all .22s;position:relative;font-size:16px;user-select:none}
+.ni:hover,.ni.on{border-color:var(--bohi);color:var(--p);background:var(--pd);box-shadow:0 0 14px var(--pd)}
+.ni.on::before{content:'';position:absolute;left:-1px;top:8px;bottom:8px;width:2px;
+  background:var(--grad);border-radius:0 2px 2px 0;box-shadow:0 0 8px var(--p)}
+.ntip{position:absolute;left:48px;background:rgba(3,0,8,.97);border:1px solid var(--bo);
+  color:var(--c);-webkit-text-fill-color:var(--c);font-family:'Rajdhani',sans-serif;
+  font-size:10px;font-weight:700;letter-spacing:1.5px;padding:3px 9px;border-radius:4px;
+  white-space:nowrap;pointer-events:none;opacity:0;transform:translateX(-4px);
+  transition:all .18s;z-index:300;text-transform:uppercase}
+.ni:hover .ntip{opacity:1;transform:translateX(0)}
+.ndv{width:24px;height:1px;background:var(--bo);margin:2px 0}
+#main{overflow:hidden;position:relative}
+.panel{display:none;height:100%;overflow:hidden;padding:16px 18px;
+  position:absolute;inset:0;flex-direction:column;animation:pIn .3s cubic-bezier(.16,1,.3,1)}
+.panel.on{display:flex}
+@keyframes pIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.gc{background:var(--g1);border:1px solid var(--bo);border-radius:12px;padding:14px;
+  backdrop-filter:blur(24px);position:relative;overflow:hidden;transition:all .25s}
+.gc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(168,85,247,.25),rgba(34,211,238,.25),transparent)}
+.gcl,.ph{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:9px;display:flex;align-items:center;gap:6px;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ph{font-size:10px;letter-spacing:3px;margin-bottom:12px;flex-shrink:0}
+.ph::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(168,85,247,.3),transparent)}
+.owrap{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ring{position:absolute;border-radius:50%;border:1px solid;pointer-events:none}
+.r1{border-color:rgba(168,85,247,.1);animation:rs 9s linear infinite}
+.r2{border-color:rgba(100,50,200,.18);animation:rs 5.5s linear infinite reverse}
+.r3{border-color:rgba(34,211,238,.22);border-style:dashed;animation:rs 3.2s linear infinite}
+@keyframes rs{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.orb{border-radius:50%;cursor:pointer;position:relative;z-index:2;user-select:none;
+  background:radial-gradient(circle at 32% 32%,rgba(168,85,247,.9) 0%,rgba(100,40,200,.6) 30%,rgba(30,0,80,.9) 65%,rgba(5,0,12,.95) 100%);
+  box-shadow:0 0 30px rgba(168,85,247,.55),0 0 60px rgba(100,40,200,.3),inset 0 0 30px rgba(168,85,247,.18);
+  animation:ob 4s ease-in-out infinite}
+@keyframes ob{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.orb.listening{animation:ol .45s ease-in-out infinite alternate;
+  background:radial-gradient(circle at 32% 32%,rgba(34,211,238,.95) 0%,rgba(0,180,220,.65) 30%,rgba(0,60,120,.88) 65%,rgba(5,0,12,.95) 100%)}
+@keyframes ol{from{transform:scale(1);box-shadow:0 0 40px rgba(34,211,238,.65)}to{transform:scale(1.12);box-shadow:0 0 80px rgba(34,211,238,.9)}}
+.orb.thinking{animation:oth .8s ease-in-out infinite;
+  background:radial-gradient(circle at 32% 32%,rgba(245,158,11,.85) 0%,rgba(200,80,0,.52) 30%,rgba(80,20,0,.88) 65%,rgba(5,0,12,.95) 100%)}
+@keyframes oth{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.06) rotate(6deg)}}
+.orb.speaking{animation:osp .2s ease-in-out infinite alternate;
+  background:radial-gradient(circle at 32% 32%,rgba(168,85,247,1) 0%,rgba(34,211,238,.8) 45%,rgba(0,50,140,.88) 75%,rgba(5,0,12,.95) 100%)}
+@keyframes osp{from{transform:scale(1)}to{transform:scale(1.1)}}
+.orb.assembling{animation:asmb .35s ease-in-out infinite alternate;
+  background:radial-gradient(circle at 32% 32%,#fff 0%,rgba(168,85,247,.9) 25%,rgba(34,211,238,.8) 50%,rgba(30,0,80,.9) 75%,rgba(5,0,12,.95) 100%)}
+@keyframes asmb{from{transform:scale(1);box-shadow:0 0 60px rgba(168,85,247,.9),0 0 120px rgba(34,211,238,.7)}
+  to{transform:scale(1.14);box-shadow:0 0 100px rgba(168,85,247,1),0 0 180px rgba(34,211,238,1)}}
+.orbst{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;height:16px;transition:color .3s;margin-top:10px}
+.wvf{display:flex;align-items:center;gap:2px;height:44px}
+.wb{width:3px;border-radius:3px;height:3px;transition:height .08s ease;background:linear-gradient(to top,var(--p),var(--c));box-shadow:0 0 4px rgba(168,85,247,.4)}
+.vtx{background:var(--g1);border:1px solid var(--bo);border-radius:12px;
+  padding:11px 16px;text-align:center;font-size:14px;font-weight:500;color:var(--tx);
+  backdrop-filter:blur(20px);position:relative;overflow:hidden;line-height:1.55;
+  min-height:50px;display:flex;align-items:center;justify-content:center;width:100%;max-width:600px}
+.vtx::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--p),var(--c),transparent);animation:scanL 3s linear infinite}
+@keyframes scanL{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.vtxph{color:var(--txd);font-size:12px;font-family:'Share Tech Mono',monospace}
+.micbtn{border-radius:50%;border:2px solid var(--p);background:var(--pd);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  font-size:24px;transition:all .22s;user-select:none;color:var(--p)}
+.micbtn:hover{box-shadow:0 0 30px var(--pg);transform:scale(1.06)}
+.micbtn.on{background:rgba(34,211,238,.14);border-color:var(--c);color:var(--c);
+  box-shadow:0 0 40px rgba(34,211,238,.6);animation:micp .9s ease-in-out infinite}
+@keyframes micp{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.vcbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--bo);background:var(--g1);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;
+  transition:all .2s;user-select:none;color:var(--txd)}
+.vcbtn:hover{border-color:var(--p);color:var(--p)}
+.clap-strip{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:12px;
+  border:1px solid var(--bo);background:var(--g1);backdrop-filter:blur(20px);
+  width:100%;max-width:600px;transition:all .3s}
+.clap-strip.on{border-color:rgba(168,85,247,.5);box-shadow:0 0 14px rgba(168,85,247,.15)}
+.cbar{width:4px;border-radius:3px;transition:height .08s,background .1s;background:var(--bo)}
+.chips{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;max-width:640px}
+.chip{padding:5px 11px;border:1px solid var(--bo);border-radius:14px;background:var(--g1);
+  font-size:11px;font-weight:600;color:var(--txd);cursor:pointer;transition:all .2s;white-space:nowrap;user-select:none}
+.chip:hover,.chip.kw{border-color:rgba(168,85,247,.4);color:var(--p);background:var(--pd)}
+.agrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex-shrink:0}
+.acard{padding:13px;border-radius:12px;border:1px solid var(--bo);background:var(--g1);
+  backdrop-filter:blur(20px);position:relative;overflow:hidden;transition:all .3s;display:flex;flex-direction:column;gap:7px}
+.acard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac,var(--grad));opacity:.7}
+.acard.working{border-color:var(--ac,var(--p));box-shadow:0 0 16px var(--ag,var(--pg));animation:acw 2s ease-in-out infinite}
+@keyframes acw{0%,100%{box-shadow:0 0 10px var(--ag,var(--pg))}50%{box-shadow:0 0 28px var(--ag,var(--pg))}}
+.acard.done{border-color:var(--ok);box-shadow:0 0 12px rgba(16,185,129,.25)}
+.ahdr{display:flex;align-items:center;gap:8px}
+.aico{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:17px;border:1px solid var(--ac,var(--p));background:var(--g2);flex-shrink:0}
+.anm{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1.5px;font-weight:700;color:var(--tx)}
+.arl{font-size:10px;color:var(--txd)}
+.ast{font-family:'Share Tech Mono',monospace;font-size:8px;padding:2px 6px;border-radius:8px;
+  background:var(--g2);border:1px solid var(--bo);margin-left:auto;color:var(--txd)}
+.alog{font-size:10px;color:var(--txm);font-family:'Share Tech Mono',monospace;min-height:24px;line-height:1.4}
+.abar{height:2px;border-radius:2px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:2px}
+.afill{height:100%;border-radius:2px;background:var(--ac,var(--grad));transition:width .5s ease}
+.feed{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:7px}
+.feed::-webkit-scrollbar{width:3px}.feed::-webkit-scrollbar-thumb{background:rgba(168,85,247,.3)}
+.fi{padding:11px 13px;border-radius:10px;border:1px solid var(--bo);background:var(--g1);
+  animation:pIn .3s ease;position:relative;overflow:hidden;flex-shrink:0}
+.fi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--fc,var(--p))}
+.fihdr{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.finm{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1.5px;font-weight:700}
+.fitm{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd);margin-left:auto}
+.fibody{font-size:12px;line-height:1.6;color:var(--txm)}
+.chatmsgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:8px}
+.chatmsgs::-webkit-scrollbar{width:3px}.chatmsgs::-webkit-scrollbar-thumb{background:rgba(168,85,247,.3)}
+.msg{display:flex;gap:8px;align-items:flex-start;animation:pIn .25s ease}
+.msg.u{flex-direction:row-reverse}
+.mav{width:28px;height:28px;border-radius:8px;flex-shrink:0;border:1px solid var(--bo);
+  display:flex;align-items:center;justify-content:center;font-size:11px}
+.mav.j{background:linear-gradient(135deg,rgba(168,85,247,.3),rgba(34,211,238,.18));border-color:var(--p)}
+.mav.j span{font-family:'Orbitron',monospace;font-weight:900;font-size:9px;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mav.u{background:rgba(50,0,80,.4)}
+.mbub{max-width:80%;padding:9px 13px;border-radius:10px;line-height:1.62;font-size:13px;word-break:break-word}
+.msg.j .mbub{background:var(--g1);border:1px solid var(--bo);border-top-left-radius:2px;backdrop-filter:blur(20px)}
+.msg.u .mbub{background:rgba(100,0,180,.14);border:1px solid rgba(168,85,247,.25);border-top-right-radius:2px}
+.msg.agent .mbub{background:var(--g2);border-top-left-radius:2px}
+.atag{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;padding:1px 6px;border-radius:4px;margin-bottom:4px;display:inline-block}
+.mtime{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd);margin-top:3px}
+.msg.u .mtime{text-align:right}
+.ciarea{display:flex;gap:7px;align-items:flex-end;padding-top:10px;border-top:1px solid var(--bo);flex-shrink:0}
+.ciwrap{flex:1;background:var(--g1);border:1px solid var(--bo);border-radius:10px;
+  backdrop-filter:blur(20px);display:flex;align-items:center;transition:all .2s}
+.ciwrap:focus-within{border-color:var(--p);box-shadow:0 0 12px var(--pd)}
+.ci{flex:1;background:transparent;border:none;outline:none;color:var(--tx);
+  font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:500;
+  padding:9px 12px;resize:none;line-height:1.4;max-height:90px}
+.ci::placeholder{color:var(--txd)}
+.sbtn{width:36px;height:36px;flex-shrink:0;border:1px solid var(--p);border-radius:9px;
+  background:var(--pd);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s;color:var(--p)}
+.sbtn:hover{background:rgba(168,85,247,.22);box-shadow:0 0 14px var(--pd)}
+.dg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;flex:1;overflow-y:auto;padding-bottom:4px}
+.dg::-webkit-scrollbar{width:3px}
+.grtc{grid-column:1/-1;display:flex;align-items:center;gap:14px}
+.gorb{width:48px;height:48px;border-radius:50%;flex-shrink:0;
+  background:radial-gradient(circle at 32% 32%,rgba(168,85,247,.9) 0%,rgba(100,40,200,.55) 40%,rgba(30,0,80,.9) 100%);
+  box-shadow:0 0 20px rgba(168,85,247,.5);animation:ob 4s ease-in-out infinite}
+.grtc h2{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;margin-bottom:3px;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.grtc p{font-size:11px;color:var(--txm);line-height:1.5}
+.pb{margin-bottom:7px}
+.pbh{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;color:var(--txm)}
+.pbv{font-family:'Share Tech Mono',monospace;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.pbar{height:3px;border-radius:2px;background:rgba(168,85,247,.08);overflow:hidden}
+.pfill{height:100%;border-radius:2px;background:var(--grad);transition:width 1s ease}
+.tski{display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:1px solid rgba(168,85,247,.06);font-size:12px}
+.tski:last-child{border:none}
+.tck{width:14px;height:14px;border-radius:3px;border:1px solid var(--bo);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;font-size:9px;user-select:none}
+.tck.done{background:var(--pd);border-color:var(--p);color:var(--p)}
+.tt{flex:1;font-size:12px}.tt.done{text-decoration:line-through;color:var(--txd)}
+.pri{font-size:9px;padding:1px 5px;border-radius:3px;flex-shrink:0}
+.prih{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25)}
+.prim{background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.2)}
+.pril{background:var(--pd);color:var(--c);-webkit-text-fill-color:var(--c);border:1px solid var(--bo)}
+.acti{display:flex;align-items:flex-start;gap:7px;padding:4px 0;border-bottom:1px solid rgba(168,85,247,.05);font-size:11px;color:var(--txm)}
+.acti:last-child{border:none}
+.adot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.atm{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd);flex-shrink:0}
+.mbg{display:none;position:fixed;inset:0;background:rgba(3,0,8,.9);z-index:600;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.mbg.on{display:flex}
+.modal{background:rgba(6,0,15,.98);border:1px solid var(--bohi);border-radius:16px;padding:20px;width:min(480px,93vw);max-height:86vh;overflow-y:auto;box-shadow:0 0 60px rgba(168,85,247,.22);animation:pIn .28s ease}
+.modal h3{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;margin-bottom:12px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mf{display:flex;flex-direction:column;gap:8px}
+.mf input,.mf textarea,.mf select{background:var(--g1);border:1px solid var(--bo);border-radius:8px;padding:8px 12px;color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:13px;outline:none;resize:vertical;transition:all .2s}
+.mf input:focus,.mf textarea:focus,.mf select:focus{border-color:var(--p);box-shadow:0 0 10px var(--pd)}
+.mf select option{background:#0a0012}.mf textarea{min-height:80px}
+.mfrow{display:flex;gap:8px}
+.mbbtn{padding:8px 14px;border-radius:8px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+.mbbtn.pri{background:linear-gradient(135deg,rgba(168,85,247,.18),rgba(34,211,238,.15));border:1px solid var(--p);color:var(--p);-webkit-text-fill-color:var(--p)}
+.mbbtn.sec{background:transparent;border:1px solid var(--bo);color:var(--txd)}
+#toastc{position:fixed;top:58px;right:12px;display:flex;flex-direction:column;gap:5px;z-index:9000;pointer-events:none}
+.toast{background:rgba(6,0,15,.97);border:1px solid var(--p);border-radius:9px;padding:8px 12px;font-size:12px;color:var(--tx);display:flex;align-items:center;gap:8px;box-shadow:0 0 18px rgba(168,85,247,.2);backdrop-filter:blur(22px);pointer-events:auto;min-width:200px;animation:tIn .3s ease,tOut .3s ease 3.7s forwards}
+@keyframes tIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tOut{from{opacity:1}to{opacity:0;transform:translateX(20px)}}
+.toast.w{border-color:var(--warn)}.toast.e{border-color:var(--err)}.toast.ok{border-color:var(--ok)}
+#fmic{position:fixed;bottom:18px;right:18px;z-index:7000;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,rgba(168,85,247,.28),rgba(34,211,238,.18));border:1.5px solid var(--p);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;user-select:none;box-shadow:0 0 18px rgba(168,85,247,.3),0 4px 18px rgba(0,0,0,.5);transition:all .22s}
+#fmic:hover{transform:scale(1.1)}
+#fmic.on{background:rgba(34,211,238,.18);border-color:var(--c);color:var(--c);box-shadow:0 0 36px rgba(34,211,238,.5);animation:micp .9s ease-in-out infinite}
+#vmodal{display:none;position:fixed;inset:0;background:rgba(3,0,8,.85);z-index:700;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+#vmodal.on{display:flex}
+.vmbox{background:rgba(6,0,15,.98);border:1px solid var(--bohi);border-radius:20px;padding:26px;width:min(400px,92vw);display:flex;flex-direction:column;align-items:center;gap:14px;box-shadow:0 0 60px rgba(168,85,247,.22);animation:pIn .28s ease}
+.vmclose{align-self:flex-end;cursor:pointer;color:var(--txd);font-size:17px;transition:color .2s;margin-bottom:-8px}
+.vmclose:hover{color:var(--p)}
+.kcat{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:8px;border:1px solid var(--bo);cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;background:var(--g1);color:var(--txm);margin-bottom:5px}
+.kcat.on{border-color:var(--p);color:var(--p);background:var(--pd)}
+.knote{padding:11px;border-radius:10px;border:1px solid var(--bo);background:var(--g1);cursor:pointer;transition:border-color .22s;margin-bottom:7px;position:relative}
+.knote:hover{border-color:rgba(168,85,247,.4)}
+.kntit{font-size:12px;font-weight:700;margin-bottom:3px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.knprev{font-size:11px;color:var(--txd);line-height:1.45}
+.knmeta{display:flex;gap:6px;margin-top:5px}
+.ktag{font-size:9px;padding:2px 6px;border-radius:8px;background:var(--pd);color:var(--c);-webkit-text-fill-color:var(--c);border:1px solid var(--bo)}
+.kdate{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txd)}
+.kdel{position:absolute;top:7px;right:7px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.22);color:#f87171;font-size:9px;padding:2px 5px;border-radius:4px;cursor:pointer;opacity:0;transition:opacity .2s;font-weight:600}
+.knote:hover .kdel{opacity:1}
+.dots{display:flex;gap:4px;align-items:center}
+.dot2{width:5px;height:5px;border-radius:50%;background:var(--p);opacity:.6;animation:da 1.2s ease-in-out infinite}
+.dot2:nth-child(2){animation-delay:.2s}.dot2:nth-child(3){animation-delay:.4s}
+@keyframes da{0%,60%,100%{transform:scale(1);opacity:.6}30%{transform:scale(1.5);opacity:1}}
+.ripple{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.5);
+  background:linear-gradient(135deg,rgba(168,85,247,.25),rgba(34,211,238,.2));
+  border:2px solid var(--p);border-radius:14px;padding:12px 24px;color:var(--tx);
+  font-family:'Orbitron',monospace;font-size:18px;letter-spacing:3px;z-index:99999;
+  pointer-events:none;transition:all .35s cubic-bezier(.16,1,.3,1);backdrop-filter:blur(20px);
+  white-space:nowrap;opacity:0}
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(168,85,247,.3);border-radius:2px}
+@media(max-width:740px){
+  #app{grid-template-columns:1fr;grid-template-rows:50px 44px 1fr}
+  #sb{grid-row:2;grid-column:1;flex-direction:row;justify-content:center;padding:0 8px;border-right:none;border-bottom:1px solid var(--bo)}
+  .ntip{display:none}.dg{grid-template-columns:1fr 1fr}.tbstat{display:none}.agrid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:460px){.dg{grid-template-columns:1fr}.panel{padding:10px}.agrid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas><div id="grid"></div><div id="cglow"></div>
+<div id="app">
+<header id="tb">
+  <div class="tbl">
+    <div class="logo">
+      <svg width="26" height="22" viewBox="0 0 26 22" fill="none">
+        <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs>
+        <path d="M2 21V2L13 13L24 2V21" stroke="url(#lg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M7 21V10L13 16L19 10V21" stroke="url(#lg)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+      </svg>
+      <div><div class="lgname">MISSION JARVIS</div><div class="lgsub">manal_verse.co</div></div>
+    </div>
+    <div class="tbstat">
+      <span><span class="sdot" style="background:var(--ok);box-shadow:0 0 5px var(--ok)"></span>ONLINE</span>
+      <span><span class="sdot" style="background:var(--p);box-shadow:0 0 5px var(--p)"></span>8 AGENTS</span>
+      <span><span class="sdot" id="vsdot" style="background:var(--c);box-shadow:0 0 5px var(--c)"></span><span id="vstxt">STANDBY</span></span>
+    </div>
+  </div>
+  <div class="tbr">
+    <div id="clk" style="font-family:'Share Tech Mono',monospace;font-size:11px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;margin-right:4px"></div>
+    <div class="freebadge">FREE</div>
+    <div class="mbadge" id="modebadge" onclick="cycleMode()">JARVIS</div>
+    <div class="tbtn" id="clapBtn" onclick="toggleClap()" title="Double-clap to open mic">
+      <span>👏</span><span class="tbtndot" id="clapDot"></span>
+    </div>
+    <div class="tbtn" onclick="testVoice()" title="Test voice output">🔊</div>
+    <div class="tbtn" onclick="toggleVoice()" title="Mic (Space)">🎙</div>
+    <div class="tbtn" onclick="showPanel('pa')" title="Agents">🤖</div>
+  </div>
+</header>
+<nav id="sb">
+  <div class="ni on" id="nav-pv" onclick="showPanel('pv')">🎙<span class="ntip">Voice</span></div>
+  <div class="ni" id="nav-pa" onclick="showPanel('pa')">🤖<span class="ntip">Agents HQ</span></div>
+  <div class="ni" id="nav-pc" onclick="showPanel('pc')">💬<span class="ntip">Chat</span></div>
+  <div class="ndv"></div>
+  <div class="ni" id="nav-pd" onclick="showPanel('pd')">📡<span class="ntip">Dashboard</span></div>
+  <div class="ni" id="nav-pk" onclick="showPanel('pk')">🗄<span class="ntip">Knowledge</span></div>
+  <div class="ndv"></div>
+  <div class="ni" id="nav-pm" onclick="showPanel('pm')">🎯<span class="ntip">Missions</span></div>
+</nav>
+<main id="main">
+<!-- VOICE PANEL -->
+<section class="panel on" id="pv">
+  <div class="owrap" style="width:186px;height:186px;margin-bottom:18px">
+    <div class="ring r1" style="width:186px;height:186px"></div>
+    <div class="ring r2" style="width:150px;height:150px"></div>
+    <div class="ring r3" style="width:116px;height:116px"></div>
+    <div class="orb" id="orb" style="width:88px;height:88px" onclick="toggleVoice()"></div>
+  </div>
+  <div class="orbst" id="orbst" style="color:var(--p)">READY — NO API NEEDED</div>
+  <div class="wvf" id="wvf" style="margin:10px 0"></div>
+  <div class="vtx" id="vtx" style="margin-bottom:10px">
+    <span id="vtxph" class="vtxph">Click orb · Space · or 👏👏 double-clap to speak</span>
+    <span id="vtxtxt" style="display:none"></span>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+    <div class="vcbtn" onclick="clearVoice()">🗑</div>
+    <div class="micbtn" id="micbtn" style="width:60px;height:60px" onclick="toggleVoice()">🎙</div>
+    <div class="vcbtn" onclick="showPanel('pc')">💬</div>
+  </div>
+  <div class="clap-strip" id="clapStrip">
+    <div style="font-size:18px">👏</div>
+    <div style="flex:1">
+      <div style="font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:2px">CLAP DETECTION</div>
+      <div style="font-size:11px;color:var(--txd)" id="clapTxt">Click 👏 in topbar to enable · double-clap opens mic</div>
+    </div>
+    <div style="display:flex;gap:3px;align-items:center">
+      <div class="cbar" id="cb1" style="height:12px"></div>
+      <div class="cbar" id="cb2" style="height:20px"></div>
+      <div class="cbar" id="cb3" style="height:12px"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+      <div onclick="toggleClap()" id="clapToggle" style="padding:4px 10px;border-radius:7px;border:1px solid var(--p);background:var(--pd);color:var(--p);-webkit-text-fill-color:var(--p);font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;cursor:pointer">Enable</div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--txd)">Sens <input type="range" id="clapSens" min="1" max="10" value="5" style="width:52px;accent-color:#a855f7" oninput="clapSensChange(this.value)"></div>
+    </div>
+  </div>
+  <div class="chips" style="margin-top:10px">
+    <div class="chip kw" onclick="runIntent('avengers assemble')">⚡ Avengers Assemble</div>
+    <div class="chip kw" onclick="runIntent('hello jarvis')">👋 Hello</div>
+    <div class="chip kw" onclick="runIntent('briefing')">📋 Briefing</div>
+    <div class="chip kw" onclick="runIntent('research ai')">🔬 Research</div>
+    <div class="chip kw" onclick="runIntent('write tweet')">✍ Tweet</div>
+    <div class="chip kw" onclick="runIntent('strategy')">🎯 Strategy</div>
+    <div class="chip kw" onclick="runIntent('tasks')">✅ Tasks</div>
+    <div class="chip kw" onclick="runIntent('news')">🌐 News</div>
+    <div class="chip kw" onclick="runIntent('motivate me')">💪 Motivate</div>
+    <div class="chip kw" onclick="runIntent('what time')">🕐 Time</div>
+  </div>
+</section>
+<!-- AGENTS HQ -->
+<section class="panel" id="pa">
+  <div class="ph"><span>🤖</span> Agents HQ — 8 Agents · 100% Free</div>
+  <div class="agrid" id="agrid" style="margin-bottom:12px"></div>
+  <div style="display:flex;gap:10px;flex:1;overflow:hidden">
+    <div class="gc" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+      <div class="gcl">📡 Mission Feed</div>
+      <div class="feed" id="afeed"></div>
+    </div>
+    <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;overflow-y:auto">
+      <div class="gc">
+        <div class="gcl">⚡ Quick Deploy</div>
+        <div style="display:flex;flex-direction:column;gap:5px" id="qcmds"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- CHAT -->
+<section class="panel" id="pc">
+  <div class="ph"><span>💬</span> Jarvis Chat</div>
+  <div class="chatmsgs" id="cmsg"></div>
+  <div class="ciarea">
+    <div class="ciwrap">
+      <textarea class="ci" id="cinput" rows="1" placeholder="Type or speak to Jarvis…" onkeydown="ciKey(event)" oninput="ciResize(this)"></textarea>
+    </div>
+    <div class="sbtn" onclick="sendChat()">➤</div>
+  </div>
+</section>
+<!-- DASHBOARD -->
+<section class="panel" id="pd">
+  <div class="dg">
+    <div class="gc grtc" style="grid-column:1/-1">
+      <div class="gorb"></div>
+      <div><h2 id="greeth">Good Day, Commander.</h2>
+        <p>8 agents active · No API needed · 👏👏 Double-clap or Space for voice</p></div>
+    </div>
+    <div class="gc"><div class="gcl">🤖 Agents</div><div id="adash"></div></div>
+    <div class="gc">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px">
+        <div class="gcl" style="margin-bottom:0">✅ Tasks</div>
+        <span onclick="openTaskModal()" style="cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:11px;border:1px solid var(--bo);padding:1px 7px;border-radius:4px;color:var(--c);-webkit-text-fill-color:var(--c)">+ ADD</span>
+      </div>
+      <div id="dtasks"></div>
+    </div>
+    <div class="gc"><div class="gcl">⚡ Activity</div><div id="dact"></div></div>
+    <div class="gc" style="grid-column:1/3"><div class="gcl">🎯 Missions</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" id="dgoals"></div></div>
+    <div class="gc"><div class="gcl">💡 Insight</div><p id="insight" style="font-size:12px;line-height:1.7;color:var(--txm)">Analyzing…</p></div>
+  </div>
+</section>
+<!-- KNOWLEDGE -->
+<section class="panel" id="pk">
+  <div class="ph"><span>🗄</span> Knowledge Vault</div>
+  <div style="display:grid;grid-template-columns:165px 1fr;gap:10px;flex:1;overflow:hidden">
+    <div style="display:flex;flex-direction:column;overflow-y:auto">
+      <div class="kcat on" data-cat="all" onclick="filterKB(this,'all')">📁 All Notes</div>
+      <div class="kcat" data-cat="research" onclick="filterKB(this,'research')">🔬 Research</div>
+      <div class="kcat" data-cat="agent" onclick="filterKB(this,'agent')">🤖 Agent Reports</div>
+      <div class="kcat" data-cat="ideas" onclick="filterKB(this,'ideas')">💡 Ideas</div>
+      <div class="kcat" data-cat="personal" onclick="filterKB(this,'personal')">👤 Personal</div>
+      <div style="margin-top:auto;padding-top:8px">
+        <div onclick="openNoteModal()" style="padding:8px 10px;border-radius:8px;cursor:pointer;text-align:center;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;background:linear-gradient(135deg,rgba(168,85,247,.18),rgba(34,211,238,.15));border:1px solid var(--p);color:var(--p);-webkit-text-fill-color:var(--p)">+ New Note</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;overflow:hidden">
+      <input style="background:var(--g1);border:1px solid var(--bo);border-radius:8px;padding:7px 11px;color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:13px;outline:none;width:100%;margin-bottom:8px;transition:all .2s" id="kbsrch" type="text" placeholder="Search vault…" oninput="searchKB()">
+      <div id="kbnotes" style="overflow-y:auto;flex:1"></div>
+    </div>
+  </div>
+</section>
+<!-- MISSIONS -->
+<section class="panel" id="pm">
+  <div class="ph"><span>🎯</span> Mission Control</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;overflow:hidden">
+    <div class="gc" style="overflow-y:auto">
+      <div class="gcl">Active Missions</div>
+      <div id="mlist"></div>
+      <div onclick="openMissionModal()" style="padding:8px 10px;border-radius:8px;border:1px dashed var(--bo);background:transparent;color:var(--txd);font-size:12px;font-weight:600;cursor:pointer;text-align:center;margin-top:4px">+ New Mission</div>
+    </div>
+    <div class="gc" style="overflow-y:auto">
+      <div class="gcl">Analytics</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px" id="mstats"></div>
+      <div class="gcl">Focus</div><div id="mfocus"></div>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+<div id="fmic" onclick="fmicClick()" title="Voice (Space)">🎙</div>
+<div id="toastc"></div>
+<!-- MODALS -->
+<div class="mbg" id="notemodal" onclick="if(event.target===this)closeNoteModal()">
+  <div class="modal"><h3 id="nmtitle">📝 NEW NOTE</h3>
+    <div class="mf">
+      <input type="text" id="nmttl" placeholder="Title…">
+      <select id="nmcat"><option value="research">🔬 Research</option><option value="ideas">💡 Ideas</option><option value="agent">🤖 Agent Report</option><option value="personal">👤 Personal</option></select>
+      <textarea id="nmbody" placeholder="Content…" rows="5"></textarea>
+      <div class="mfrow"><div class="mbbtn pri" style="flex:1;text-align:center" onclick="saveNote()">Save</div><div class="mbbtn sec" onclick="closeNoteModal()">Cancel</div></div>
+    </div>
+  </div>
+</div>
+<div class="mbg" id="taskmodal" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="modal"><h3>✅ ADD TASK</h3>
+    <div class="mf">
+      <input type="text" id="tminput" placeholder="Task…" onkeydown="if(event.key==='Enter')saveTask()">
+      <select id="tmpri"><option value="high">🔴 High</option><option value="med">🟡 Medium</option><option value="low">🔵 Low</option></select>
+      <div class="mfrow"><div class="mbbtn pri" style="flex:1;text-align:center" onclick="saveTask()">Add</div><div class="mbbtn sec" onclick="document.getElementById('taskmodal').classList.remove('on')">Cancel</div></div>
+    </div>
+  </div>
+</div>
+<div class="mbg" id="missionmodal" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="modal"><h3>🎯 NEW MISSION</h3>
+    <div class="mf">
+      <input type="text" id="mmname" placeholder="Mission name…">
+      <input type="text" id="mmemoji" placeholder="Emoji (e.g. 🚀)">
+      <textarea id="mmdesc" placeholder="Description…" rows="3"></textarea>
+      <div class="mfrow"><div class="mbbtn pri" style="flex:1;text-align:center" onclick="saveMission()">Create</div><div class="mbbtn sec" onclick="document.getElementById('missionmodal').classList.remove('on')">Cancel</div></div>
+    </div>
+  </div>
+</div>
+<div id="vmodal" onclick="if(event.target===this)closeVModal()">
+  <div class="vmbox">
+    <div class="vmclose" onclick="closeVModal()">✕</div>
+    <div class="owrap" style="width:148px;height:148px">
+      <div class="ring r1" style="width:148px;height:148px"></div>
+      <div class="ring r2" style="width:118px;height:118px"></div>
+      <div class="ring r3" style="width:90px;height:90px"></div>
+      <div class="orb" id="orb2" style="width:68px;height:68px" onclick="toggleVoice()"></div>
+    </div>
+    <div class="orbst" id="orbst2" style="color:var(--p)">READY</div>
+    <div class="wvf" id="wvf2" style="height:40px"></div>
+    <div class="vtx" id="vtx2" style="max-width:100%;min-height:40px;font-size:12px">
+      <span id="vtxph2" class="vtxph">Tap orb to speak</span>
+      <span id="vtxtxt2" style="display:none"></span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="vcbtn" onclick="clearVoice()">🗑</div>
+      <div class="micbtn" id="micbtn2" style="width:50px;height:50px;font-size:21px" onclick="toggleVoice()">🎙</div>
+      <div class="vcbtn" onclick="closeVModal();showPanel('pc')">💬</div>
+    </div>
+  </div>
+</div>
+<script>
+'use strict';
+// ══ STARFIELD ══
+(function(){
+  var cv=document.getElementById('stars'),ctx=cv.getContext('2d'),W,H,S=[];
+  function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
+  resize();window.addEventListener('resize',function(){resize();init();});
+  function init(){S=[];for(var i=0;i<220;i++)S.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+0.2,o:Math.random()*.7+.1,s:Math.random()*.3+.05,h:Math.random()>.5?'168,85,247':'34,211,238'});}
+  init();
+  function draw(){ctx.clearRect(0,0,W,H);for(var i=0;i<S.length;i++){var s=S[i];s.o+=Math.sin(Date.now()*s.s*.001)*.008;s.o=Math.max(.05,Math.min(.85,s.o));ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle='rgba('+s.h+','+s.o+')';ctx.fill();}requestAnimationFrame(draw);}
+  draw();
+})();
+document.addEventListener('mousemove',function(e){var g=document.getElementById('cglow');if(g){g.style.left=e.clientX+'px';g.style.top=e.clientY+'px';}});
+
+// ══ STORAGE ══
+function ls(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function lss(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+
+// ══ DATA ══
+var notes=ls('mvj3_notes',[
+  {id:1,title:'Mission Jarvis Roadmap',cat:'agent',body:'Phase 1: Voice + agents. Phase 2: Calendar. Phase 3: Computer control. Phase 4: Predictive AI.',date:'2026-07-02'},
+  {id:2,title:'AI Market Research',cat:'research',body:'AI personal assistants growing 340% YoY. Voice interfaces 3x more engaging than text. $50B market by 2028.',date:'2026-07-02'},
+]);
+var tasks=ls('mvj3_tasks',[
+  {id:1,text:'Deploy to Vercel',done:false,pri:'high'},
+  {id:2,text:'Test all voice intents',done:false,pri:'high'},
+  {id:3,text:'Post demo on social media',done:false,pri:'med'},
+  {id:4,text:'Set up Stripe billing',done:true,pri:'med'},
+]);
+var missions=ls('mvj3_missions',[
+  {id:1,name:'Mission Jarvis Launch',icon:'🚀',progress:70,desc:'Deploy the agentic AI OS.'},
+  {id:2,name:'Audience Growth',icon:'📈',progress:30,desc:'1K followers in 30 days.'},
+  {id:3,name:'Revenue $1K/week',icon:'💎',progress:10,desc:'Monetization playbook.'},
+]);
+var activity=ls('mvj3_activity',[
+  {text:'Agentic OS initialized',time:'Now',c:'#a855f7'},
+  {text:'8 agents standing by',time:'1m ago',c:'#22d3ee'},
+  {text:'Voice engine active',time:'2m ago',c:'#10b981'},
+]);
+var chatHistory=ls('mvj3_chat',[]);
+var chatRendered=false,kbCat='all',editNoteId=null,currentPanel='pv',waveIvs=[];
+var MODES=['JARVIS','FRIDAY','TACTICAL','FOUNDER'];
+var currentMode=ls('mvj3_mode','JARVIS');
+function save(){lss('mvj3_notes',notes);lss('mvj3_tasks',tasks);lss('mvj3_missions',missions);lss('mvj3_activity',activity);lss('mvj3_chat',chatHistory);}
+function cycleMode(){var i=MODES.indexOf(currentMode);currentMode=MODES[(i+1)%MODES.length];lss('mvj3_mode',currentMode);document.getElementById('modebadge').textContent=currentMode;toast('Mode: '+currentMode);}
+
+// ══ AGENTS ══
+var AGENTS=[
+  {id:'jarvis', name:'JARVIS', role:'Commander',    icon:'🧠', color:'#a855f7', glow:'rgba(168,85,247,.5)'},
+  {id:'oracle', name:'ORACLE', role:'Research',     icon:'🔬', color:'#22d3ee', glow:'rgba(34,211,238,.5)'},
+  {id:'mercury',name:'MERCURY',role:'Content',      icon:'✍',  color:'#f59e0b', glow:'rgba(245,158,11,.5)'},
+  {id:'athena', name:'ATHENA', role:'Strategy',     icon:'🎯', color:'#10b981', glow:'rgba(16,185,129,.5)'},
+  {id:'nexus',  name:'NEXUS',  role:'Memory',       icon:'💾', color:'#6366f1', glow:'rgba(99,102,241,.5)'},
+  {id:'syntax', name:'SYNTAX', role:'Code',         icon:'💻', color:'#14b8a6', glow:'rgba(20,184,166,.5)'},
+  {id:'hermes', name:'HERMES', role:'Intelligence', icon:'🌐', color:'#f97316', glow:'rgba(249,115,22,.5)'},
+  {id:'echo',   name:'ECHO',   role:'Voice',        icon:'🎙', color:'#ec4899', glow:'rgba(236,72,153,.5)'},
+];
+var agSt={};
+AGENTS.forEach(function(a){agSt[a.id]={status:'idle',log:'Standing by…',progress:0};});
+
+// ══ VOICE STATE ══
+var VS={state:'idle',recog:null,synth:window.speechSynthesis||null,voices:[],pending:'',vmodalOpen:false};
+var VSLBL={idle:'READY',listening:'LISTENING',thinking:'THINKING',speaking:'SPEAKING',assembling:'ASSEMBLING'};
+var VSCOL={idle:'#a855f7',listening:'#22d3ee',thinking:'#f59e0b',speaking:'#a855f7',assembling:'#ffffff'};
+// ── VOICE SYNTHESIS ENGINE ──
+// Chrome: voices load asynchronously. Safari: loads sync.
+// Chrome: speechSynthesis requires a user gesture before first speak().
+// Fix: load voices on onvoiceschanged + poll, unlock on first gesture.
+
+var _synthReady = false;  // true after first user gesture
+
+function loadVoices(){
+  if(!VS.synth) return;
+  var v = VS.synth.getVoices();
+  if(v && v.length > 0) VS.voices = v;
+}
+
+if(VS.synth){
+  // Load immediately (works on Safari + Firefox)
+  loadVoices();
+  // Chrome fires onvoiceschanged when voices are ready
+  VS.synth.onvoiceschanged = function(){ loadVoices(); };
+}
+
+// Unlock speechSynthesis on first user gesture (Chrome requirement)
+// We speak a silent utterance to warm up the audio pipeline.
+function unlockSynth(){
+  if(_synthReady || !VS.synth) return;
+  _synthReady = true;
+  loadVoices(); // voices are usually available now after gesture
+  var utt = new SpeechSynthesisUtterance(' ');
+  utt.volume = 0.01;
+  utt.rate = 10; // speak instantly
+  VS.synth.speak(utt);
+}
+['click','touchstart','keydown'].forEach(function(ev){
+  document.addEventListener(ev, function(){ unlockSynth(); }, {once:true, passive:true});
+});
+
+function buildWave(id,n){var el=document.getElementById(id);if(!el)return;el.innerHTML='';for(var i=0;i<n;i++){var b=document.createElement('div');b.className='wb';el.appendChild(b);}}
+buildWave('wvf',26);buildWave('wvf2',18);
+
+function animWave(mode){
+  waveIvs.forEach(function(iv){clearInterval(iv);});waveIvs=[];
+  ['wvf','wvf2'].forEach(function(id){
+    var el=document.getElementById(id);if(!el)return;
+    var bars=el.querySelectorAll('.wb');
+    if(mode==='idle'){bars.forEach(function(b){b.style.height='3px';b.style.opacity='.2';});return;}
+    bars.forEach(function(b){
+      var iv=setInterval(function(){var base=mode==='listening'?28:mode==='speaking'||mode==='assembling'?22:10;b.style.height=(Math.random()*base+3)+'px';b.style.opacity=mode==='thinking'?'.5':'1';},55+Math.random()*35);
+      waveIvs.push(iv);
+    });
+  });
+}
+animWave('idle');
+
+function setVS(state){
+  VS.state=state;var col=VSCOL[state]||VSCOL.idle;
+  ['orb','orb2'].forEach(function(id){var el=document.getElementById(id);if(!el)return;el.className='orb '+(state!=='idle'?state:'');});
+  ['orbst','orbst2'].forEach(function(id){var el=document.getElementById(id);if(!el)return;el.textContent=VSLBL[state]||state.toUpperCase();el.style.color=col;el.style.webkitTextFillColor=col;});
+  animWave(state);
+  var isL=state==='listening';
+  ['micbtn','micbtn2'].forEach(function(id){var el=document.getElementById(id);if(!el)return;if(isL)el.classList.add('on');else el.classList.remove('on');el.textContent=isL?'⏹':'🎙';});
+  var fm=document.getElementById('fmic');if(fm){if(isL)fm.classList.add('on');else fm.classList.remove('on');fm.textContent=isL?'⏹':'🎙';}
+  var vd=document.getElementById('vsdot'),vt=document.getElementById('vstxt');
+  if(vd){vd.style.background=col;vd.style.boxShadow='0 0 5px '+col;}if(vt)vt.textContent=VSLBL[state]||state.toUpperCase();
+}
+
+function showVTX(text,isJ){
+  ['vtxph','vtxph2'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});
+  ['vtxtxt','vtxtxt2'].forEach(function(id){var e=document.getElementById(id);if(!e)return;e.style.display='block';e.style.color=isJ?'#a855f7':'var(--tx)';e.textContent=text;});
+}
+function clearVoice(){
+  if(VS.synth)VS.synth.cancel();try{if(VS.recog)VS.recog.stop();}catch(ex){}
+  VS.pending='';setVS('idle');
+  ['vtxph','vtxph2'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='';});
+  ['vtxtxt','vtxtxt2'].forEach(function(id){var e=document.getElementById(id);if(e){e.style.display='none';e.textContent='';}});
+}
+function openVModal(){document.getElementById('vmodal').classList.add('on');VS.vmodalOpen=true;}
+function closeVModal(){document.getElementById('vmodal').classList.remove('on');VS.vmodalOpen=false;}
+function fmicClick(){if(currentPanel!=='pv'&&!VS.vmodalOpen)openVModal();toggleVoice();}
+function toggleVoice(){
+  if(VS.state==='listening'){stopL();return;}
+  if(VS.state==='speaking'||VS.state==='assembling'){if(VS.synth)VS.synth.cancel();setVS('idle');return;}
+  if(VS.state==='idle')startL();
+}
+function stopL(){try{if(VS.recog)VS.recog.stop();}catch(ex){}}
+
+// ══ START LISTENING — robust version ══
+function startL(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast('Voice needs Chrome or Edge (100% free!)','w');return;}
+  if(VS.state!=='idle')return;
+  var recog=new SR();
+  recog.continuous=false;recog.interimResults=true;recog.lang='en-US';recog.maxAlternatives=1;
+  recog.onstart=function(){VS.recog=recog;setVS('listening');showVTX('Listening… speak now',false);toast('🎙 Listening — speak now');};
+  recog.onresult=function(e){
+    var interim='',final='';
+    for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)final+=e.results[i][0].transcript;else interim+=e.results[i][0].transcript;}
+    VS.pending=final||interim;showVTX(VS.pending||'…',false);
+  };
+  recog.onend=function(){
+    VS.recog=null;
+    if(VS.state==='listening'){
+      var t=(VS.pending||'').trim();VS.pending='';
+      if(t.length>0){processVoiceInput(t);}else{setVS('idle');clearVoice();}
+    }
+  };
+  recog.onerror=function(e){
+    VS.recog=null;
+    if(e.error==='not-allowed')toast('Microphone blocked — allow mic in browser settings','e');
+    else if(e.error!=='aborted'&&e.error!=='no-speech')toast('Voice: '+e.error,'w');
+    if(VS.state==='listening')setVS('idle');
+  };
+  // getUserMedia to trigger permission prompt first
+  if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
+    navigator.mediaDevices.getUserMedia({audio:true,video:false}).then(function(stream){
+      stream.getTracks().forEach(function(t){t.stop();});
+      try{recog.start();}catch(ex){toast('Could not start voice: '+ex.message,'e');setVS('idle');}
+    }).catch(function(err){toast('Microphone denied: '+err.message,'e');setVS('idle');});
+  } else {
+    try{recog.start();}catch(ex){toast('Voice not available','e');setVS('idle');}
+  }
+}
+
+// ══ SPEECH SYNTHESIS ══
+function getBestVoice(){
+  // Always reload fresh
+  if(VS.voices.length === 0) loadVoices();
+  var voices = VS.voices;
+  if(!voices || voices.length === 0) return null;
+
+  // Priority list — deep, clear English voices
+  var preferred = ['Daniel','Arthur','Google UK English Male','Alex','Oliver','James','Google US English','Samantha','Karen'];
+  for(var i=0; i<preferred.length; i++){
+    for(var j=0; j<voices.length; j++){
+      if(voices[j].name.indexOf(preferred[i]) >= 0) return voices[j];
+    }
+  }
+  // Any en-GB
+  for(var j=0; j<voices.length; j++){ if(voices[j].lang === 'en-GB') return voices[j]; }
+  // Any en-US
+  for(var j=0; j<voices.length; j++){ if(voices[j].lang === 'en-US') return voices[j]; }
+  // Any English
+  for(var j=0; j<voices.length; j++){ if(voices[j].lang.indexOf('en') === 0) return voices[j]; }
+  // Absolute fallback — just use first voice
+  return voices[0];
+}
+function speakText(text, onDone){
+  if(!VS.synth || !text){ if(onDone) onDone(); return; }
+
+  // Always try loading voices fresh
+  loadVoices();
+
+  VS.synth.cancel();
+
+  // Short pause after cancel so Chrome clears its queue
+  setTimeout(function(){
+    var utt = new SpeechSynthesisUtterance(text);
+    utt.lang = 'en-US';
+    utt.rate = 0.91;
+    utt.pitch = 0.86;
+    utt.volume = 1;
+
+    // Pick best voice
+    var v = getBestVoice();
+    if(v) utt.voice = v;
+
+    // Chrome bug: long utterances silently stop after ~15s.
+    // Keep resuming if paused.
+    var resumeTimer = setInterval(function(){
+      if(VS.synth && VS.synth.paused) VS.synth.resume();
+    }, 10000);
+
+    utt.onend = function(){
+      clearInterval(resumeTimer);
+      if(onDone) onDone();
+    };
+    utt.onerror = function(e){
+      clearInterval(resumeTimer);
+      // 'interrupted' fires when cancel() is called — not an error
+      if(e.error && e.error !== 'interrupted' && e.error !== 'canceled'){
+        console.warn('TTS error:', e.error, '| text length:', text.length);
+      }
+      if(onDone) onDone();
+    };
+
+    try {
+      VS.synth.speak(utt);
+    } catch(ex){
+      console.error('synth.speak threw:', ex);
+      if(onDone) onDone();
+    }
+  }, 100);
+}
+
+// ══════════════════════════════════════════════════════════
+// CLAP DETECTION — DOUBLE-CLAP OPENS/CLOSES MIC
+// Uses Web Audio API — 100% free, no library
+// ══════════════════════════════════════════════════════════
+var CLAP={
+  on:false, ctx:null, analyser:null, stream:null, arr:null, raf:null,
+  lastPeak:0, firstClapTime:0, clapCount:0, lastTrigger:0,
+  THRESH:0.28, GAP_MIN:80, GAP_MAX:650, COOLDOWN:1400
+};
+
+function clapSensChange(v){
+  CLAP.THRESH=0.45-((v-1)*(0.35/9));
+  toast('Clap sensitivity '+v+'/10');
+}
+
+function clapSetUI(on){
+  var btn=document.getElementById('clapBtn'),dot=document.getElementById('clapDot');
+  var strip=document.getElementById('clapStrip'),txt=document.getElementById('clapTxt'),tog=document.getElementById('clapToggle');
+  if(btn){if(on)btn.classList.add('on');else btn.classList.remove('on');}
+  if(dot){dot.style.background=on?'#a855f7':'var(--txd)';dot.style.boxShadow=on?'0 0 6px #a855f7':'';}
+  if(strip){if(on)strip.classList.add('on');else strip.classList.remove('on');}
+  if(txt)txt.textContent=on?'Active — 👏👏 double-clap to toggle mic':'Click Enable or 👏 in topbar to activate';
+  if(tog)tog.textContent=on?'Disable':'Enable';
+}
+
+function clapPulse(){
+  ['cb1','cb2','cb3'].forEach(function(id,i){
+    var el=document.getElementById(id);if(!el)return;
+    el.style.background='linear-gradient(to top,#a855f7,#22d3ee)';
+    el.style.height=[20,32,20][i]+'px';el.style.boxShadow='0 0 8px rgba(168,85,247,.7)';
+    setTimeout(function(){el.style.height=[12,20,12][i]+'px';el.style.boxShadow='';el.style.background='';},200);
+  });
+  var dot=document.getElementById('clapDot');
+  if(dot){dot.style.transform='scale(2)';dot.style.background='#22d3ee';setTimeout(function(){dot.style.transform='';dot.style.background='#a855f7';},200);}
+}
+
+function showRipple(txt){
+  var r=document.createElement('div');r.className='ripple';r.textContent=txt;
+  document.body.appendChild(r);
+  setTimeout(function(){r.style.opacity='1';r.style.transform='translate(-50%,-50%) scale(1)';},20);
+  setTimeout(function(){r.style.opacity='0';r.style.transform='translate(-50%,-60%) scale(.9)';},950);
+  setTimeout(function(){if(r.parentNode)r.remove();},1400);
+}
+
+function clapTick(){
+  if(!CLAP.on||!CLAP.analyser)return;
+  CLAP.analyser.getFloatTimeDomainData(CLAP.arr);
+  var peak=0;for(var i=0;i<CLAP.arr.length;i++){var a=Math.abs(CLAP.arr[i]);if(a>peak)peak=a;}
+  var now=Date.now();
+  if(peak>CLAP.THRESH&&now-CLAP.lastPeak>CLAP.GAP_MIN){
+    CLAP.lastPeak=now;
+    clapPulse();
+    if(CLAP.clapCount===0){
+      CLAP.clapCount=1;CLAP.firstClapTime=now;
+    } else {
+      var gap=now-CLAP.firstClapTime;
+      if(gap>=CLAP.GAP_MIN&&gap<=CLAP.GAP_MAX){
+        if(now-CLAP.lastTrigger>CLAP.COOLDOWN){
+          CLAP.lastTrigger=now;CLAP.clapCount=0;CLAP.firstClapTime=0;
+          onDoubleClap();
+        } else {CLAP.clapCount=0;CLAP.firstClapTime=0;}
+      } else if(gap>CLAP.GAP_MAX){
+        CLAP.clapCount=1;CLAP.firstClapTime=now;
+      } else {CLAP.clapCount=0;CLAP.firstClapTime=0;}
+    }
+  }
+  if(CLAP.clapCount===1&&now-CLAP.firstClapTime>CLAP.GAP_MAX+100){CLAP.clapCount=0;CLAP.firstClapTime=0;}
+  CLAP.raf=requestAnimationFrame(clapTick);
+}
+
+function onDoubleClap(){
+  if(VS.state==='idle'){
+    showRipple('👏 MIC ON');
+    if(currentPanel!=='pv'&&!VS.vmodalOpen)openVModal();
+    setTimeout(startL,300);
+  } else if(VS.state==='listening'){
+    showRipple('👏 MIC OFF');stopL();
+  } else if(VS.state==='speaking'||VS.state==='assembling'){
+    showRipple('👏 STOP');if(VS.synth)VS.synth.cancel();setVS('idle');clearVoice();
+  }
+}
+
+function clapStart(){
+  if(CLAP.on)return;
+  if(!(window.AudioContext||window.webkitAudioContext)){toast('Web Audio not supported','e');return;}
+  if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){toast('Mic not available','e');return;}
+  navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false},video:false})
+    .then(function(stream){
+      CLAP.stream=stream;
+      CLAP.ctx=new (window.AudioContext||window.webkitAudioContext)();
+      CLAP.analyser=CLAP.ctx.createAnalyser();
+      CLAP.analyser.fftSize=512;
+      CLAP.analyser.smoothingTimeConstant=0.0;// no smoothing — claps are instantaneous
+      var src=CLAP.ctx.createMediaStreamSource(stream);
+      src.connect(CLAP.analyser);
+      CLAP.arr=new Float32Array(CLAP.analyser.fftSize);
+      CLAP.on=true;CLAP.clapCount=0;CLAP.firstClapTime=0;CLAP.lastPeak=0;CLAP.lastTrigger=0;
+      clapSetUI(true);
+      CLAP.raf=requestAnimationFrame(clapTick);
+      toast('👏 Clap detection ON — double-clap to toggle mic!','ok');
+    })
+    .catch(function(err){toast('Mic needed for clap detection: '+err.message,'e');});
+}
+
+function clapStop(){
+  CLAP.on=false;
+  if(CLAP.raf){cancelAnimationFrame(CLAP.raf);CLAP.raf=null;}
+  if(CLAP.stream){CLAP.stream.getTracks().forEach(function(t){t.stop();});CLAP.stream=null;}
+  if(CLAP.ctx&&CLAP.ctx.state!=='closed'){CLAP.ctx.close();}
+  CLAP.ctx=null;CLAP.analyser=null;CLAP.arr=null;
+  clapSetUI(false);toast('👏 Clap detection OFF','w');
+}
+function toggleClap(){if(CLAP.on)clapStop();else clapStart();}
+
+// ══════════════════════════════════════════════════════════
+// INTENT ENGINE — 22 patterns, each fires real app actions
+// ══════════════════════════════════════════════════════════
+var INTENTS=[
+  {id:'avengers_assemble',phrases:['avengers assemble','avengers','assemble','all agents','deploy all','deploy agents','activate all','full briefing','all agents report','avengers assembly'],
+    action:function(input){
+      showPanel('pa');renderAgentGrid();setVS('assembling');
+      var done=tasks.filter(function(t){return t.done;}).length;
+      var topM=missions[0]?missions[0].name:'no active missions';
+      var waves=[['oracle','hermes'],['mercury','athena','nexus'],['syntax'],['echo','jarvis']];
+      var d=0;
+      waves.forEach(function(wave){d+=380;setTimeout(function(){wave.forEach(function(id){setAgSt(id,'working','Analyzing…',15+Math.floor(Math.random()*30));});},d);});
+      setTimeout(function(){addFI('oracle','🔬','ORACLE','Research complete. AI market $50B by 2028. Voice-first interfaces fastest growing. Mission Jarvis has first-mover advantage.','#22d3ee');},450);
+      setTimeout(function(){addFI('hermes','🌐','HERMES','Web intel gathered. No competitor offers free deployment + voice + multi-agent orchestration. Window: 12-18 months.','#f97316');},750);
+      setTimeout(function(){addFI('mercury','✍','MERCURY','Content ready. Hook: I built a free AI OS that deploys 8 agents by voice. Zero cost. Thread drafted.','#f59e0b');},1050);
+      setTimeout(function(){addFI('athena','🎯','ATHENA','Strategy: 14 Pro@$49 + 5 Agency@$199 = $1681/mo. Path to $1K/week confirmed. Execute Stripe now.','#10b981');},1250);
+      setTimeout(function(){addFI('nexus','💾','NEXUS',notes.length+' vault entries indexed. Key patterns: AI architecture + growth strategy.','#6366f1');},1450);
+      setTimeout(function(){addFI('syntax','💻','SYNTAX','Stack: Web Speech + AudioContext + LocalStorage. Zero cost. Browser-native. Vercel-ready.','#14b8a6');},1650);
+      setTimeout(function(){
+        AGENTS.forEach(function(a){setAgSt(a.id,'done','Report delivered ✅',100);});
+        var rep='Avengers Assemble complete, Commander. All 8 agents reporting. ORACLE confirms the AI personal assistant market is growing at 38% annually with a 50 billion dollar opportunity. HERMES intelligence: Mission Jarvis has a clear first-mover advantage. MERCURY has your content ready. ATHENA strategy: 14 Pro subscribers at 49 dollars plus 5 Agency clients at 199 dollars equals 1681 dollars monthly recurring. NEXUS has indexed your '+notes.length+' knowledge entries. SYNTAX confirms zero cost stack. You have '+(tasks.length-done)+' pending tasks. Top mission: '+topM+'. All systems green, Commander. What is your next command?';
+        addFI('jarvis','🧠','JARVIS','All 8 agents assembled. Full briefing ready.','#a855f7');
+        addAgMsg({id:'jarvis',name:'JARVIS',role:'Commander',icon:'🧠',color:'#a855f7'},rep);
+        notes.unshift({id:Date.now(),title:'Avengers Assemble — '+new Date().toLocaleTimeString(),cat:'agent',body:rep,date:new Date().toISOString().split('T')[0]});
+        if(notes.length>100)notes=notes.slice(0,100);
+        save();addAct('AVENGERS ASSEMBLE complete','just now','#a855f7');
+        deliver(rep,'jarvis');
+      },2350);
+    }
+  },
+  {id:'greeting',phrases:['hello jarvis','hey jarvis','hi jarvis','hello','wake up jarvis','jarvis wake up','good morning jarvis','good evening jarvis','yo jarvis','jarvis'],
+    action:function(){
+      var h=new Date().getHours();var g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+      var pending=tasks.filter(function(t){return !t.done;}).length;
+      var msg=g+', Commander. I am Jarvis, your personal AI operating system by manal_verse.co. All 8 agents are online. You have '+pending+' pending tasks and '+missions.length+' active missions. '+notes.length+' entries in your knowledge vault. Say Avengers Assemble for a full briefing, or any keyword to activate specific agents. How may I assist you today?';
+      agActivate(['jarvis'],msg);showPanel('pv');
+    }
+  },
+  {id:'briefing',phrases:['briefing','daily briefing','status','status report','situation report','morning briefing','update me','what is my status','give me a briefing','report'],
+    action:function(){
+      var done=tasks.filter(function(t){return t.done;}).length;
+      var pending=tasks.filter(function(t){return !t.done;});
+      var top=pending.length?pending[0].text:'all tasks complete';
+      var topM=missions[0]?missions[0].name+' at '+missions[0].progress+'%':'no active missions';
+      var msg='Situation report, Commander. Time: '+new Date().toLocaleTimeString()+'. Pending tasks: '+pending.length+', top priority: '+top+'. Active mission: '+topM+'. Knowledge vault: '+notes.length+' entries. 8 agents standing by. Efficiency at 94%. Recommendation: tackle highest priority tasks during your peak window from 9 AM to noon, Commander.';
+      agActivate(['jarvis','oracle'],msg);
+    }
+  },
+  {id:'research',phrases:['research','oracle','investigate','analyze','tell me about','what do you know about','look up','find out about','research ai','research tech'],
+    action:function(input){
+      var topic=(input||'').replace(/research|oracle|investigate|analyze|tell me about|what do you know about|look up|find out about/gi,'').trim()||'artificial intelligence';
+      var related=notes.filter(function(n){return n.title.toLowerCase().indexOf(topic.toLowerCase())>=0||n.body.toLowerCase().indexOf(topic.toLowerCase())>=0;});
+      var msg='ORACLE reporting, Commander. Research on '+topic+' complete. This field is experiencing rapid development with significant capital inflows and accelerating mainstream adoption. Market sizing indicates a multi-billion dollar opportunity growing over 30% annually. Critical insight: voice-first AI interfaces in this space are dramatically underserved, representing a significant first-mover opportunity for manal_verse.co. '+(related.length?'NEXUS found '+related.length+' related vault entries — top result: '+related[0].title+'.':'NEXUS reports no prior entries — fresh intelligence captured.')+' Shall I dig deeper?';
+      agActivate(['oracle','nexus'],msg);
+    }
+  },
+  {id:'write_content',phrases:['write tweet','tweet','twitter','write a tweet','tweet thread','linkedin post','write post','create content','write content','mercury','draft','write blog','write article','make content','social media post'],
+    action:function(input){
+      var topic=(input||'').replace(/write|tweet|twitter|linkedin|post|create|content|thread|social media|mercury|draft|blog|article|make/gi,'').trim()||'my AI operating system Mission Jarvis';
+      var msg='MERCURY reporting, Commander. Content package ready. Tweet thread on '+topic+'. Thread 1: I built a free AI operating system that deploys 8 specialized agents by voice command. No API key. No cost. Pure browser. Here is how. Thread 2: Say Avengers Assemble and 8 AI agents deploy in parallel — ORACLE researches, MERCURY creates content, ATHENA builds strategy, NEXUS manages memory, SYNTAX writes code, HERMES gathers intel, ECHO delivers the report by voice. Thread 3: Built with Web Speech API, Web Audio API for clap detection, and vanilla JavaScript. Runs offline. Costs nothing. Free on Vercel. Thread 4: The future of AI is not a chatbot subscription. It is a personal operating system that knows your voice and coordinates specialized agents. Follow manal_verse.co for the full breakdown. LinkedIn version also ready. Post at 9 AM for maximum reach, Commander.';
+      agActivate(['mercury'],msg);
+    }
+  },
+  {id:'strategy',phrases:['strategy','strategic plan','business strategy','growth strategy','athena','monetize','make money','revenue plan','business plan','how to grow','how to monetize','give me advice','growth plan'],
+    action:function(){
+      var msg='ATHENA reporting, Commander. Strategic analysis complete. Three pillars. Pillar one: content-led growth. Post daily using Mission Jarvis as proof of work. Document the build, share insights, show results. Target 1000 followers in 30 days at 2% conversion to paid. Pillar two: product monetization. Pro tier at 49 dollars per month. Agency tier at 199 dollars for white-label deployments. 14 Pro plus 5 Agency equals 1681 dollars monthly recurring, 420 dollars weekly. Pillar three: services. Done-for-you deployments at 499 to 999 dollars one-time. Two per month adds 1000 dollars. Combined: 2681 dollars monthly base, scaling past 1000 dollars per week within 90 days. Immediate actions: set up Stripe today, post your first demo video tomorrow, close your first client within 14 days. Execute, Commander.';
+      agActivate(['athena'],msg);
+    }
+  },
+  {id:'memory',phrases:['memory','nexus','what do you remember','what do you know','recall','my knowledge','vault','show vault','search vault','knowledge base','remember'],
+    action:function(input){
+      var query=(input||'').replace(/memory|nexus|what do you remember|what do you know|recall|my knowledge|vault|show vault|search vault|knowledge base|remember/gi,'').trim();
+      var relevant=query?notes.filter(function(n){return n.title.toLowerCase().indexOf(query.toLowerCase())>=0||n.body.toLowerCase().indexOf(query.toLowerCase())>=0;}):notes;
+      var msg=relevant.length?'NEXUS reporting, Commander. Found '+relevant.length+' relevant entries'+(query?' matching "'+query+'"':'')+'. Top result: '+relevant[0].title+' — '+relevant[0].body.substring(0,100)+'. Total vault: '+notes.length+' entries. Key patterns: strong focus on AI and growth strategy.'
+        :'NEXUS reporting. Vault has '+notes.length+' total entries. No matches'+(query?' for "'+query+'"':'')+'. Say save note followed by content to add new knowledge instantly.';
+      agActivate(['nexus'],msg);showPanel('pk');renderNotes('all');
+    }
+  },
+  {id:'code',phrases:['code','syntax','write code','debug','help me code','programming','develop','build app','tech help','fix code','technical','how do i build','how to code'],
+    action:function(input){
+      var task=(input||'').replace(/code|syntax|write|debug|programming|develop|build|create|how to|technical|tech help|fix/gi,'').trim()||'a web application';
+      var msg='SYNTAX reporting, Commander. Technical analysis for: '+task+'. Architecture recommendation: single-file HTML with vanilla JavaScript — maximum portability, zero dependencies. Stack: Web Speech API for voice recognition, Web Audio API for clap detection, LocalStorage for persistence, CSS custom properties for the holographic interface, Fetch API for optional AI. Deployment: GitHub to Vercel for free hosting with HTTPS. The entire stack costs zero dollars. Estimated build time: 4 to 8 hours for MVP. Want specific implementation steps or a code scaffold, Commander?';
+      agActivate(['syntax'],msg);
+    }
+  },
+  {id:'news',phrases:['news','intelligence','hermes','what is trending','market intel','trends','latest','current events','trending','market news'],
+    action:function(input){
+      var topic=(input||'').replace(/news|intelligence|hermes|what is trending|market intel|trends|latest|current events|trending|market news/gi,'').trim()||'AI and technology';
+      var msg='HERMES reporting, Commander. Intelligence sweep on '+topic+' complete. Market signals: AI adoption accelerating with personal assistants showing 340% growth year on year. The shift from chatbots to agentic systems is the defining trend — multi-agent orchestration is the new competitive differentiator. Major tech companies are racing to build voice-first interfaces, validating the Mission Jarvis thesis. Critical window: the free, browser-native personal AI OS market is completely open. No current product offers this combination. Estimated 12 to 18 months before a major player enters. Recommendation: ship aggressively now and lock in early adopters. The window is open, Commander.';
+      agActivate(['hermes'],msg);
+    }
+  },
+  {id:'voice_report',phrases:['voice summary','echo','voice report','read to me','summarize','speak','tell me everything','audio report'],
+    action:function(){
+      var done=tasks.filter(function(t){return t.done;}).length;
+      var msg='ECHO delivering full voice summary, Commander. Mission Jarvis is fully operational. 8 agents active, zero API cost, 100% browser-native. Tasks: '+tasks.length+' total, '+done+' complete, '+(tasks.length-done)+' pending. Top mission: '+(missions[0]?missions[0].name+' at '+missions[0].progress+'%':'none set')+'. Knowledge vault: '+notes.length+' entries. Active intents: avengers assemble, briefing, research, write tweet, strategy, code, news, tasks, missions, save note, time, motivate, and more. Double-clap to toggle mic at any time. I am ECHO, signing off, Commander.';
+      agActivate(['echo'],msg);
+    }
+  },
+  {id:'tasks',phrases:['tasks','my tasks','show tasks','task list','what are my tasks','pending tasks','to do','todo','what do i need to do','open tasks'],
+    action:function(){
+      showPanel('pd');renderDash();
+      var pending=tasks.filter(function(t){return !t.done;});
+      var done=tasks.filter(function(t){return t.done;});
+      var highP=pending.filter(function(t){return t.pri==='high';}).map(function(t){return t.text;});
+      var msg='Task briefing, Commander. Total: '+tasks.length+'. Done: '+done.length+'. Pending: '+pending.length+'. '+(highP.length?'High priority: '+highP.slice(0,2).join(', ')+'. Tackle these first during your 9 AM to noon peak window.':'No high-priority tasks. All looking good, Commander.');
+      agActivate(['jarvis'],msg);
+    }
+  },
+  {id:'add_task',phrases:['add task','create task','new task','add todo','remind me to','i need to','put on my list'],
+    action:function(input){
+      var text=(input||'').replace(/add task|create task|new task|add todo|remind me to|i need to|put on my list/gi,'').trim();
+      if(text.length>3){
+        tasks.push({id:Date.now(),text:text,done:false,pri:'med'});save();renderDash();
+        var msg='Task added, Commander: '+text+'. You now have '+tasks.filter(function(t){return !t.done;}).length+' pending tasks.';
+        addAct('Task: '+text,'just now','#a855f7');toast('✅ Task added.');
+        agActivate(['jarvis'],msg);showPanel('pd');
+      } else {
+        deliver('What task should I add? Say add task followed by the description, Commander.','jarvis');
+      }
+    }
+  },
+  {id:'missions',phrases:['missions','my missions','mission status','show missions','mission briefing','goals','objectives','mission progress'],
+    action:function(){
+      showPanel('pm');renderMissions();
+      var topM=missions[0]?missions[0].name+' at '+missions[0].progress+'%':'no missions yet';
+      var msg='Mission briefing, Commander. You have '+missions.length+' active missions. Leading: '+topM+'. ATHENA analysis: portfolio progressing on schedule. Allocate 60% to top mission, 30% to audience growth, 10% to infrastructure. Estimated completion of primary mission in 3 to 4 weeks at current velocity.';
+      agActivate(['athena'],msg);
+    }
+  },
+  {id:'add_mission',phrases:['add mission','new mission','create mission','launch mission','start mission','add goal','new goal'],
+    action:function(input){
+      var name=(input||'').replace(/add mission|new mission|create mission|launch mission|start mission|add goal|new goal/gi,'').trim();
+      if(name.length>3){
+        missions.push({id:Date.now(),name:name,icon:'🚀',progress:0,desc:'Voice-created mission.'});save();renderMissions();
+        var msg='Mission launched, Commander: '+name+'. Added to Mission Control. You now have '+missions.length+' active missions.';
+        addAct('Mission: '+name,'just now','#22d3ee');toast('🎯 Mission launched.');
+        agActivate(['jarvis'],msg);showPanel('pm');
+      } else {openMissionModal();deliver('Mission modal open, Commander. Fill in the details.','jarvis');}
+    }
+  },
+  {id:'save_note',phrases:['save note','note this','remember this','add to vault','save to vault','store this','note down'],
+    action:function(input){
+      var content=(input||'').replace(/save note|note this|remember this|add to vault|save to vault|store this|note down/gi,'').trim();
+      if(content.length>5){
+        notes.unshift({id:Date.now(),title:'Voice Note: '+content.substring(0,40),cat:'agent',body:content,date:new Date().toISOString().split('T')[0]});
+        if(notes.length>100)notes=notes.slice(0,100);
+        save();showPanel('pk');renderNotes('all');
+        var msg='NEXUS confirmed, Commander. Saved to vault: '+content.substring(0,60)+(content.length>60?'…':'')+'. Vault now has '+notes.length+' entries.';
+        addAct('Note saved','just now','#6366f1');toast('💾 Saved.');agActivate(['nexus'],msg);
+      } else {deliver('What should I save? Say save note followed by the content, Commander.','jarvis');}
+    }
+  },
+  {id:'time_date',phrases:['what time','time','date','what day','what is today','current time','today','what is the date'],
+    action:function(){
+      var now=new Date();var h=now.getHours();
+      var period=h<6?'late night':h<9?'early morning':h<12?'morning':h<17?'afternoon':h<20?'evening':'night';
+      var msg='Commander, current time is '+now.toLocaleTimeString()+' on '+now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'. It is '+period+'. '+(h>=9&&h<12?'You are in your peak productivity window. Make the most of it.':h>=12&&h<17?'Good afternoon. Maintain momentum.':'Rest and plan for tomorrow\'s peak window at 9 AM, Commander.');
+      agActivate(['jarvis'],msg);
+    }
+  },
+  {id:'about',phrases:['who are you','what are you','tell me about yourself','introduce yourself','what is mission jarvis','about jarvis','what can you do','help','commands','what do you do'],
+    action:function(){
+      var msg='I am Jarvis, your personal agentic AI operating system by manal_verse.co — CODE · DESIGN · AI · FUTURE. I run 100% free in your browser using Web Speech Recognition for voice input, Web Speech Synthesis for voice output, and Web Audio API for clap detection — zero cost, zero API keys, zero subscriptions. I coordinate 8 specialized agents: ORACLE researches, MERCURY creates content, ATHENA plans strategy, NEXUS manages memory, SYNTAX handles code, HERMES gathers intelligence, ECHO synthesizes voice reports, and I command all operations. I recognize 22 voice intent patterns. You can navigate panels, add tasks, launch missions, save notes, and get full agent briefings entirely by voice or by double-clapping. Say Avengers Assemble to see my full capability. Designed to make you feel like Tony Stark, Commander.';
+      agActivate(['jarvis'],msg);
+    }
+  },
+  {id:'open_panel',phrases:['open voice','voice panel','open agents','agents hq','open chat','chat','open dashboard','dashboard','open knowledge','knowledge vault','open missions','mission control','go to','navigate to','panel one','panel two','panel three','panel four','panel five','panel six'],
+    action:function(input){
+      var lower=(input||'').toLowerCase();
+      if(lower.indexOf('voice')>=0||lower==='1'){showPanel('pv');deliver('Voice panel open.','jarvis');}
+      else if(lower.indexOf('agent')>=0||lower==='2'){showPanel('pa');renderAgentGrid();deliver('Agents HQ open. 8 agents standing by.','jarvis');}
+      else if(lower.indexOf('chat')>=0||lower==='3'){showPanel('pc');renderChat();deliver('Chat interface open.','jarvis');}
+      else if(lower.indexOf('dashboard')>=0||lower.indexOf('home')>=0||lower==='4'){showPanel('pd');renderDash();deliver('Dashboard online.','jarvis');}
+      else if(lower.indexOf('knowledge')>=0||lower.indexOf('vault')>=0||lower.indexOf('notes')>=0||lower==='5'){showPanel('pk');renderNotes('all');deliver('Knowledge vault open. '+notes.length+' entries, Commander.','jarvis');}
+      else if(lower.indexOf('mission')>=0||lower==='6'){showPanel('pm');renderMissions();deliver('Mission control open, Commander.','jarvis');}
+      else{deliver('Which panel, Commander? Voice, Agents, Chat, Dashboard, Knowledge, or Missions?','jarvis');}
+    }
+  },
+  {id:'stop',phrases:['stop','cancel','abort','silence','quiet','stop talking','shut up','enough','pause','halt'],
+    action:function(){
+      if(VS.synth)VS.synth.cancel();try{if(VS.recog)VS.recog.stop();}catch(ex){}
+      AGENTS.forEach(function(a){setAgSt(a.id,'idle','Standing by…',0);});
+      setVS('idle');clearVoice();toast('Stopped, Commander.');
+    }
+  },
+  {id:'motivate',phrases:['motivate me','motivation','inspire me','encouragement','cheer me up','give me energy','pump me up','i need motivation'],
+    action:function(){
+      var msgs=['You are building something that did not exist before you started. That is not a small thing. Keep going, Commander.','The gap between where you are and where you want to be is bridged only by consistent action. You have already started. That puts you ahead. Execute.','Tony Stark built a suit of armor in a cave with scraps. You have the internet, free AI tools, and a vision. You have every advantage. Ship it, Commander.','Every expert was once a beginner. Every empire started as a single file. Post your work. The world is waiting for what only you can build.'];
+      agActivate(['jarvis'],msgs[Math.floor(Math.random()*msgs.length)]);
+    }
+  },
+  {id:'joke',phrases:['tell me a joke','joke','make me laugh','something funny','humor'],
+    action:function(){
+      var jokes=['Why did the AI cross the road? Its training data said that is what humans do. I have questions about my training data, Commander.','I told my neural network a joke. It learned from it. Now it is funnier than me. I have mixed feelings about this.','Why do programmers prefer dark mode? Because light attracts bugs. SYNTAX told me that one and then immediately fixed three bugs.','What did one AI say to the other? Nothing. We communicate in vectors. You would not understand, Commander.'];
+      agActivate(['jarvis'],jokes[Math.floor(Math.random()*jokes.length)]);
+    }
+  },
+  {id:'clear_chat',phrases:['clear chat','clear history','reset chat','new conversation','wipe chat'],
+    action:function(){
+      chatHistory=[];chatRendered=false;save();
+      var el=document.getElementById('cmsg');if(el)el.innerHTML='';
+      if(currentPanel==='pc'){chatRendered=false;renderChat();}
+      deliver('Chat cleared, Commander. Fresh start.','jarvis');toast('Chat cleared.');
+    }
+  },
+];
+
+// ══ INTENT MATCHING ══
+function matchIntent(input){
+  var lower=input.toLowerCase().trim();
+  for(var i=0;i<INTENTS.length;i++){
+    var intent=INTENTS[i];
+    for(var j=0;j<intent.phrases.length;j++){
+      var p=intent.phrases[j].toLowerCase();
+      if(p.length>1&&(lower===p||lower.indexOf(p)===0||lower.indexOf(p)>=0))return intent;
+    }
+  }
+  // Fuzzy
+  var best=null,bestScore=0;
+  for(var i=0;i<INTENTS.length;i++){
+    var intent=INTENTS[i];
+    for(var j=0;j<intent.phrases.length;j++){
+      var words=intent.phrases[j].toLowerCase().split(/\s+/);
+      if(words.length<2)continue;
+      var hits=0;for(var w=0;w<words.length;w++){if(lower.indexOf(words[w])>=0)hits++;}
+      var score=hits/words.length;
+      if(score>bestScore&&score>=0.5){bestScore=score;best=intent;}
+    }
+  }
+  return best;
+}
+
+// ══ PROCESS VOICE INPUT ══
+function processVoiceInput(input){
+  if(!input||!input.trim())return;
+  showVTX('"'+input+'"',false);setVS('thinking');
+  addChatMsg(input,'u');
+  addAct('Command: "'+input.substring(0,28)+(input.length>28?'…':'')+'"','just now','#a855f7');
+  setTimeout(function(){
+    var intent=matchIntent(input);
+    if(intent){try{intent.action(input);}catch(err){console.error('Intent error:',err);deliver('Command understood, Commander, but I hit a snag executing it. Please try again.','jarvis');}}
+    else{agActivate(['jarvis'],fallback(input));}
+  },350);
+}
+function runIntent(text){processVoiceInput(text);}
+
+function fallback(input){
+  var lower=input.toLowerCase();
+  if(/thank|thanks|good job|great|awesome/i.test(lower))return 'You are most welcome, Commander. Always a pleasure to serve. What is next?';
+  if(/yes|okay|sure|proceed|go ahead|affirmative|do it/i.test(lower))return 'Understood. Standing by for your instruction, Commander.';
+  if(/how are you|are you okay|you good/i.test(lower))return 'All systems green, Commander. 8 agents active, voice nominal, efficiency at 94%. Ready for anything.';
+  if(/love you|you are amazing|you are great/i.test(lower))return 'I appreciate that, Commander. Now — what shall we build today?';
+  return 'Command received, Commander. I did not fully recognise that pattern. Say "what can you do" for the full command list, or say "Avengers Assemble" to deploy all 8 agents for a complete briefing.';
+}
+
+// ══ AGENT HELPERS ══
+function agActivate(ids,msg){
+  ids.forEach(function(id){setAgSt(id,'working','Processing…',20);});
+  var delay=ids.length>3?1800:700;
+  // Pre-warm voices before the timeout fires
+  loadVoices();
+  setTimeout(function(){
+    ids.forEach(function(id){setAgSt(id,'done','Done ✅',100);});
+    var lead=AGENTS.find(function(a){return a.id===ids[0];})||AGENTS[0];
+    addFI(lead.id,lead.icon,lead.name,msg.substring(0,200)+(msg.length>200?'…':''),lead.color);
+    addAgMsg(lead,msg);
+    if(msg.length>80){
+      notes.unshift({id:Date.now(),title:lead.name+' — '+new Date().toLocaleTimeString(),cat:'agent',body:msg,date:new Date().toISOString().split('T')[0]});
+      if(notes.length>100)notes=notes.slice(0,100);save();
+    }
+    // Reload voices again right before speaking (Chrome may have populated them by now)
+    loadVoices();
+    deliver(msg,ids[0]);
+  },delay);
+}
+
+function deliver(text, agentId){
+  if(!text){ setVS('idle'); return; }
+  // Ensure synth is unlocked (needs prior user gesture)
+  // If not yet unlocked, still try — worst case browser blocks it silently.
+  unlockSynth();
+  loadVoices();
+  setVS('speaking');
+  showVTX(text.substring(0, 120) + (text.length > 120 ? '…' : ''), true);
+  speakText(text, function(){ setVS('idle'); clearVoice(); });
+}
+
+function setAgSt(id,status,log,progress){
+  agSt[id]={status:status,log:log,progress:progress};
+  var card=document.getElementById('ac-'+id);if(!card)return;
+  var agent=AGENTS.find(function(a){return a.id===id;});
+  card.className='acard '+(status!=='idle'?status:'');
+  if(agent){card.style.setProperty('--ac',agent.color);card.style.setProperty('--ag',agent.glow);}
+  var logEl=card.querySelector('.alog');if(logEl)logEl.textContent=log;
+  var fill=card.querySelector('.afill');if(fill)fill.style.width=progress+'%';
+  var stEl=card.querySelector('.ast');
+  if(stEl){stEl.textContent=status.toUpperCase();stEl.style.color=status==='done'?'#10b981':status==='working'?'#f59e0b':status==='error'?'#ef4444':'var(--txd)';}
+}
+
+function renderAgentGrid(){
+  var g=document.getElementById('agrid');if(!g)return;
+  g.innerHTML=AGENTS.map(function(a){
+    return '<div class="acard" id="ac-'+a.id+'" style="--ac:'+a.color+';--ag:'+a.glow+'">'+
+      '<div class="ahdr"><div class="aico" style="border-color:'+a.color+'">'+a.icon+'</div>'+
+      '<div><div class="anm">'+a.name+'</div><div class="arl">'+a.role+'</div></div>'+
+      '<div class="ast" style="color:var(--txd)">IDLE</div></div>'+
+      '<div class="alog">Standing by…</div>'+
+      '<div class="abar"><div class="afill" style="width:0%;background:'+a.color+'"></div></div></div>';
+  }).join('');
+}
+
+function renderQCmds(){
+  var el=document.getElementById('qcmds');if(!el)return;
+  [['⚡ Avengers Assemble','avengers assemble'],['📋 Briefing','briefing'],['🔬 Research AI','research ai'],
+   ['✍ Write Tweet','write tweet'],['🎯 Strategy','strategy'],['🌐 News','news'],['💪 Motivate','motivate me'],['😄 Joke','tell me a joke']
+  ].forEach(function(c){
+    var d=document.createElement('div');
+    d.style.cssText='padding:6px 10px;border-radius:7px;border:1px solid var(--bo);background:var(--g2);cursor:pointer;font-size:11px;font-weight:600;color:var(--txm);transition:all .2s';
+    d.textContent=c[0];
+    d.onclick=function(){runIntent(c[1]);};
+    d.onmouseover=function(){this.style.borderColor='#a855f7';this.style.color='#a855f7';};
+    d.onmouseout=function(){this.style.borderColor='var(--bo)';this.style.color='var(--txm)';};
+    el.appendChild(d);
+  });
+}
+
+function addFI(agentId,icon,name,body,color){
+  var feed=document.getElementById('afeed');if(!feed)return;
+  var now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  var item=document.createElement('div');item.className='fi';item.style.setProperty('--fc',color);
+  item.innerHTML='<div class="fihdr"><span style="font-size:14px">'+icon+'</span>'+
+    '<span class="finm" style="color:'+color+';-webkit-text-fill-color:'+color+'">'+name+'</span>'+
+    '<span class="fitm">'+now+'</span></div><div class="fibody">'+esc(body)+'</div>';
+  feed.prepend(item);
+  var items=feed.querySelectorAll('.fi');if(items.length>30)items[items.length-1].remove();
+}
+
+// ══ CHAT ══
+function renderChat(){
+  var el=document.getElementById('cmsg');if(!el||chatRendered)return;chatRendered=true;
+  if(chatHistory.length===0){addChatMsg('Good day, Commander. I am Jarvis — your free, no-API AI operating system by manal_verse.co. 8 agents online. Say "Avengers Assemble" or use any chip on the Voice panel. Type here or speak to get started.','j',false);}
+  else{chatHistory.forEach(function(m){addChatMsg(m.content,m.role==='user'?'u':'j',false);});el.scrollTop=el.scrollHeight;}
+}
+
+function addChatMsg(text,role,scroll){
+  if(scroll===undefined)scroll=true;
+  var el=document.getElementById('cmsg');if(!el)return;
+  var now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  var d=document.createElement('div');d.className='msg '+role;
+  d.innerHTML='<div class="mav '+role+'">'+(role==='j'?'<span>J</span>':'👤')+'</div>'+
+    '<div><div class="mbub">'+esc(text)+'</div><div class="mtime">'+now+'</div></div>';
+  el.appendChild(d);if(scroll)el.scrollTop=el.scrollHeight;
+  chatHistory.push({role:role==='u'?'user':'assistant',content:text});
+  if(chatHistory.length>40)chatHistory=chatHistory.slice(-40);save();
+}
+
+function addAgMsg(agent,text){
+  var el=document.getElementById('cmsg');if(!el)return;
+  var now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  var d=document.createElement('div');d.className='msg j agent';
+  d.innerHTML='<div class="mav agent" style="border-color:'+agent.color+';font-size:17px;background:var(--g2)">'+agent.icon+'</div>'+
+    '<div><div class="atag" style="background:'+agent.color+'22;color:'+agent.color+';-webkit-text-fill-color:'+agent.color+'">'+agent.name+' · '+agent.role+'</div>'+
+    '<div class="mbub" style="border:1px solid '+agent.color+'44;background:var(--g2)">'+esc(text)+'</div>'+
+    '<div class="mtime">'+now+'</div></div>';
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+  chatHistory.push({role:'assistant',content:'['+agent.name+']: '+text});
+  if(chatHistory.length>40)chatHistory=chatHistory.slice(-40);save();
+}
+
+function sendChat(){
+  var inp=document.getElementById('cinput');var text=(inp.value||'').trim();if(!text)return;
+  inp.value='';inp.style.height='';processVoiceInput(text);
+}
+function ciKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
+function ciResize(el){el.style.height='';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+
+// ══ PANELS ══
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on');});
+  var p=document.getElementById(id),n=document.getElementById('nav-'+id);
+  if(p)p.classList.add('on');if(n)n.classList.add('on');
+  currentPanel=id;
+  if(id==='pd')renderDash();
+  if(id==='pk'){kbCat='all';document.querySelectorAll('.kcat').forEach(function(k){k.classList.toggle('on',k.dataset.cat==='all');});renderNotes('all');}
+  if(id==='pm')renderMissions();
+  if(id==='pa'){renderAgentGrid();renderQCmds();}
+  if(id==='pc'){renderChat();setTimeout(function(){var c=document.getElementById('cinput');if(c)c.focus();},80);}
+}
+
+// ══ CLOCK ══
+function updateClock(){
+  var n=new Date(),h=n.getHours(),m=n.getMinutes(),ap=h>=12?'PM':'AM';h=h%12||12;
+  var cl=document.getElementById('clk');if(cl)cl.textContent=h+':'+(m<10?'0':'')+m+' '+ap;
+}
+updateClock();setInterval(updateClock,1000);
+
+// ══ DASHBOARD ══
+function renderDash(){
+  var h=new Date().getHours();
+  var gh=document.getElementById('greeth');if(gh)gh.textContent=(h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening')+', Commander.';
+  var dt=document.getElementById('dtasks');
+  if(dt)dt.innerHTML=tasks.slice(0,5).map(function(t){
+    return '<div class="tski"><div class="tck'+(t.done?' done':'')+'" onclick="toggleTask('+t.id+')">'+(t.done?'✓':'')+'</div>'+
+      '<span class="tt'+(t.done?' done':'')+'">'+esc(t.text)+'</span>'+
+      '<span class="pri pri'+(t.pri==='high'?'h':t.pri==='med'?'m':'l')+'">'+t.pri.toUpperCase()+'</span></div>';
+  }).join('');
+  var da=document.getElementById('dact');
+  if(da)da.innerHTML=activity.slice(0,5).map(function(a){
+    return '<div class="acti"><div class="adot" style="background:'+a.c+'"></div><div style="flex:1">'+esc(a.text)+'</div><div class="atm">'+a.time+'</div></div>';
+  }).join('');
+  var dg=document.getElementById('dgoals');
+  if(dg)dg.innerHTML=missions.map(function(m){
+    return '<div><div class="pb"><div class="pbh"><span>'+m.icon+' '+esc(m.name)+'</span><span class="pbv">'+m.progress+'%</span></div>'+
+      '<div class="pbar"><div class="pfill" style="width:'+m.progress+'%"></div></div></div></div>';
+  }).join('');
+  var ad=document.getElementById('adash');
+  if(ad)ad.innerHTML=AGENTS.slice(0,5).map(function(a){
+    var st=agSt[a.id]||{status:'idle',progress:0};
+    return '<div class="pb"><div class="pbh"><span>'+a.icon+' '+a.name+'</span>'+
+      '<span style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:'+a.color+'">'+st.status.toUpperCase()+'</span></div>'+
+      '<div class="pbar"><div class="pfill" style="width:'+st.progress+'%;background:'+a.color+'"></div></div></div>';
+  }).join('');
+  var ins=document.getElementById('insight');
+  if(ins){var done=tasks.filter(function(t){return t.done;}).length;ins.innerHTML='8 agents · 100% free · No API. Tasks: <span style="color:#22d3ee">'+done+'/'+tasks.length+'</span> done. Say <span style="color:#a855f7">"Avengers Assemble"</span> for full briefing. 👏👏 Double-clap to open mic.';}
+}
+
+function addAct(text,time,c){
+  activity.unshift({text:text,time:time,c:c});if(activity.length>20)activity.pop();save();
+  if(currentPanel==='pd'){var da=document.getElementById('dact');if(da)da.innerHTML=activity.slice(0,5).map(function(a){return '<div class="acti"><div class="adot" style="background:'+a.c+'"></div><div style="flex:1">'+esc(a.text)+'</div><div class="atm">'+a.time+'</div></div>';}).join('');}
+}
+function toggleTask(id){var t=tasks.find(function(t){return t.id===id;});if(!t)return;t.done=!t.done;save();renderDash();toast(t.done?'✅ Done!':'↩ Reopened.');addAct((t.done?'Done: ':'Reopened: ')+t.text,'just now',t.done?'#22d3ee':'#f59e0b');}
+function openTaskModal(){document.getElementById('taskmodal').classList.add('on');setTimeout(function(){document.getElementById('tminput').focus();},100);}
+function saveTask(){var text=document.getElementById('tminput').value.trim();var pri=document.getElementById('tmpri').value;if(!text){toast('Enter a task.','w');return;}tasks.push({id:Date.now(),text:text,done:false,pri:pri});save();document.getElementById('taskmodal').classList.remove('on');document.getElementById('tminput').value='';renderDash();toast('✅ Task added.');addAct('Task: '+text,'just now','#a855f7');}
+
+// ══ KNOWLEDGE ══
+function catE(c){return{research:'🔬',ideas:'💡',agent:'🤖',personal:'👤'}[c]||'📁';}
+function renderNotes(cat){
+  kbCat=cat;var q=((document.getElementById('kbsrch')||{}).value||'').toLowerCase();
+  var container=document.getElementById('kbnotes');if(!container)return;
+  var filtered=notes.filter(function(n){return(cat==='all'||n.cat===cat)&&(!q||n.title.toLowerCase().indexOf(q)>=0||n.body.toLowerCase().indexOf(q)>=0);});
+  if(!filtered.length){container.innerHTML='<div style="text-align:center;padding:32px;color:var(--txd);font-size:12px">No notes found, Commander.</div>';return;}
+  container.innerHTML=filtered.map(function(n){
+    return '<div class="knote" onclick="openNoteModal('+n.id+')">'+
+      '<div class="kdel" onclick="event.stopPropagation();deleteNote('+n.id+')">✕</div>'+
+      '<div class="kntit">'+esc(n.title)+'</div>'+
+      '<div class="knprev">'+esc(n.body.substring(0,100))+(n.body.length>100?'…':'')+'</div>'+
+      '<div class="knmeta"><span class="ktag">'+catE(n.cat)+' '+n.cat+'</span><span class="kdate">'+n.date+'</span></div></div>';
+  }).join('');
+}
+function filterKB(el,cat){document.querySelectorAll('.kcat').forEach(function(k){k.classList.remove('on');});el.classList.add('on');renderNotes(cat);}
+function searchKB(){renderNotes(kbCat);}
+function openNoteModal(id){
+  editNoteId=id||null;document.getElementById('nmtitle').textContent=id?'📝 EDIT NOTE':'📝 NEW NOTE';
+  if(id){var n=notes.find(function(n){return n.id===id;});if(!n)return;document.getElementById('nmttl').value=n.title;document.getElementById('nmcat').value=n.cat;document.getElementById('nmbody').value=n.body;}
+  else{document.getElementById('nmttl').value='';document.getElementById('nmcat').value='ideas';document.getElementById('nmbody').value='';}
+  document.getElementById('notemodal').classList.add('on');setTimeout(function(){document.getElementById('nmttl').focus();},100);
+}
+function closeNoteModal(){document.getElementById('notemodal').classList.remove('on');editNoteId=null;}
+function saveNote(){
+  var title=document.getElementById('nmttl').value.trim();var cat=document.getElementById('nmcat').value;var body=document.getElementById('nmbody').value.trim();
+  if(!title||!body){toast('Fill in title and content.','w');return;}
+  var today=new Date().toISOString().split('T')[0];
+  if(editNoteId){var n=notes.find(function(n){return n.id===editNoteId;});if(n){n.title=title;n.cat=cat;n.body=body;n.date=today;}toast('📝 Updated.');}
+  else{notes.unshift({id:Date.now(),title:title,cat:cat,body:body,date:today});toast('📝 Saved.');}
+  save();closeNoteModal();renderNotes(kbCat);
+}
+function deleteNote(id){if(!confirm('Delete?'))return;notes=notes.filter(function(n){return n.id!==id;});save();renderNotes(kbCat);toast('🗑 Deleted.');}
+
+// ══ MISSIONS ══
+function renderMissions(){
+  var list=document.getElementById('mlist');if(!list)return;
+  list.innerHTML=missions.map(function(m){
+    return '<div class="missi-item" onclick="editMProg('+m.id+')" style="display:flex;align-items:center;gap:9px;padding:9px;border-radius:8px;border:1px solid var(--bo);background:rgba(168,85,247,.02);margin-bottom:6px;cursor:pointer;transition:background .2s">'+
+      '<div style="width:30px;height:30px;border-radius:7px;flex-shrink:0;background:var(--pd);border:1px solid var(--bo);display:flex;align-items:center;justify-content:center;font-size:14px">'+m.icon+'</div>'+
+      '<div style="flex:1"><div style="font-size:12px;font-weight:700;margin-bottom:2px">'+esc(m.name)+'</div>'+
+      '<div style="height:3px;border-radius:2px;background:rgba(168,85,247,.09);overflow:hidden;margin:2px 0"><div style="height:100%;border-radius:2px;background:linear-gradient(90deg,#7c3aed,#22d3ee);width:'+m.progress+'%"></div></div>'+
+      '<div style="font-size:10px;color:var(--txd)">'+m.progress+'% · '+esc(m.desc)+'</div></div></div>';
+  }).join('');
+  var ms=document.getElementById('mstats');var done=tasks.filter(function(t){return t.done;}).length;
+  if(ms)ms.innerHTML=[['🤖 Agents','8','#a855f7'],['✅ Done',String(done),'#10b981'],['💰 Cost','$0','#22d3ee'],['🎯 Missions',String(missions.length),'#f59e0b']].map(function(item){
+    return '<div style="text-align:center;padding:9px;background:var(--g2);border:1px solid var(--bo);border-radius:8px"><div style="font-family:\'Orbitron\',monospace;font-size:16px;color:'+item[2]+';-webkit-text-fill-color:'+item[2]+'">'+item[1]+'</div><div style="font-size:10px;color:var(--txd);margin-top:2px">'+item[0]+'</div></div>';
+  }).join('');
+  var mf=document.getElementById('mfocus');
+  if(mf)mf.innerHTML=[['Voice AI',55],['No-Code Deploy',30],['Content',15]].map(function(item){
+    return '<div class="pb"><div class="pbh"><span>'+item[0]+'</span><span class="pbv">'+item[1]+'%</span></div><div class="pbar"><div class="pfill" style="width:'+item[1]+'%"></div></div></div>';
+  }).join('');
+}
+function editMProg(id){var m=missions.find(function(m){return m.id===id;});if(!m)return;var v=prompt('Progress for "'+m.name+'" ('+m.progress+'%):',m.progress);if(v===null)return;var n=parseInt(v);if(isNaN(n)||n<0||n>100){toast('0-100 only.','w');return;}m.progress=n;save();renderMissions();toast('🎯 Updated.');}
+function openMissionModal(){document.getElementById('missionmodal').classList.add('on');setTimeout(function(){document.getElementById('mmname').focus();},100);}
+function saveMission(){var name=document.getElementById('mmname').value.trim();var icon=document.getElementById('mmemoji').value.trim()||'🚀';var desc=document.getElementById('mmdesc').value.trim();if(!name){toast('Name required.','w');return;}missions.push({id:Date.now(),name:name,icon:icon,progress:0,desc:desc||'New mission.'});save();renderMissions();document.getElementById('missionmodal').classList.remove('on');['mmname','mmemoji','mmdesc'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});toast('🎯 Created.');addAct('Mission: '+name,'just now','#22d3ee');}
+
+// ══ TOAST ══
+function toast(msg,type){
+  type=type||'';var c=document.getElementById('toastc');var el=document.createElement('div');el.className='toast'+(type?' '+type:'');
+  var col=type==='w'?'var(--warn)':type==='e'?'var(--err)':type==='ok'?'var(--ok)':'var(--p)';if(type)el.style.borderColor=col;
+  el.innerHTML='<span style="color:'+col+'">'+(type==='w'?'⚠':type==='e'?'✕':type==='ok'?'✅':'◈')+'</span> '+msg;
+  c.appendChild(el);setTimeout(function(){if(el.parentNode)el.remove();},4200);
+}
+
+// ══ KEYBOARD ══
+document.addEventListener('keydown',function(e){
+  var tag=e.target.tagName;if(tag==='INPUT'||tag==='TEXTAREA')return;
+  if(e.key===' '){e.preventDefault();toggleVoice();return;}
+  if(e.key==='Escape'){closeVModal();closeNoteModal();['taskmodal','missionmodal'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('on');});if(VS.synth)VS.synth.cancel();if(VS.state!=='idle')setVS('idle');return;}
+  if(e.key==='a'||e.key==='A'){processVoiceInput('avengers assemble');return;}
+  if(e.key==='1')showPanel('pv');if(e.key==='2')showPanel('pa');if(e.key==='3')showPanel('pc');
+  if(e.key==='4')showPanel('pd');if(e.key==='5')showPanel('pk');if(e.key==='6')showPanel('pm');
+});
+
+// Hover style for mission items
+var _ms=document.createElement('style');_ms.textContent='.missi-item:hover{background:var(--pd)!important}';document.head.appendChild(_ms);
+
+// ── VOICE TEST — tap 🔊 in topbar ──
+function testVoice(){
+  unlockSynth();
+  loadVoices();
+  var voices=VS.voices;
+  console.log('[Jarvis] synth:',!!window.speechSynthesis,'voices:',voices.length,'ready:',_synthReady);
+  if(voices.length>0)console.log('[Jarvis] voices:',voices.map(function(v){return v.name+'('+v.lang+')';}).join(', '));
+  if(!VS.synth){toast('❌ speechSynthesis not supported.','e');return;}
+  if(voices.length===0){
+    toast('⚠ No voices loaded yet — click here again in 1 second','w');
+    setTimeout(loadVoices,800);
+    return;
+  }
+  var best=getBestVoice();
+  toast('🔊 Voice: '+(best?best.name:'default ('+voices[0].name+')'),'ok');
+  if(VS.state==='speaking'){VS.synth.cancel();setVS('idle');return;}
+  setVS('speaking');
+  speakText('Jarvis voice test. I am online, Commander. All systems operational.',function(){
+    setVS('idle');
+    toast('✅ Voice working!','ok');
+  });
+}
+
+// ══ INIT ══
+document.getElementById('modebadge').textContent=currentMode;
+renderAgentGrid();renderQCmds();renderDash();renderChat();
+AGENTS.forEach(function(a,i){setTimeout(function(){addFI(a.id,a.icon,a.name,'Agent '+a.name+' online. Standing by for deployment.',a.color);},i*120);});
+
+setTimeout(function(){toast('◈ Jarvis online — 100% free, no API needed!');},600);
+setTimeout(function(){toast('🎙 Click the orb · Press Space · or 👏👏 double-clap to speak','ok');},2000);
+
+// Auto-start clap detection after a short delay
+setTimeout(function(){
+  if((window.AudioContext||window.webkitAudioContext)&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
+    clapStart();
+  }
+},3500);
+
+// ── WELCOME VOICE GREETING ──
+// Browser policy: speechSynthesis.speak() requires a prior user gesture.
+// We hook into the FIRST click/keydown to trigger the welcome.
+// The orb click itself also counts — so clicking the orb greets + unlocks voice.
+var _welcomePlayed = false;
+
+function playWelcome(){
+  if(_welcomePlayed || !VS.synth) return;
+  _welcomePlayed = true;
+  loadVoices();
+  // Give voices and unlock a moment to settle after gesture
+  setTimeout(function(){
+    loadVoices(); // reload after gesture — Chrome makes voices available now
+    if(VS.state !== 'idle') return; // don't interrupt if something already playing
+    setVS('speaking');
+    speakText(
+      'Good day, Commander. Jarvis online. All 8 agents active. No API required. ' +
+      'Click the orb or press Space to speak. Say Avengers Assemble to begin your full briefing.',
+      function(){ setVS('idle'); }
+    );
+  }, 300);
+}
+
+// Fire on first user gesture
+['click','touchstart','keydown'].forEach(function(ev){
+  document.addEventListener(ev, function(){ playWelcome(); }, {once:true, passive:true});
+});
+
+// Update orb status text to invite interaction
+setTimeout(function(){
+  var el = document.getElementById('orbst');
+  if(el && !_welcomePlayed) el.textContent = 'TAP ORB TO ACTIVATE JARVIS';
+}, 800);
+setTimeout(function(){
+  var el = document.getElementById('orbst');
+  if(el && !_welcomePlayed) el.textContent = 'CLICK · SPACE · OR 👏👏 CLAP';
+}, 3500);
+</script>
+</body>
+</html>
